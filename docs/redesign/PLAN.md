@@ -3,22 +3,24 @@
 Owner: Opus (lead) · Builders: Sonnet · Chores/QA: Haiku
 Repo: `E:\ataspace\BuiltwGrok\HedgeHound` (this folder) · Backend: `E:\ataspace\WhaleHunterAlt\scanner\server.py` (stays where it is)
 Tickets: `docs/redesign/TICKETS.md` · Agent rules: `CLAUDE.md`
+**Design: `DESIGN.md` (repo root) is binding for look and motion. It records the owner's taste; read its first section before any UI work.** Prototype of record: route `/_almagest` on branch `D1-almagest`.
 
 ---
 
 ## 0. TL;DR
 
-Rebuild HedgeHound's front end as a long-scroll **"Edition"** in the style of Shopify Editions (Renaissance, Winter '26), using a **dark constellation** theme in place of the paintings:
+> **Direction changed on 2026-10-13 ("Almagest", spike D1).** The owner scrolled a live prototype through three rounds and set the look. `DESIGN.md` is the source of truth for colour, type, layout and motion. This plan keeps product, data, architecture and process.
+
+Rebuild HedgeHound's front end as a long-scroll **Edition**: a funding-spread **observatory at night**. It keeps the fluid scroll of Shopify Editions (Renaissance, Winter 2026), but the world is a real night sky instead of paintings and paper.
 
 | Shopify Editions does… | HedgeHound does… |
 |---|---|
-| Renaissance paintings as full-bleed "plates" | One **persistent 3D night sky** (single R3F canvas). The camera *travels* between constellations, one per chapter |
-| Cream paper content sheets with torn edges | **Star-chart parchment** sheets (celestial-atlas engraving look) plus **liquid-glass** sheets for live data |
-| Floating 3D products (POS hub, Sidekick sphere) | Floating 3D **instruments**: Hedge Astrolabe (two-leg rings), Radar dish, the Hound constellation, Ember field |
-| Left index rail with roman numerals | Same rail, I–X. Each item is a star that lights when active |
-| Neo-grotesk mega titles + swash serif subtitles | Bricolage Grotesque mega titles + Fraunces italic with a **Pinyon Script swash initial** |
-| "Ren///ssance" glitch wordmark | "Can✶s Edition". The star replaces the dot of the i |
-| — (our twist) | **Scanning everywhere**: radar sweeps, scan-lines that flare the stars they cross, a HUD with RA/DEC coordinates, a live poll countdown, and text that decodes in like a readout |
+| Renaissance paintings as full-bleed plates | **One persistent 3D night sky** (single R3F canvas): near-black, dense faint stars in parallax layers. Each chapter is an instrument in the sky (the glass hound, Canis Major, the radar…) |
+| Cream paper sheets with torn edges | **Copy straight on the sky.** No sheets, cards or glass behind text (owner: "white and black already contrast to read") |
+| Index rail with Roman numerals | Index of **Greek Bayer letters α–κ**, the active one lit cyan |
+| Neo-grotesk titles + swash serif subtitles | **Two fonts:** Noto Serif Display at its thinnest (ancient but modern) + JetBrains Mono |
+| Scroll-driven transitions | **Scroll-locked "bite" transitions:** pixels eat the scene into shimmering stars, then rebuild the next one. Nothing moves while the scroll is still |
+| — (our twist) | **Real astronomy as ornament:** Canis Major from J2000 positions, Sirius's RA/DEC in the HUD, the scanner as a radar sweep, readings that gather out of star specks |
 
 WhaleHunterAlt/web is **not** extended. Its live-data layer and the components worth keeping are **ported into HedgeHound**. WhaleHunterAlt keeps running the Python scanner and becomes an archive for the web part.
 
@@ -55,104 +57,85 @@ WhaleHunterAlt/web is **not** extended. Its live-data layer and the components w
 
 ---
 
-## 2. Art direction
+## 2. Art direction (summary; `DESIGN.md` is normative)
 
-### 2.1 Concept: "A celestial atlas that is also a radar"
-Renaissance paintings ↔ **17th-century star atlases** (Bayer's *Uranometria*, Hevelius). Engraved constellation figures, parchment, copperplate lines. Canis Major *is* a hound, and its brightest star, Sirius, sits at **RA 06h 45m 09s · DEC −16° 43′**. That real coordinate becomes our home position in the HUD.
-The twist is that the atlas is **alive**. A scanner beam sweeps it. Stars are real coins whose brightness comes from live net APR, and their twinkle steadiness comes from persistence.
+### 2.1 Concept: "The observatory at night"
+The sky is the interface. Coins are stars, the scanner is a radar sweep, and every chapter is a region of sky you scroll through. Real astronomy is the ornament: Canis Major is a hound, and its brightest star Sirius sits at **RA 06h 45m 09s · DEC −16° 43′**, which is the home coordinate in the HUD. The Greek Bayer letters (α Sirius, β Mirzam …) give the ancient-Greek layer; Ptolemy's *Almagest* and the Babylonian star catalogues are the lineage.
 
-### 2.2 Color tokens (replace the ember-brown palette)
-```
---void        #04050A   page base, deepest space
---night       #070A14   plate background
---deep        #0C1224   raised dark surface
---nebula-1    #2B1F55   violet nebula wash
---nebula-2    #0B3442   teal nebula wash
---starlight   #F3EEE2   primary text on dark, star cores
---dim         #9097AC   secondary text on dark
---faint       #4A5168   tertiary / grid lines on dark
---line        rgb(243 238 226 / 0.12)
---scent       #FF6A1A   ALERT / brand accent (kept from v1 for continuity) = SHORT leg
---ember       #FFB15A   warm highlight, "building history"
---scan        #8BE9FF   scanner beam, HUD, focus rings = LONG leg
---parchment   #E9E2CF   star-chart sheet
---parchment-2 #DCD2BA   sheet shade / table stripes
---ink         #121624   text on parchment
---ink-soft    #4B5266   secondary on parchment
---rule        #C3B898   hairlines on parchment
-```
-Rules: `--scent` is **only** for alerts, short leg, primary CTA. `--scan` is **only** for scanning motifs, long leg, focus. Never use them decoratively.
+### 2.2 Colour
+Void `#010104` · Starlight `#f4f1ea` (0.62 dim, 0.38 faint) · Chart line `#9aa0ad` · **Scan cyan `#7fdcff`** (scanning, long leg, Bayer letters, focus) · **Scent orange `#ff8a3d`** (alerts, short leg). There is no other accent: no red or green, no nebula washes, no parchment. Star tints (`#c9d6ff` cool, `#ffe2c4` warm) are for stars only. Hex values live in `src/lib/palette.ts` and the `@theme` block of `styles.css` (kept in lockstep by `palette.test.ts`).
 
 ### 2.3 Type
-| Role | Face | Spec |
-|---|---|---|
-| Mega chapter titles ("Sniff", "The Kennel") | **Bricolage Grotesque Variable** 760–800 | `clamp(4.5rem, 13vw, 12rem)`, lh .84, tracking −.05em |
-| Wordmark only | Syne 800 (existing) | brand continuity |
-| Editorial / subtitles | **Fraunces Variable** italic 300–400, opsz 72+ | `clamp(1.4rem, 2.6vw, 2.4rem)`, lh 1.08 |
-| Swash initial on subtitles | **Pinyon Script** | first letter 2.3em, overlaps by −.18em, color `--starlight`/`--ink` |
-| Body | Fraunces roman 400, opsz 14 | 17–18px, lh 1.55, max 62ch |
-| Data, HUD, labels, tables | **JetBrains Mono Variable** | tabular-nums, HUD 10.5px uppercase tracking .14em |
+**Noto Serif Display Variable**: titles at weight ~180 (hero `clamp(3.2rem, 9vw, 8.5rem)`), italic subtitles and body at ~330. **JetBrains Mono Variable**: labels, HUD, Greek letters and figures (300, uppercase, 0.22em tracking for labels; tabular numbers for figures). Titles use `@spell/shimmer-text`. Retired: Bricolage, Fraunces, Pinyon, Syne, Marcellus, EB Garamond.
 
-All fonts load through `@fontsource*` packages (local-first, no Google CDN at runtime).
+### 2.4 Layout
+- One canvas fills the viewport. Copy lives on a **fixed stage** above it, and scroll length sets each scene's duration.
+- Copy column on the left (`max(16px, 7vw)`, ~500px); the chapter's instrument on the right.
+- HUD: drifting coordinate top-left, edition name top-right, α–κ index on the left edge.
+- Mobile: instrument above copy, HUD reduced to the coordinate, no horizontal scroll.
 
-### 2.4 Layout grammar (from the reference)
-- **Fixed left index rail** (desktop ≥1024px): `Overture I · Sniff II · Spread III · Trail IV · Hedge V · Kennel VI · Embers VII · Sky VIII · Den IX · Ledger X`. Active item is starlight, the rest are 40% dim, and the numeral is right-aligned in mono. Clicking scrolls to the chapter. Mobile collapses it to a bottom-left "II / X" chip that opens a sheet.
-- **Top nav** is a liquid-glass pill: wordmark left, "Editions ▾" (HoundMenu) + search (⌘K coin jump) center-left, poll status + "Open scanner" CTA right (= Shopify's "Start for free").
-- **Content column** starts at ~28% of the viewport (the rail sits in the left gutter), max 920px. Card grids are 3-up.
-- **Chapter rhythm:** Plate (sticky, 100svh, 3D + mega title + swash subtitle) → Sheet (scrolls over the plate, torn top edge, cards + feature table) → torn bottom edge → next Plate.
+### 2.5 Motion (the owner's rules)
+1. **Scroll-locked.** Transitions, reveals and crawls are pure functions of scroll progress, with no clocks: stop scrolling and they freeze. Lenis on `gsap.ticker` gives the fluid feel. Only ambient life runs on time (star twinkle, radar sweep, carousel cycle).
+2. **The bite crawl** between scenes:
+   - a ragged front rises
+   - every 4px cell (plus 14px chunks) has a fixed moment to be bitten, and once bitten stays gone
+   - the eaten area shows sparse stars that shimmer only while scrolling
+   - the next scene rebuilds cell by cell
+   - dither is the default
+   - the same bites apply to DOM text through generated mask frames
+3. **Entrances grow from where they connect.** A reading draws its leader line, then gathers out of 2px star specks; chapter copy rises from below the screen with the scroll; titles resolve from blur and shimmer.
+4. **The glass hound** (Overture) moves only with the cursor and recedes exponentially into depth, and the constellation's stars burst out where it vanished.
+5. **Banned:** bloom, glow halos, haze, drop shadows, sliding gradient masks pretending to be pixels, ScrambleText decode effects.
+6. `prefers-reduced-motion: reduce`: static sky, no crawl, plain fades, no scroll-linked motion.
 
-### 2.5 The scanning motif (our signature, used consistently)
-1. **Scan-line pass**: on every chapter enter, a 1px `--scan` line with a 40px soft trail sweeps top→bottom in 0.9s. Stars within 8px of the line flare (bloom spike) as it passes. Implemented in 3D (shader uniform `uScanY`) + a DOM overlay line.
-2. **Radar sweep**: a conic beam in the Sniff chapter and on the boot sequence. Coins ping (ring ripple) when the beam crosses their angle.
-3. **Decode text**: HUD readouts and the index items use GSAP ScrambleText on reveal (chars `0123456789ABCDEF·`). **Never** on body copy or mega titles.
-4. **HUD**: corner brackets at viewport corners. Top-left: `RA 06h 45m 09s · DEC −16° 43′` drifts with the pointer (±2° mapped). Bottom-right: `POLL #0142 · NEXT 04:12 · SRC LIVE`. It reads real `ts` from the API; the countdown is computed from 300 s.
-5. **Reticle cursor** (desktop, optional): a 24px crosshair ring follows the pointer with spring lag and snaps onto stars on hover.
+### 2.6 Depth stack (back → front)
+1. far star shell (slow rotation with scroll and cursor)
+2. flight layer and dust (stream past with scroll: parallax)
+3. the chapter's instrument
+4. projected DOM labels pinned to 3D points
+5. fixed-stage copy and HUD
 
-### 2.6 What makes it feel like *space* (depth stack, back → front)
-1. Nebula wash: a custom fbm shader on a full-screen quad inside SkyStage (S2), very low contrast, slow drift. A CSS gradient floor (`.sky-floor`) covers SSR first paint, low tier and reduced motion.
-2. Far stars: instanced points, ~6k (quality-tiered). Parallax 0.15× scroll and pointer.
-3. Constellation stars = coins (sized by |net APR|, twinkle amplitude by 1−persistence) with lines drawn in.
-4. Hero instrument (3D object of the chapter), with MeshTransmission/metal materials catching bloom.
-5. Near dust: a few hundred soft sprites, parallax 1.3×, slight DOF blur.
-6. DOM: mega title (scrubbed) → swash subtitle → HUD/rail/nav (fixed).
-7. Post: Bloom (threshold .6, intensity .8), film grain (Noise .035), Vignette (.35). ChromaticAberration only during the scan pass.
+Post: crawl effect + film grain (0.03) + vignette. No bloom.
 
 ---
 
 ## 3. Chapter map (the `/` Edition)
 
-Copy follows `PRODUCT.md`: every number on screen is LIVE, PAPER or SAMPLE and carries a `<SourceTag>`. Copy that already exists in `hero-film.tsx` / `den-desk.tsx` is reused where it fits; it is good copy.
+Copy follows `PRODUCT.md`: every number on screen is LIVE, PAPER or SAMPLE and carries a `<SourceTag>`. Copy that already exists in `hero-film.tsx` / `den-desk.tsx` is reused where it fits. Each chapter = an **instrument** (3D, right) + **copy on the sky** (left), joined to the next by a bite crawl (or a lighter transition where noted).
 
-| # | id | Mega title | Swash subtitle | Plate (3D) | Sheet contents |
+| # | id | Title | Subtitle | Instrument (3D) | Copy on the sky |
 |---|---|---|---|---|---|
-| I | `overture` | *(wordmark)* HedgeHound — The Can✶s Edition | "It does not chase price. It sniffs the hour." | Boot sequence → Hound constellation (Canis) assembles from coin-stars; liquid-metal hound mark; centered **glass Edition card** with the index list inside (exactly the Shopify hero card, as glass) | none (plate only), then a scroll hint |
-| II | `sniff` | Sniff | "Every five minutes, the hound lifts its nose." | **Radar dish**: live coins plotted by angle = hash(symbol) and radius = f(net APR), with a sweep beam; pings on poll | 3 cards Normalize / Cancel / Doubt (existing copy); feature table "What the scanner checks" (poll 300 s, 144-sample average, 30-day listing rule, $250k vol, $50k OI, zero-rate filter) |
-| III | `spread` | One coin. Two legs. | "Long the cheap hour. Short the rich one. Price cancels." | **Hedge Astrolabe**: coin core + two counter-rotating rings (scan-cyan = long, scent-orange = short); scroll separates the rings into legs labelled Lighter / Binance | AnimatedBeam diagram Lighter ⇄ coin ⇄ Binance; 4 cards (existing CARDS copy); live "loudest clean scent" card |
-| IV | `trail` | The Trail | "A scent only counts if it stays." | Coin star leaves a comet trail; trail length = window_h, color flips at sign flips | Sparkline grid for the top 6 by persistence (from `/api/history` after T41, else SAMPLE); explanation of persistence and flip hours |
-| V | `hedge` | The Hedge | "Where the hour actually disagrees." | Camera flies to the Hedge sector constellation | Live opportunity cards (BorderBeam "scanning" border, NumberTicker APR), sorted status ok → building; "Open in scanner" links |
-| VI | `kennel` | The Kennel | "Faster funding, worse manners." | Kennel constellation: jittery twinkle, stars wobble by 1−persistence | Meme coins table with persistence bars; copy on why persistence has to earn the alert |
-| VII | `embers` | Cold Embers | "Walked past on purpose." | Ember field: filtered coins as cooling sparks drifting down, color temperature orange → grey | Rules table (max 2× isolated, liquidation ≥40% away, never one naked leg, one symbol at $20, no coin younger than 30 days, stop at −25% budget) + the live skipped lists from `meta` |
-| VIII | `sky` | The Sky | "Every coin, charted." | Camera pulls back to show the whole atlas; "Enter the sky" CTA **dives** the camera in and routes to `/sky` with no canvas remount | none (plate + CTA) |
-| IX | `den` | The Den | "A paper desk for a $20 research budget." | Small glass desk object / pocket-sky orb | Teaser of den stats (paper book) + "A year of what-ifs" preview → `/den` |
-| X | `ledger` | — | — | Stars fade, Sirius remains | Footer: data source status, phase badge "Phase 0 · paper only", disclaimer "Not financial advice. No order code exists.", links |
+| — | `overture` | HedgeHound (wordmark, shimmer) | "A funding-spread observatory · paper only" | **Glass hound**, cursor-only motion; recedes exponentially on scroll | none, then the scroll cue `↓ α` |
+| α | `canis` | The hound in the sky | — | **Canis Major** (J2000): stars burst out of the hound, lines draw in, Bayer letters appear | "Every coin is a star…", rising with the scroll; positions note. Exit: **bite crawl** with the symbol carousel (net APR, tagged) at full grain |
+| β | `sniff` | Sniff | "Every five minutes, the hound lifts its nose." | **Radar**: coins by angle = hash(symbol), radius = f(net APR), cyan sweep, pings; the loudest reading drawn out on a leader line and gathering from star specks | Normalize / Cancel / Doubt; "What the scanner checks" (poll 300 s, 144-sample average, 30-day listing rule, $250k vol, $50k OI, zero-rate filter) |
+| γ | `spread` | One coin. Two legs. | "Long the cheap hour. Short the rich one. Price cancels." | Coin with two counter-rotating rings (cyan long, orange short) that separate into legs labelled Lighter / Binance | the two-leg explanation; the live loudest clean scent |
+| δ | `trail` | The Trail | "A scent only counts if it stays." | A coin star leaves a comet trail; length = window_h, colour flips at sign flips | small multiples of the top 6 by persistence (`/api/history` after T41, else SAMPLE) |
+| ε | `hedge` | The Hedge | "Where the hour actually disagrees." | The camera flies to the Hedge sector | live opportunities as text rows on the sky (no cards), sorted ok → building, "Open in scanner" |
+| ζ | `kennel` | The Kennel | "Faster funding, worse manners." | Kennel stars, jittery twinkle by 1 − persistence | meme-coin rows with persistence; why persistence has to earn the alert |
+| η | `embers` | Cold Embers | "Walked past on purpose." | Filtered coins as cooling sparks drifting down | risk rules + the live skipped lists from `meta` |
+| θ | `sky` | The Sky | "Every coin, charted." | The camera pulls back to the whole atlas; "Enter the sky" dives in and routes to `/sky` with no canvas remount | none |
+| ι | `den` | The Den | "A paper desk for a $20 research budget." | A small glass orb holding a pocket sky | den stats (PAPER) + "A year of what-ifs" preview → `/den` |
+| κ | `ledger` | — | — | Stars fade, Sirius remains | footer: data source status, "Phase 0 · paper only", "Not financial advice. No order code exists.", links |
 
 ---
 
 ## 4. Technical architecture
 
 ### 4.1 Principles
-1. **One WebGL canvas for the whole app** (`SkyStage`), mounted once in `__root.tsx`, client-only, persistent across routes. Section 3D objects render through **drei `<View>`** tracked to DOM boxes, so there's no new `<Canvas>` per section. *(S1)* The View **is** the box: `<View ref className>`. `track={ref}` is silently ignored in drei 10.7.9. DOM children of a View don't render, so overlays go in a sibling wrapper (and they block 3D pointer events where they sit). Page content sits in a `relative z-10` wrapper above the fixed z-0 canvas. **No exceptions** (decided after S2/S4): the nebula is a custom shader in SkyStage (S2), and the liquid-metal hound mark runs the `@paper-design/shaders` LiquidMetal fragment shader as a material inside SkyStage through a View (S4 option b, T14). Anything else that wants a canvas needs a new spike.
+1. **One WebGL canvas for the whole app** (`SkyStage`), mounted once in `__root.tsx`, client-only, persistent across routes. Section 3D objects render through **drei `<View>`** tracked to DOM boxes, so there's no new `<Canvas>` per section. *(S1)* The View **is** the box: `<View ref className>`. `track={ref}` is silently ignored in drei 10.7.9. DOM children of a View don't render, so overlays go in a sibling wrapper (and they block 3D pointer events where they sit). Page content sits in a `relative z-10` wrapper above the fixed z-0 canvas. **No exceptions**: the glass hound is a custom shader inside SkyStage, and there is no nebula (D1 replaced both S2's nebula and S4's LiquidMetal mark). Anything else that wants a canvas needs a new spike.
 2. **SSR-safe:** everything that touches `window`/WebGL/GSAP lives behind `<ClientOnly>` or a dynamic `import()` inside `useEffect`. Text content is server-rendered (LCP = mega title, not the canvas).
 3. **GSAP owns scroll** (ScrollTrigger + SplitText + ScrambleText + DrawSVG). **`motion` owns component micro-interactions** (menus, hovers, mount/unmount, magicui internals). They never animate the same element.
 4. **Lenis** for smooth scroll, driven from `gsap.ticker`. `ScrollTrigger.update` runs on Lenis scroll. *(S5)* While Lenis is active, SkyStage runs `frameloop="never"` and is advanced from an `afterScroll` hook right after `lenis.raf`, so 3D and DOM agree on the same frame (otherwise 1 frame of lag); `"always"` otherwise, `"demand"` under reduced motion. Call `lenis.reset()` before `destroy()` (stale `html.lenis` class otherwise). A debounced `ResizeObserver` on `<body>` calls `ScrollTrigger.refresh()` so late fonts/content don't leave triggers stale.
-5. **CSS `position: sticky`** for plates (not GSAP `pin`). Sheets scroll over them with a higher z-index. GSAP only scrubs reveals and writes progress to the store. That's cheaper and avoids pin-spacer bugs with Lenis.
-6. **Zustand stage store** is the only bridge DOM → 3D. Chapters write `{chapter, progress}`, and the 3D reads it in `useFrame` via `getState()`, so 3D never re-renders React on scroll.
-7. **Quality tiers** `high | mid | low` picked from drei `PerformanceMonitor` + `navigator.hardwareConcurrency` + viewport width. `prefers-reduced-motion` → static sky, no scrub, no boot sequence, instant reveals.
+5. **Fixed stage, not sticky plates** (D1). Scroll sections are empty spacers that set each scene's length; progress per section = `(scrollY − top) / height`, measured on resize (debounced `ResizeObserver` on `<body>`, S5). Copy lives on a fixed stage and is driven per frame from that progress. No GSAP `pin`, no sheets.
+6. **Projected labels, not drei `<Html>`, for anything whose data refreshes.** `<Html>` mounts a separate React root per label; on data refresh it can orphan a frozen copy on screen (D1 bug). Render labels as page DOM and project them onto their 3D point each frame. Static labels (Bayer letters) may use `<Html>`.
+7. **Colour pipeline:** the post stack is linear. Author custom shader colours in sRGB and write `pow(c, 2.2)`, or faint glows get lifted into grey haze (D1 bug).
+8. **Zustand stage store** is the only bridge DOM → 3D. Chapters write `{chapter, progress}`, and the 3D reads it in `useFrame` via `getState()`, so 3D never re-renders React on scroll.
+9. **Quality tiers** `high | mid | low` picked from drei `PerformanceMonitor` + `navigator.hardwareConcurrency` + viewport width. `prefers-reduced-motion` → static sky, no scrub, no boot sequence, instant reveals.
 
 ### 4.2 Target file tree
 ```
 src/
-  styles.css                    tokens (§2.2), type scale, .parchment, .glass, utilities
+  styles.css                    tokens (§2.2), type scale, utilities (DESIGN.md)
   content/edition.ts            per-chapter copy + waypoint ids (Haiku-editable)
   lib/
     palette.ts                  mirrors tokens for 3D (keep in lockstep)
@@ -165,12 +148,11 @@ src/
     magicui/                    magicui (generated; restyled to tokens)
     client-only.tsx
     nav/site-nav.tsx hound-menu.tsx poll-status.tsx coin-command.tsx
-    edition/chapter.tsx plate.tsx sheet.tsx torn-edge.tsx chapter-index.tsx
-            swash-heading.tsx mega-title.tsx hud.tsx source-tag.tsx glass-panel.tsx
-            feature-table.tsx boot-sequence.tsx scan-line.tsx
-    stage/sky-stage.tsx starfield.tsx constellation.tsx nebula.tsx camera-rig.tsx
-          scan-sweep.tsx effects.tsx dust.tsx
-    objects/radar.tsx hedge-astrolabe.tsx hound-mark-metal.tsx ember-field.tsx comet-trail.tsx desk-orb.tsx
+    edition/chapter.tsx stage.tsx chapter-index.tsx hud.tsx source-tag.tsx
+            shimmer-title.tsx rise.tsx stardust.tsx projected-label.tsx bite-mask.ts
+    logos-carousel.tsx shimmer-text.tsx   (@spell registry, owner-chosen)
+    stage/sky-stage.tsx starfield.tsx camera-rig.tsx effects.tsx (crawl + grain + vignette) dust.tsx
+    objects/glass-hound.tsx canis-major.tsx radar.tsx hedge-astrolabe.tsx ember-field.tsx comet-trail.tsx desk-orb.tsx
     chapters/01-overture.tsx … 10-ledger.tsx
     den-desk.tsx universe-view.tsx  (existing, restyled in P4)
   routes/
@@ -201,30 +183,34 @@ type StageState = {
 **Chapter primitive** (`components/edition/chapter.tsx`)
 ```tsx
 <Chapter
-  id="sniff" numeral="II" index={1}
-  title="Sniff"
-  swash="Every five minutes, the hound lifts its nose."
-  plate={<RadarView />}      // DOM + optional drei <View> for the 3D object
-  sheet={<SniffSheet />}     // optional; parchment | glass via `tone`
-  tone="parchment"
-  plateHeight="170svh"       // scroll distance the plate stays sticky
-/>
+  id="sniff" letter="β" index={2}
+  title="Sniff"                                   // ShimmerTitle
+  subtitle="Every five minutes, the hound lifts its nose."
+  length="330svh"                                 // scroll length of the scene
+  enter="crawl" exit="none"                       // "crawl" | "rise" | "none"
+>
+  <SniffCopy />                                   // copy on the sky, left column
+</Chapter>
 ```
-Inside, one GSAP timeline per chapter, `scrub: 0.8`, trigger = chapter wrapper, `start: "top 80%"`, `end: "bottom 50%"` (the only values that line the table up with the sheet geometry, S5). Chapter I uses `start: "top top"`, or it loads at progress ≈ .4 and its reveal never plays. Never name a file `*.client.*` (TanStack Start import protection breaks `vite build`, S5). SplitText `mask: "lines"` clips glyphs at lh .84: pad the line class and pull it back with a negative margin.
+The chapter writes `{chapter, progress}` to the store, and the instrument in SkyStage reads them in `useFrame`. Copy choreography is a pure function of `progress`, applied every frame on `gsap.ticker`. Reference values from D1:
+
 | progress | what |
 |---|---|
-| 0.00 | store.chapter = index; fire scan-line (`scanAt = now`); ScrambleText the index item |
-| 0.00–0.22 | mega title SplitText chars `yPercent 120→0`, stagger .018, ease `power3.out`; mask gradient sweeps (scanned-in look) |
-| 0.12–0.32 | swash subtitle: `filter blur(14px)→0`, `opacity 0→1`, y 24→0 |
-| 0.00–1.00 | `store.progress` = raw ScrollTrigger `self.progress` from `onUpdate` (not `tl.progress()`; the CameraRig damps it) |
-| 0.55–0.80 | title drifts up `yPercent −30` and fades to .25 while the sheet rises over it |
-| 0.60→ | sheet (in normal flow after the sticky plate) overlaps via `margin-top: -40svh; z-index: 10` |
+| 0.00–0.20 | (if `enter="crawl"`) second crawl front rebuilds the scene and the copy, cell by cell |
+| 0.00–0.16 | title resolves from blur 12px → 0 with the shimmer; kicker "β · SNIFF" with it |
+| 0.16–0.48 | body items rise and resolve in sequence (stagger 0.07) |
+| 0.32–0.62 | instrument extras: leader line draws (first 30%), then the reading gathers from star specks |
+| 0.86–1.00 | copy blurs out upward; or the next chapter's crawl takes over |
+
+Never name a file `*.client.*` (TanStack Start import protection breaks `vite build`, S5).
 
 **SourceTag**: `<SourceTag kind="live" ts={…} />` → mono chip `LIVE · 12:04`, `SAMPLE`, `PAPER`. **Required** next to any figure.
 
-**GlassPanel** (DOM liquid glass, our own, see S3 + its Addendum): **two sibling layers**, because the single filter chain costs ~100 fps at 3 panels in Chromium. (1) Interior: plain `backdrop-filter: blur(18px) saturate(1.4)`, masked to exclude the rim band. (2) Rim layer, masked to a 26 px band: `backdrop-filter: url(#rim) blur(3px) saturate(1.4)`, where `#rim` = `feImage` normal map (displacement along the outward normal, profile `5·e^(−0.8d) + e^(−0.15d)`, ported from dashersw/liquid-glass-js, MIT) → `feDisplacementMap` scale `refract · 30` px. Chromium only (detected after mount via `navigator.userAgentData.brands`); Safari/Firefox get the interior blur only. Plus inner rim highlight (two inset box-shadows), top specular gradient, 1px `--line` border, tint `rgb(12 18 36 / .35)`, and a solid-tint fallback under `prefers-reduced-transparency: reduce` or no `backdrop-filter`. Props: `radius`, `tint`, `refract` (0–0.5, default 0.4; above ~0.8 the rim streaks). The `.glass` utility lives in `styles.css`.
+**Stardust** (`edition/stardust.tsx`): bare text that gathers out of 2px specks (32 precomputed coverage frames, coverage^1.7), opacity 0.35 → 1, blur 1.6px → 0, crisp at 0.98. Scroll-driven, reversible. The masked element carries any offset itself; never offset content inside it.
 
-**TornEdge**: procedurally generated path (seeded value noise, 3 octaves, amplitude 10–28px) + fibre edge (`feTurbulence baseFrequency .9` displacement 3px) + paper texture. Variants `top | bottom`, `seed`. Replaces the zigzag `Tear`.
+**Bite mask** (`edition/bite-mask.ts`): the DOM half of the crawl. Mask frames per element size, with 4px cells + 14px chunks and a fixed random moment per cell, picked by the crawl front's position. Matches the shader exactly.
+
+**Retired (do not build):** GlassPanel, TornEdge, SwashHeading, MegaTitle, Sheet, Plate, FeatureTable-as-card, BootSequence, ScanLine, parchment, the S3 rim refraction and the S4 LiquidMetal mark. Their spike notes stay as history.
 
 ### 4.4 Data layer
 - **Dev proxy:** `vite.config.ts` → `server.proxy: { "/api": "http://127.0.0.1:8000" }`. The scanner keeps running from `WhaleHunterAlt\scanner`.
@@ -238,20 +224,21 @@ Inside, one GSAP timeline per chapter, `scrub: 0.8`, trigger = chapter wrapper, 
 | Library | Use it for | Don't use it for |
 |---|---|---|
 | **@react-three/fiber** (installed) | SkyStage, all 3D | — |
-| **@react-three/drei** (add) | `View`, `PerformanceMonitor`, `MeshTransmissionMaterial`, `Instances`, `Line`, `Html` labels, `Float`, `AdaptiveDpr` | `Stars` (we write our own instanced starfield for the scan flare) |
-| **@react-three/postprocessing** + `postprocessing` (add) | Bloom, Noise, Vignette, ChromaticAberration (scan only) | DOF on low tier |
-| **gsap** (installed, all plugins free) | ScrollTrigger, SplitText, ScrambleText, DrawSVG (index stars, torn edges, beams) | hover states |
+| **@react-three/drei** (add) | `View`, `PerformanceMonitor`, `Instances`, `Line`, `Html` for **static** labels only, `AdaptiveDpr` | `Stars`; `Html` for refreshing data; `MeshTransmissionMaterial` (renders flat white in our pipeline; the hound uses a custom glass shader) |
+| **@react-three/postprocessing** + `postprocessing` (add) | the custom **CrawlEffect**, Noise (0.03), Vignette | **Bloom (banned by the owner)**, DOF |
+| **gsap** (installed, all plugins free) | `gsap.ticker` (drives Lenis + per-frame choreography), the hero's one-time intro tween | ScrambleText decode, scrubbed timelines on copy (choreography is computed from progress) |
 | **lenis** (add) | smooth scroll | — |
 | **motion** (add, required by magicui) | menus, hover, magicui internals, HoundMenu port | anything scroll-scrubbed |
 | **shadcn/ui** (CLI, Radix flavour, matches installed Radix) | button, card, table, tabs, tooltip, hover-card, slider, sheet, dialog, command, badge, scroll-area, separator, sonner, toggle-group | — |
 | **magicui** (via shadcn CLI) | `number-ticker` (APRs), `border-beam` (scanning card border), `marquee` (symbol tape), `animated-beam` (two-leg diagram), `orbiting-circles` (venues around a coin), `hyper-text` (HUD decode alt), `ripple` (radar ping, DOM fallback), `meteors` (rare shooting stars, Overture only) | particles/stars (3D owns that) |
 | ~~@shadergradient/react~~ | **Removed after S2**: built for three 0.169/R3F 8, its shaders fail on three 0.186; nebula is a custom fbm shader | — |
-| **liquid-glass-js** (dashersw, `github.com/dashersw/liquid-glass-js`, MIT) | **Reference only**: its normal-direction rim/edge refraction profile is ported into GlassPanel (S3 Addendum). Note: the npm package `liquid-glass-js` is a **different** project (eamonliu) | runtime dependency |
-| **@paper-design/shaders** (via `shaders-react`, Apache-2.0) | Liquid-metal **hound mark** in the Overture + loader: the exported `liquidMetalFragmentShader` + `toProcessedLiquidMetal` as a material inside SkyStage (S4 option b). `colorBack` alpha 0, `--starlight` tint at 50%. Pre-bake the image processing (~0.8 s cold) so it doesn't stall the boot sequence | body content; its own canvas |
+| **@spell/shimmer-text**, **@spell/logos-carousel** (shadcn registry `@spell`, owner-chosen) | titles; the symbol carousel in the α→β crawl. `logos-carousel` needed `<style jsx>` → `<style>` (styled-jsx is Next-only) | — |
+| ~~liquid-glass-js~~, ~~@paper-design/shaders~~ | **Retired with the glass cards and the liquid-metal mark (D1).** S3/S4 notes stay as history | — |
 
 ---
 
 ## 4.6 Design skill: Impeccable (chosen over emilkowalski/apple-design)
+- **2026-10-13:** `DESIGN.md` (+ `.impeccable/design.json`) now exists and is what Impeccable reads for every critique, audit and polish. Its "owner's taste" section outranks Impeccable's general craft advice where they conflict.
 - **Why Impeccable:** the owner already uses it. `WhaleHunterAlt/PRODUCT.md` is written in its `impeccable:product-schema`, so the product context carries straight over. Its commands also map onto our phases (critique/audit for review, polish for the finish, typography/motion passes). Apple-design pulls toward restrained, light, system-UI calm, which is the opposite of an editorial deep-space scroll.
 - **Setup (T00b):** install Impeccable into this repo for Claude Code (same method used for WhaleHunterAlt; the public repo is `pbakaus/impeccable`). Copy `WhaleHunterAlt/PRODUCT.md` → `HedgeHound/PRODUCT.md` and update it (Platform/Stack lines, Brand Commitments = §2 of this plan). Then run Impeccable's teach/context step so it writes the design context file from §2.
 - **When to run it:**
@@ -286,7 +273,8 @@ Merge order: P0 → (P1 ∥ T40) → P2 → (P3 ∥ P4) → T41 → P6.
 - `prefers-reduced-motion: reduce` → readable, static, no scrubbed motion, no boot sequence.
 - 390×844 mobile: no horizontal scroll, rail collapses, quality tier ≤ mid, 3D objects simplified.
 - No new `<Canvas>` unless a spike approved it. No `window` access at module top level (SSR).
-- Only tokens from §2.2. No hex literals in components except `lib/palette.ts`.
+- Only tokens from §2.2 / `DESIGN.md`. No hex literals in components except `lib/palette.ts` (and the `@theme` block).
+- **Taste check** (`DESIGN.md` "The owner's taste"): no bloom or glow, no cards behind copy, transitions scroll-locked, no ghosts or clipped text, two fonts only.
 - Every on-screen number carries a `SourceTag` or sits inside a tagged container.
 - Screenshots (desktop + mobile) attached to the ticket's notes in `docs/redesign/notes/<ticket>.md`.
 
@@ -295,22 +283,23 @@ Merge order: P0 → (P1 ∥ T40) → P2 → (P3 ∥ P4) → T41 → P6.
 |---|---|---|---|
 | far stars | 6000 | 2500 | 900 |
 | DPR cap | 1.75 | 1.5 | 1.0 |
-| post | bloom + grain + vignette + CA(scan) | bloom + vignette | bloom only (half-res) or none |
-| transmission material | yes (samples 6, res 512) | metal fallback | metal fallback |
-| nebula | shader | shader @ 0.5 dpr | static gradient |
+| post | crawl + grain + vignette | crawl + vignette | crawl only |
+| glass hound | custom shader, 72 curve segments | 40 segments | 24 segments |
+| bite/stardust mask frames | generated lazily per element size | same | same, 32→24 frames |
 | target | 60 fps | 50+ | 30+ |
-LCP < 2.5 s (SSR'd mega title), JS for 3D lazy after first paint, `frameloop` pauses when the tab is hidden.
+LCP < 2.5 s (SSR'd hero title), JS for 3D lazy after first paint, `frameloop` pauses when the tab is hidden.
 
 ## 8. Decisions needed from the owner (defaults in **bold**)
 1. Add stdlib read-only endpoints to `scanner/server.py` (`/api/history`, per-venue rate/vol/OI fields)? **Yes**, otherwise trails and per-venue numbers stay SAMPLE.
 2. Keep Grok scaffolding (better-auth, PGlite, PWA, preview bridge)? **Keep for now** (auth is already off); strip in a later cleanup ticket.
 3. Edition name: **"The Can✶s Edition"**.
 4. Demo login gate from WhaleHunterAlt: **port it, off by default** (env flag `VITE_DEMO_GATE`).
-5. Display face: **Bricolage Grotesque** (alt: keep Syne everywhere).
+5. Display face: **decided: Noto Serif Display + JetBrains Mono** (D1, owner's pick).
 
 ## 9. Risks
 - **Extra WebGL contexts**: resolved by S2/S4. One canvas, no exceptions. The legacy hero/universe canvases go when T33/T51 replace them.
 - **TanStack Start SSR + R3F/drei** → hydration errors. Mitigated by S1 and `<ClientOnly>`.
 - **Lenis + sticky + ScrollTrigger on iOS Safari** (address bar resize) → `ScrollTrigger.config({ ignoreMobileResize: true })`, `svh` units, S5.
 - **Scope creep**: ten chapters is a lot. P3 tickets are independent, so ship I–III + VIII + X first if time is short.
-- **Honesty drift**: pretty numbers are tempting. The SourceTag rule + T52 review guard it.
+- **Honesty drift**: pretty numbers are tempting. The SourceTag rule + T52 review guard it. (D1: red/green price moves were requested and dropped because the scanner doesn't measure price.)
+- **Taste drift**: builders default to glow, cards and timed animations. `DESIGN.md` + the DoD taste check guard it; when unsure, prototype and let the owner scroll it.

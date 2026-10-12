@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-13T00:00:00Z",
+  "title": "Design System: HedgeHound · The Canis Edition",
+  "extensions": {
+    "colorMeta": {
+      "void": {
+        "role": "neutral",
+        "displayName": "Void"
+      },
+      "starlight": {
+        "role": "primary",
+        "displayName": "Starlight"
+      },
+      "scan-cyan": {
+        "role": "secondary",
+        "displayName": "Scan Cyan",
+        "purpose": "Scanning, long leg, Bayer letters, focus. Never decorative."
+      },
+      "scent-orange": {
+        "role": "tertiary",
+        "displayName": "Scent Orange",
+        "purpose": "Alerts and short leg only. Never decorative."
+      },
+      "chart-line": {
+        "role": "neutral",
+        "displayName": "Chart Line"
+      }
+    },
+    "typographyMeta": {
+      "display-hero": {
+        "displayName": "Hero",
+        "purpose": "The wordmark only, with ShimmerText."
+      },
+      "display-chapter": {
+        "displayName": "Chapter",
+        "purpose": "Chapter titles (Sniff, The Trail…), with ShimmerText."
+      },
+      "label": {
+        "displayName": "Label / HUD",
+        "purpose": "Mono capitals: kickers, HUD, captions."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Numbers. Always next to a SourceTag."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "scroll-locked",
+        "value": "progress = section scroll fraction; no clock",
+        "purpose": "Every transition, reveal and crawl. Stops when the scroll stops."
+      },
+      {
+        "name": "smooth-scroll",
+        "value": "Lenis lerp 0.075 on gsap.ticker",
+        "purpose": "Fluid scroll (Shopify Editions feel)."
+      },
+      {
+        "name": "bite-crawl",
+        "value": "4px crumbs + 14px chunks, monotonic per-cell threshold",
+        "purpose": "Scene-to-scene transition; dither default."
+      },
+      {
+        "name": "stardust",
+        "value": "2px specks, coverage^1.7, blur 1.6px→0, opacity 0.35→1",
+        "purpose": "Subtle entrance for readings and labels."
+      },
+      {
+        "name": "hound-recede",
+        "value": "depth = (e^(4.4t)−1)/(e^4.4−1)",
+        "purpose": "Glass hound falls away exponentially."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile",
+        "value": "767px"
+      }
+    ]
+  },
+  "components": [],
+  "narrative": {
+    "northStar": "The observatory at night",
+    "overview": "A funding-spread scanner presented as a night-sky observatory. The sky is the interface; the scroll is the only clock. Built to the owner's taste: real dark sky, minimal colour, no cards, no bloom, scroll-locked bite transitions, thin Noto Serif Display with a mono.",
+    "keyCharacteristics": [
+      "Near-black real sky with J2000 Canis Major",
+      "Copy straight on the sky",
+      "Scroll-locked bite crawl",
+      "One glass object: the hound",
+      "Two fonts, two signal colours"
+    ],
+    "rules": [
+      {
+        "name": "The Two Signals Rule",
+        "body": "Cyan = scanning/long, orange = alert/short. No other accents.",
+        "section": "colors"
+      },
+      {
+        "name": "The Honest Number Rule",
+        "body": "Every figure carries LIVE/PAPER/SAMPLE.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Fonts Rule",
+        "body": "Noto Serif Display + JetBrains Mono only.",
+        "section": "typography"
+      },
+      {
+        "name": "No Glow",
+        "body": "No bloom, halos, haze or drop shadows. Depth comes from parallax layers.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Lock transitions to scroll",
+      "Let entrances grow from where they connect",
+      "Use real astronomy as ornament"
+    ],
+    "donts": [
+      "No bloom or glow",
+      "No cards behind copy",
+      "No red/green or price moves",
+      "No drei <Html> for refreshing labels",
+      "No sliding masks pretending to be pixels"
+    ]
+  }
+}
