@@ -3,22 +3,25 @@
 // and a post stack (bloom, the pixel-grain crawl, film grain, vignette).
 import { Html } from "@react-three/drei"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
-import { Bloom, EffectComposer, Noise, Vignette } from "@react-three/postprocessing"
+import { EffectComposer, Noise, Vignette } from "@react-three/postprocessing"
 import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 import { SVGLoader } from "three-stdlib"
+import { SourceTag } from "@/components/edition/source-tag"
 import { CMA, CMA_LINES, magToPx, project } from "./canis-major"
+import { applyReveal } from "./pixel-mask"
 import { CrawlEffect } from "./transition-effect"
 import { SKY, band, smooth, useSky } from "./state"
 
 type Portal = React.MutableRefObject<HTMLElement>
 
 export type RadarCoin = { symbol: string; net: number; status: "ok" | "building history" }
+export type Reading = { symbol: string; net: number; ok: boolean; live: boolean; ts?: number; stale: boolean }
 
 // ---------------------------------------------------------------- star shader
 
 const starVert = /* glsl */ `
-uniform float uTime, uPR, uForm, uPersp, uFlight, uWrap, uZMin, uZRange;
+uniform float uTime, uPR, uForm, uPersp, uFlight, uWrap, uZMin, uZRange, uSpread;
 attribute float aSize; attribute vec3 aColor; attribute float aPhase; attribute vec3 aStart; attribute float aDelay;
 varying vec3 vColor; varying float vA;
 void main() {
@@ -30,7 +33,7 @@ void main() {
   gl_Position = projectionMatrix * mv;
   float tw = 0.78 + 0.22 * sin(uTime * (0.6 + aPhase * 2.1) + aPhase * 61.0);
   float att = uPersp > 0.5 ? 10.0 / max(0.5, -mv.z) : 1.0;
-  gl_PointSize = max(1.0, aSize * uPR * att);
+  gl_PointSize = max(1.0, aSize * uPR * att * uSpread);
   // Fade wrapped layers in from depth and out before they reach the lens.
   float depthFade = uWrap > 0.5 ? smoothstep(uZMin, uZMin + 8.0, p.z) * (1.0 - smoothstep(6.0, 9.5, p.z)) : 1.0;
   vColor = aColor;
@@ -38,19 +41,22 @@ void main() {
 }`
 
 const starFrag = /* glsl */ `
-uniform float uOpacity, uSoft;
+uniform float uOpacity, uSoft, uSpread, uHalo;
 varying vec3 vColor; varying float vA;
 void main() {
   vec2 c = gl_PointCoord - 0.5;
   float d2 = dot(c, c);
-  float core = exp(-d2 * mix(140.0, 9.0, uSoft));
-  float halo = exp(-d2 * mix(18.0, 5.0, uSoft)) * mix(0.30, 0.55, uSoft);
+  // uSpread enlarges the sprite while keeping the core the same size, so the halo spreads wide and soft
+  // (this replaces post bloom).
+  float core = exp(-d2 * mix(140.0, 9.0, uSoft) * uSpread * uSpread);
+  float halo = exp(-d2 * mix(18.0, 5.0, uSoft)) * mix(0.30, 0.55, uSoft) * uHalo;
+  halo += exp(-d2 * 4.0) * 0.05 * step(1.01, uSpread);
   float a = (core + halo) * vA * uOpacity * smoothstep(0.5, 0.36, sqrt(d2));
   if (a < 0.004) discard;
-  gl_FragColor = vec4(vColor * a, 1.0);
+  gl_FragColor = vec4(pow(max(vColor * a, vec3(0.0)), vec3(2.2)), 1.0);
 }`
 
-function starMaterial(o: { persp?: boolean; soft?: number; wrap?: [number, number] } = {}) {
+function starMaterial(o: { persp?: boolean; soft?: number; wrap?: [number, number]; spread?: number; halo?: number } = {}) {
   return new THREE.ShaderMaterial({
     vertexShader: starVert,
     fragmentShader: starFrag,
@@ -68,6 +74,8 @@ function starMaterial(o: { persp?: boolean; soft?: number; wrap?: [number, numbe
       uZRange: { value: o.wrap ? o.wrap[1] - o.wrap[0] : 1 },
       uOpacity: { value: 1 },
       uSoft: { value: o.soft ?? 0 },
+      uSpread: { value: o.spread ?? 1 },
+      uHalo: { value: o.halo ?? 1 },
     },
   })
 }
@@ -197,13 +205,14 @@ function useHoundGeometry() {
   return useMemo(() => {
     const data = new SVGLoader().parse(HOUND_SVG)
     const shapes = data.paths.flatMap((p) => SVGLoader.createShapes(p as unknown as Parameters<typeof SVGLoader.createShapes>[0]))
+    // Deep, soft bevel so every edge reads as rounded glass rather than a cut-out.
     const g = new THREE.ExtrudeGeometry(shapes, {
-      depth: 7,
+      depth: 4,
       bevelEnabled: true,
-      bevelThickness: 2.2,
-      bevelSize: 1.4,
-      bevelSegments: 10,
-      curveSegments: 40,
+      bevelThickness: 4.2,
+      bevelSize: 2.6,
+      bevelSegments: 24,
+      curveSegments: 72,
     })
     g.center()
     g.scale(0.062, -0.062, 0.062)
@@ -223,75 +232,94 @@ void main() {
   gl_Position = vClip;
 }`
 
-// Crystal glass on black: dark body, fresnel rim with a chromatic split, stars seen "through" the
-// glass bent by the surface normal, and one moving specular streak. No environment map needed.
+// Clear crystal on black: an almost-invisible body, a soft wide fresnel glow, stars seen through the
+// glass and bent strongly by the surface (with a chromatic split), and one highlight that follows the
+// cursor. No clock: it only changes when the pointer moves.
 const glassFrag = /* glsl */ `
-uniform float uTime, uO;
-uniform vec3 uRimA, uRimB, uStar;
+uniform float uO;
+uniform vec2 uLight;
+uniform vec3 uRim, uStar;
 varying vec3 vN; varying vec3 vV; varying vec4 vClip; varying vec3 vObj;
-float hash(vec2 p) { return fract(sin(dot(p, vec2(41.3, 289.1))) * 45758.5453); }
+float hash(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
 float stars(vec2 uv) {
-  vec2 g = uv * 70.0; vec2 i = floor(g); vec2 f = fract(g) - 0.5;
+  vec2 g = uv * 60.0; vec2 i = floor(g); vec2 f = fract(g) - 0.5;
   float h = hash(i);
   vec2 o = vec2(hash(i + 3.1), hash(i + 7.7)) - 0.5;
   float d = length(f - o * 0.7);
-  return step(0.93, h) * exp(-d * d * 260.0) * (0.4 + h);
+  return step(0.9, h) * exp(-d * d * 200.0) * (0.5 + h);
 }
 void main() {
   vec3 n = normalize(vN); vec3 v = normalize(vV);
   float ndv = clamp(dot(n, v), 0.0, 1.0);
-  float fr = pow(1.0 - ndv, 2.6);
+  float fr = pow(1.0 - ndv, 2.0);
   vec2 suv = vClip.xy / vClip.w * 0.5 + 0.5;
-  vec2 bend = n.xy * 0.045;
-  float sR = stars(suv + bend * 1.08);
-  float sG = stars(suv + bend);
-  float sB = stars(suv + bend * 0.92);
-  vec3 seen = vec3(sR, sG, sB) * uStar * 1.6;
-  vec3 body = mix(vec3(0.01, 0.012, 0.03), vec3(0.035, 0.05, 0.1), smoothstep(-1.0, 1.0, vObj.y));
-  vec3 rim = mix(uRimA, uRimB, smoothstep(0.2, 1.0, fr)) * fr * 2.1;
-  vec3 l = normalize(vec3(sin(uTime * 0.35) * 0.8, 0.7, 0.6));
-  float spec = pow(max(dot(reflect(-l, n), v), 0.0), 80.0) * 1.4;
-  float caustic = smoothstep(0.6, 1.0, sin(vObj.x * 6.0 + vObj.y * 4.0 + uTime * 0.6)) * 0.05 * (1.0 - fr);
-  vec3 col = body + seen * (0.35 + 0.65 * (1.0 - fr)) + rim + vec3(spec) + caustic * uStar;
-  float a = clamp(0.32 + fr * 0.68 + spec, 0.0, 1.0) * uO;
-  gl_FragColor = vec4(col, a);
+  vec2 bend = n.xy * (0.06 + fr * 0.08);
+  vec3 seen = vec3(stars(suv + bend * 1.05), stars(suv + bend), stars(suv + bend * 0.95)) * uStar * 1.5;
+  seen = mix(seen, vec3(dot(seen, vec3(0.333))), 0.65); // a hint of dispersion, mostly clear
+  vec3 rim = uRim * (fr * 1.5 + pow(fr, 4.0) * 1.6) + uRim * smoothstep(0.35, 0.9, fr) * 0.25;
+  vec3 l = normalize(vec3(uLight * 0.9, 0.75));
+  float spec = pow(max(dot(reflect(-l, n), v), 0.0), 120.0) * 1.6;
+  float sheen = pow(max(dot(reflect(-l, n), v), 0.0), 8.0) * 0.08;
+  vec3 col = seen * (0.4 + 0.6 * (1.0 - fr)) + rim + vec3(spec + sheen);
+  float a = clamp(0.1 + fr * 0.85 + spec + length(seen) * 0.4, 0.0, 1.0) * uO;
+  gl_FragColor = vec4(pow(max(col, vec3(0.0)), vec3(2.2)), a);
 }`
 
 function GlassHound() {
   const geo = useHoundGeometry()
   const ref = useRef<THREE.Group>(null)
+  const glow = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        uniforms: { uO: { value: 1 }, uC: { value: C.star.clone().lerp(C.cool, 0.5) } },
+        vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+        fragmentShader: `uniform float uO; uniform vec3 uC; varying vec2 vUv;
+          void main(){ float d = length(vUv - 0.5) * 2.0; float a = (exp(-d*d*3.2) * 0.32 + exp(-d*d*14.0) * 0.22) * uO; gl_FragColor = vec4(pow(max(uC * a, vec3(0.0)), vec3(2.2)), 1.0); }`,
+      }),
+    [],
+  )
   const glass = useMemo(
     () =>
       new THREE.ShaderMaterial({
         vertexShader: glassVert,
         fragmentShader: glassFrag,
         transparent: true,
+        depthWrite: false,
         uniforms: {
-          uTime: { value: 0 },
           uO: { value: 1 },
-          uRimA: { value: C.cool.clone() },
-          uRimB: { value: C.cyan.clone().lerp(C.star, 0.35) },
+          uLight: { value: new THREE.Vector2(0.3, 0.5) },
+          uRim: { value: C.star.clone().lerp(C.cool, 0.25) },
           uStar: { value: C.star.clone() },
         },
       }),
     [],
   )
-  useFrame(({ clock }, dt) => {
-    glass.uniforms.uTime.value = clock.elapsedTime
+  useFrame((_, dt) => {
     const s = useSky.getState()
     const g = ref.current
     if (!g) return
-    const away = smooth(band(s.hero, 0.25, 1))
-    g.visible = s.alpha < 0.45
-    const t = clock.elapsedTime
-    const idle = s.reduced ? 0 : 1
-    g.position.set(0, 0.85 + Math.sin(t * 0.6) * 0.08 * idle, -away * 34)
-    g.rotation.y = THREE.MathUtils.damp(g.rotation.y, Math.sin(t * 0.25) * 0.45 * idle + s.pointer[0] * 0.35 + away * 1.2, 3, dt)
-    g.rotation.x = THREE.MathUtils.damp(g.rotation.x, -s.pointer[1] * 0.2, 3, dt)
-    g.scale.setScalar(0.78 - away * 0.3)
+    // Exponential recede: slow at first, then faster and smaller as it falls into depth.
+    const away = s.reduced ? 0 : band(s.hero, 0.12, 1)
+    const depth = (Math.exp(away * 4.4) - 1) / (Math.exp(4.4) - 1)
+    const o = 1 - band(away, 0.78, 1)
+    g.visible = o > 0.001
+    g.position.set(0, 0.85 + depth * 0.6, -depth * 60)
+    g.rotation.y = THREE.MathUtils.damp(g.rotation.y, -0.32 + s.pointer[0] * 0.22, 2.2, dt)
+    g.rotation.x = THREE.MathUtils.damp(g.rotation.x, 0.08 - s.pointer[1] * 0.14, 2.2, dt)
+    g.scale.setScalar(0.8)
+    const u = glass.uniforms.uLight.value as THREE.Vector2
+    u.set(THREE.MathUtils.damp(u.x, 0.3 + s.pointer[0] * 0.8, 3, dt), THREE.MathUtils.damp(u.y, 0.5 + s.pointer[1] * 0.6, 3, dt))
+    glass.uniforms.uO.value = o
+    glow.uniforms.uO.value = o
   })
   return (
     <group ref={ref}>
+      <mesh position={[0, -0.1, -1.2]} material={glow}>
+        <planeGeometry args={[7, 7]} />
+      </mesh>
       <mesh geometry={geo}>
         <primitive object={glass} attach="material" />
       </mesh>
@@ -310,7 +338,7 @@ function Haze() {
         uniforms: { uO: { value: 1 }, uC: { value: C.cool.clone() } },
         vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
         fragmentShader: `uniform float uO; uniform vec3 uC; varying vec2 vUv;
-          void main(){ float d = length(vUv - 0.5) * 2.0; float a = exp(-d*d*3.6) * 0.035 * uO; gl_FragColor = vec4(uC * a, 1.0); }`,
+          void main(){ float d = length(vUv - 0.5) * 2.0; float a = exp(-d*d*3.6) * 0.035 * uO; gl_FragColor = vec4(pow(max(uC * a, vec3(0.0)), vec3(2.2)), 1.0); }`,
       }),
     [],
   )
@@ -357,7 +385,7 @@ function CanisMajor({ portal }: { portal: Portal }) {
     })
     return f
   }, [pos, order])
-  const mat = useMemo(() => starMaterial({ persp: true }), [])
+  const mat = useMemo(() => starMaterial({ persp: true, spread: 3.4, halo: 0.5 }), [])
 
   // Lines are redrawn each frame; each segment draws in sequence after its stars arrive.
   const lineGeo = useMemo(() => {
@@ -437,7 +465,7 @@ void main() {
   float ring = smoothstep(0.02, 0.0, abs(sqrt(d2) - 0.38)) * vPing * 0.8 * uOpacity;
   a += ring;
   if (a < 0.004) discard;
-  gl_FragColor = vec4(vColor * a, 1.0);
+  gl_FragColor = vec4(pow(max(vColor * a, vec3(0.0)), vec3(2.2)), 1.0);
 }`
 
 function hashAngle(sym: string) {
@@ -448,7 +476,8 @@ function hashAngle(sym: string) {
 
 const R_OUT = 3.6
 
-function Radar({ coins, portal }: { coins: RadarCoin[]; portal: Portal }) {
+function Radar({ coins, portal, reading }: { coins: RadarCoin[]; portal: Portal; reading: Reading | null }) {
+  const callout = useRef<HTMLDivElement>(null)
   const group = useRef<THREE.Group>(null)
   const sweepRef = useRef<THREE.Mesh>(null)
   const labels = useRef<Array<HTMLDivElement | null>>([])
@@ -462,7 +491,23 @@ function Radar({ coins, portal }: { coins: RadarCoin[]; portal: Portal }) {
       }),
     [coins],
   )
-  const top = useMemo(() => [...placed].sort((a, b) => Math.abs(b.net) - Math.abs(a.net)).slice(0, 6), [placed])
+  const top = useMemo(
+    () => [...placed].filter((k) => k.symbol !== reading?.symbol).sort((a, b) => Math.abs(b.net) - Math.abs(a.net)).slice(0, 5),
+    [placed, reading],
+  )
+  const anchor = useMemo(() => placed.find((k) => k.symbol === reading?.symbol) ?? null, [placed, reading])
+  const mobile = useSky.getState().mobile
+  // The reading sits outside the ring (right on desktop, below on mobile), joined to its coin by a leader.
+  const dock = useMemo<[number, number]>(
+    () => (anchor ? (mobile ? [0, -R_OUT - 0.5] : [R_OUT + 0.35, Math.max(-1.6, Math.min(1.6, anchor.y))]) : [0, 0]),
+    [anchor, mobile],
+  )
+  const leader = useMemo(() => {
+    const g = new THREE.BufferGeometry()
+    if (anchor) g.setAttribute("position", new THREE.Float32BufferAttribute([anchor.x, anchor.y, 0, dock[0], dock[1], 0], 3))
+    return g
+  }, [anchor, dock])
+  const leaderMat = useMemo(() => new THREE.LineBasicMaterial({ color: C.star, transparent: true, opacity: 0, depthWrite: false }), [])
 
   const pointGeo = useMemo(() => {
     const g = new THREE.BufferGeometry()
@@ -529,7 +574,7 @@ function Radar({ coins, portal }: { coins: RadarCoin[]; portal: Portal }) {
             float r = length(vP) / ${R_OUT.toFixed(1)};
             float a = pow(lead, 3.0) * 0.16 * smoothstep(1.0, 0.85, r) * uO;
             a += smoothstep(0.012, 0.0, abs(ang)) * 0.35 * uO;
-            gl_FragColor = vec4(uC * a, 1.0);
+            gl_FragColor = vec4(pow(max(uC * a, vec3(0.0)), vec3(2.2)), 1.0);
           }`,
       }),
     [],
@@ -544,7 +589,7 @@ function Radar({ coins, portal }: { coins: RadarCoin[]; portal: Portal }) {
     g.scale.setScalar((0.5 + appear * 0.2) * (useSky.getState().mobile ? 0.8 : 1))
     g.rotation.x = -0.18 + s.pointer[1] * 0.05
     g.rotation.y = s.pointer[0] * 0.08
-    g.position.set(s.mobile ? 0 : 2.2, s.mobile ? 1.4 : -0.1, -2 + appear * 2 - band(s.beta, 0.85, 1) * 6)
+    g.position.set(s.mobile ? 0 : 1.7, s.mobile ? 1.4 : -0.1, -2 + appear * 2 - band(s.beta, 0.85, 1) * 6)
     const sweep = s.reduced ? 0.6 : -clock.elapsedTime * 0.85
     const wrapped = ((sweep % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)
     if (sweepRef.current) sweepRef.current.rotation.z = wrapped
@@ -555,6 +600,9 @@ function Radar({ coins, portal }: { coins: RadarCoin[]; portal: Portal }) {
     sweepMat.uniforms.uO.value = s.reduced ? 0.6 : appear
     const lo = band(s.beta, 0.2, 0.35) * (1 - band(s.beta, 0.88, 1))
     labels.current.forEach((el) => el && (el.style.opacity = String(s.reduced ? 1 : lo)))
+    const co = s.reduced ? 1 : band(s.beta, 0.36, 0.5) * (1 - band(s.beta, 0.86, 0.96))
+    if (callout.current) applyReveal(callout.current, co)
+    leaderMat.opacity = 0.4 * Math.min(1, co * 3)
   })
 
   return (
@@ -571,6 +619,31 @@ function Radar({ coins, portal }: { coins: RadarCoin[]; portal: Portal }) {
           </div>
         </Html>
       ))}
+      {anchor && reading && (
+        <lineSegments geometry={leader} material={leaderMat} />
+      )}
+      {anchor && reading && (
+        <Html portal={portal} position={[dock[0], dock[1], 0]} zIndexRange={[6, 0]} style={{ pointerEvents: "none" }}>
+          <div ref={callout} className="a-callout" data-dock={mobile ? "below" : "right"} style={{ visibility: "hidden" }}>
+            <div className="a-glass a-callout-card">
+              <p className="a-mono" style={{ margin: 0, color: "var(--a-faint)", fontSize: 9.5 }}>
+                Loudest {reading.ok ? "clean scent" : "reading · building history"}
+              </p>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginTop: 6, flexWrap: "wrap" }}>
+                <span className="a-display" style={{ fontSize: "1.6rem" }}>
+                  {reading.symbol}
+                </span>
+                <span className="a-mono" style={{ fontSize: 14, letterSpacing: "0.06em", color: reading.ok ? "var(--a-orange)" : "var(--a-star)" }}>
+                  {reading.net.toFixed(1)}% net
+                </span>
+              </div>
+              <div style={{ marginTop: 8 }}>
+                <SourceTag kind={reading.live ? "live" : "sample"} ts={reading.ts} stale={reading.stale} />
+              </div>
+            </div>
+          </div>
+        </Html>
+      )}
     </group>
   )
 }
@@ -591,25 +664,23 @@ function Rig() {
 function Post() {
   const crawl = useMemo(() => new CrawlEffect(), [])
   const { size, gl } = useThree()
-  useFrame(({ clock }) => {
+  useFrame(() => {
     const s = useSky.getState()
     const u = crawl.uniforms
     u.get("uProgress")!.value = s.reduced ? 0 : s.crawl
-    u.get("uTime")!.value = clock.elapsedTime
     u.get("uMode")!.value = s.grain === "pixel" ? 0 : s.grain === "dither" ? 1 : 2
     ;(u.get("uRes")!.value as THREE.Vector2).set(size.width * gl.getPixelRatio(), size.height * gl.getPixelRatio())
   })
   return (
     <EffectComposer multisampling={0} enabled={!(typeof window !== "undefined" && window.location.search.includes("nopost"))}>
-      <Bloom mipmapBlur luminanceThreshold={0.72} luminanceSmoothing={0.15} intensity={0.9} radius={0.65} />
       <primitive object={crawl} dispose={null} />
-      <Noise opacity={0.05} premultiply />
+      <Noise opacity={0.03} premultiply />
       <Vignette offset={0.22} darkness={0.85} />
     </EffectComposer>
   )
 }
 
-export default function AlmagestSky({ coins, labels }: { coins: RadarCoin[]; labels: HTMLElement }) {
+export default function AlmagestSky({ coins, labels, reading }: { coins: RadarCoin[]; labels: HTMLElement; reading: Reading | null }) {
   const mobile = useSky((s) => s.mobile)
   const portal = useMemo(() => ({ current: labels }), [labels])
   return (
@@ -625,7 +696,7 @@ export default function AlmagestSky({ coins, labels }: { coins: RadarCoin[]; lab
       <Haze />
       <GlassHound />
       <CanisMajor portal={portal} />
-      <Radar coins={coins} portal={portal} />
+      <Radar coins={coins} portal={portal} reading={reading} />
       <Rig />
       <Post />
     </Canvas>

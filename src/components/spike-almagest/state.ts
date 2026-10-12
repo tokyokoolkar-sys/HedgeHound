@@ -42,7 +42,7 @@ export const useSky = create<Sky>((set) => ({
   crawl: 0,
   beta: 0,
   pointer: [0, 0],
-  grain: "mixed",
+  grain: "dither",
   reduced: false,
   mobile: false,
   set: (p) => set(p),

@@ -2,11 +2,10 @@
 // Text is server-rendered; the canvas and the scroll engine load on the client only.
 import { ClientOnly, useNavigate, useSearch } from "@tanstack/react-router"
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react"
-import { SourceTag } from "@/components/edition/source-tag"
 import { useScan } from "@/lib/scan/use-scan"
-import { applyCrawl } from "./pixel-mask"
+import { applyCrawl, applyReveal } from "./pixel-mask"
 import { TYPE_PAIRS, band, clamp01, smooth, useSky, type GrainMode, type TypePair } from "./state"
-import type { RadarCoin } from "./sky"
+import type { RadarCoin, Reading } from "./sky"
 import "./almagest.css"
 
 const Sky = lazy(() => import("./sky"))
@@ -28,22 +27,34 @@ function Words({ text, className }: { text: string; className?: string }) {
   )
 }
 
-type Reveal = { el: HTMLElement; words: HTMLElement[] }
+type Reveal = { el: HTMLElement; words: HTMLElement[]; glint: boolean[] }
 
 function collect(root: HTMLElement | null): Reveal | null {
   if (!root) return null
-  return { el: root, words: Array.from(root.querySelectorAll<HTMLElement>(".a-w")) }
+  const words = Array.from(root.querySelectorAll<HTMLElement>(".a-w"))
+  return { el: root, words, glint: words.map((w) => !!w.closest("[data-shimmer]")) }
 }
 
-/** Word-staggered blur reveal at progress p (0 hidden → 1 resolved). */
+/**
+ * Word-staggered blur reveal at progress p (0 hidden → 1 resolved), driven by the scroll.
+ * Titles marked data-shimmer also catch a cold glint as each word lands: a light that travels
+ * across the title with the scroll and stops when you stop.
+ */
 function revealWords(r: Reveal, p: number, reduced: boolean) {
   const n = r.words.length
   const step = Math.min(0.08, 0.6 / Math.max(1, n))
   r.words.forEach((w, i) => {
-    const t = reduced ? (p > 0.5 ? 1 : 0) : smooth(clamp01((p * (1 + n * step) - i * step) / 1))
+    const raw = clamp01((p * (1 + n * step) - i * step) / 1)
+    const t = reduced ? (p > 0.5 ? 1 : 0) : smooth(raw)
     w.style.opacity = String(t)
     w.style.filter = t >= 0.999 ? "none" : `blur(${((1 - t) * 14).toFixed(2)}px)`
     w.style.transform = t >= 0.999 ? "none" : `translateY(${((1 - t) * 0.32).toFixed(3)}em)`
+    if (r.glint[i] && !reduced) {
+      // Glint peaks as the word finishes resolving (raw 0.55→1), then settles to plain starlight.
+      const g = Math.max(0, Math.sin(Math.PI * clamp01((raw - 0.4) / 0.6)))
+      w.style.color = g > 0.01 ? `color-mix(in srgb, #ffffff ${Math.round(g * 100)}%, var(--a-star))` : ""
+      w.style.textShadow = g > 0.01 ? `0 0 ${(g * 26).toFixed(1)}px rgb(127 220 255 / ${(g * 0.6).toFixed(2)}), 0 0 ${(g * 3).toFixed(1)}px rgb(255 255 255 / ${(g * 0.8).toFixed(2)})` : ""
+    }
   })
 }
 
@@ -71,8 +82,8 @@ export function AlmagestPage() {
   const scan = useScan()
   const search = useSearch({ strict: false }) as { type?: string; grain?: string }
   const navigate = useNavigate()
-  const type: TypePair = search.type && search.type in TYPE_PAIRS ? (search.type as TypePair) : "inscription"
-  const grain: GrainMode = search.grain === "pixel" || search.grain === "dither" ? search.grain : "mixed"
+  const type: TypePair = search.type && search.type in TYPE_PAIRS ? (search.type as TypePair) : "observatory"
+  const grain: GrainMode = search.grain === "pixel" || search.grain === "mixed" ? search.grain : "dither"
   const setType = (t: TypePair) => void navigate({ to: ".", search: (p: object) => ({ ...p, type: t }), replace: true })
   const setGrain = (g: GrainMode) => void navigate({ to: ".", search: (p: object) => ({ ...p, grain: g }), replace: true })
   const [labelHost, setLabelHost] = useState<HTMLElement | null>(null)
@@ -83,10 +94,12 @@ export function AlmagestPage() {
     () => scan.rows.map((r) => ({ symbol: r.symbol, net: r.net_apr, status: r.status })),
     [scan.rows],
   )
-  const loudest = useMemo(() => {
+  const reading = useMemo<Reading | null>(() => {
     const ok = scan.rows.filter((r) => r.status === "ok").sort((a, b) => b.net_apr - a.net_apr)[0]
-    return ok ?? [...scan.rows].sort((a, b) => b.net_apr - a.net_apr)[0]
-  }, [scan.rows])
+    const top = ok ?? [...scan.rows].sort((a, b) => b.net_apr - a.net_apr)[0]
+    if (!top) return null
+    return { symbol: top.symbol, net: top.net_apr, ok: top.status === "ok", live: scan.live, ts: scan.ts ?? undefined, stale: scan.stale }
+  }, [scan.rows, scan.live, scan.ts, scan.stale])
 
   // Spacers
   const secHero = useRef<HTMLElement>(null)
@@ -100,7 +113,6 @@ export function AlmagestPage() {
   const betaRef = useRef<HTMLDivElement>(null)
   const betaTitleRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
-  const dataRef = useRef<HTMLDivElement>(null)
   const endRef = useRef<HTMLDivElement>(null)
   const coordRef = useRef<HTMLSpanElement>(null)
   const indexRef = useRef<HTMLDivElement>(null)
@@ -140,8 +152,6 @@ export function AlmagestPage() {
       const alpha = collect(alphaRef.current)
       const betaTitle = collect(betaTitleRef.current)
       const cards = Array.from(cardsRef.current?.children ?? []) as HTMLElement[]
-      const shimmerA = alphaRef.current?.querySelector<HTMLElement>(".a-shimmer")
-      const shimmerB = betaTitleRef.current?.querySelector<HTMLElement>(".a-shimmer")
 
       let intro = reduced ? 1 : 0
       if (!reduced) gsap.to({ v: 0 }, { v: 1, duration: 2.4, delay: 0.5, ease: "power2.out", onUpdate() { intro = this.targets()[0].v } })
@@ -176,12 +186,16 @@ export function AlmagestPage() {
 
         // α panel: words resolve after the constellation forms; the crawl eats it from below.
         if (alpha && alphaRef.current) {
-          const pin = band(a, 0.42, 0.55)
-          revealWords(alpha, pin, reduced)
-          const vis = a > 0.4 && c < 0.5 ? 1 : 0
-          fade(alphaRef.current, vis, 0, (1 - smooth(pin)) * 18)
-          if (shimmerA) shimmerA.classList.toggle("is-lit", pin > 0.95)
-          applyCrawl(alphaRef.current, !reduced && c > 0 && c < 0.5 ? -0.3 + 1.6 * (c * 2) : null, "out")
+          const card = reduced ? (a > 0.4 ? 1 : 0) : band(a, 0.38, 0.47)
+          revealWords(alpha, band(a, 0.45, 0.58), reduced)
+          if (c > 0 && c < 0.5 && !reduced) {
+            alphaRef.current.style.visibility = "visible"
+            applyCrawl(alphaRef.current, -0.3 + 1.6 * (c * 2), "out")
+          } else if (c >= 0.5) {
+            alphaRef.current.style.visibility = "hidden"
+          } else {
+            applyReveal(alphaRef.current, card)
+          }
         }
 
         // β panel: the second crawl front builds the glass, then the words and cards resolve.
@@ -191,13 +205,10 @@ export function AlmagestPage() {
           fade(betaRef.current, shown ? 1 - out : 0, out * 10, -out * 40)
           applyCrawl(betaRef.current, !reduced && c >= 0.5 && c < 1 ? -0.3 + 1.6 * ((c - 0.5) * 2) : null, "in")
           if (betaTitle) revealWords(betaTitle, band(c, 0.8, 1) * 0.5 + band(b, 0, 0.16) * 0.5, reduced)
-          if (shimmerB) shimmerB.classList.toggle("is-lit", b > 0.16)
           cards.forEach((card, i) => {
             const t = reduced ? (b > 0.1 ? 1 : 0) : smooth(band(b, 0.16 + i * 0.07, 0.34 + i * 0.07))
             fade(card, t, (1 - t) * 12, (1 - t) * 26)
           })
-          const d = reduced ? (b > 0.1 ? 1 : 0) : smooth(band(b, 0.42, 0.56))
-          fade(dataRef.current, d, (1 - d) * 10, (1 - d) * 20)
         }
 
         fade(endRef.current, smooth(band(b, 0.95, 1)) * (y > 0 ? 1 : 0), 0, 0)
@@ -239,7 +250,7 @@ export function AlmagestPage() {
   return (
     <div className="almagest" data-type={type}>
       <ClientOnly fallback={null}>
-        <Suspense fallback={null}>{labelHost && <Sky coins={coins} labels={labelHost} />}</Suspense>
+        <Suspense fallback={null}>{labelHost && <Sky coins={coins} labels={labelHost} reading={reading} />}</Suspense>
       </ClientOnly>
 
       <div ref={setLabelHost} className="a-labels" />
@@ -275,7 +286,7 @@ export function AlmagestPage() {
 
         {/* Overture */}
         <div ref={heroRef} style={{ position: "absolute", left: 0, right: 0, bottom: "16svh", textAlign: "center", padding: "0 16px" }}>
-          <h1 className="a-display" style={{ fontSize: "clamp(3.2rem, 9vw, 8.5rem)", margin: 0 }}>
+          <h1 className="a-display" data-shimmer style={{ fontSize: "clamp(3.2rem, 9vw, 8.5rem)", margin: 0 }}>
             <Words text="HedgeHound" />
           </h1>
           <p className="a-mono" style={{ marginTop: 18, color: "var(--a-dim)" }}>
@@ -295,7 +306,7 @@ export function AlmagestPage() {
           <p className="a-mono" style={{ margin: 0, color: "var(--a-dim)" }}>
             <span className="a-greek" style={{ fontSize: 14 }}>α</span> · Canis Major
           </p>
-          <h2 className="a-display a-shimmer" style={{ fontSize: "clamp(2.2rem, 3.6vw, 3.4rem)", margin: "14px 0 14px" }}>
+          <h2 className="a-display" data-shimmer style={{ fontSize: "clamp(2.2rem, 3.6vw, 3.4rem)", margin: "14px 0 14px" }}>
             <Words text="The hound in the sky" />
           </h2>
           <p className="a-body" style={{ margin: 0 }}>
@@ -317,7 +328,7 @@ export function AlmagestPage() {
               <p className="a-mono" style={{ margin: 0, color: "var(--a-dim)" }}>
                 <span className="a-greek" style={{ fontSize: 14 }}>β</span> · Sniff
               </p>
-              <h2 className="a-display a-shimmer" style={{ fontSize: "clamp(2.6rem, 5vw, 4.6rem)", margin: "12px 0 10px" }}>
+              <h2 className="a-display" data-shimmer style={{ fontSize: "clamp(2.6rem, 5vw, 4.6rem)", margin: "12px 0 10px" }}>
                 <Words text="Sniff" />
               </h2>
               <p className="a-body" style={{ margin: 0, fontStyle: "italic", fontSize: "clamp(1.2rem, 1.4vw, 1.45rem)", color: "var(--a-star)" }}>
@@ -342,24 +353,6 @@ export function AlmagestPage() {
               ))}
             </div>
           </div>
-        </div>
-
-        <div ref={dataRef} className="a-glass a-data" style={{ opacity: 0, visibility: "hidden" }}>
-          <p className="a-mono" style={{ margin: 0, color: "var(--a-faint)", fontSize: 9.5 }}>
-            Loudest {loudest?.status === "ok" ? "clean scent" : "reading, still building history"}
-          </p>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginTop: 8, flexWrap: "wrap" }}>
-            <span className="a-display" style={{ fontSize: "1.8rem" }}>
-              {loudest?.symbol ?? "—"}
-            </span>
-            <span className="a-mono" style={{ fontSize: 15, letterSpacing: "0.06em", color: loudest?.status === "ok" ? "var(--a-orange)" : "var(--a-star)" }}>
-              {loudest ? `${loudest.net_apr.toFixed(1)}% net` : ""}
-            </span>
-            <SourceTag kind={scan.live ? "live" : "sample"} ts={scan.ts ?? undefined} stale={scan.stale} className="a-tag" />
-          </div>
-          <p className="a-mono" style={{ margin: "8px 0 0", color: "var(--a-faint)", fontSize: 9.5 }}>
-            Radar: angle by symbol, closer to centre = louder · same source
-          </p>
         </div>
 
         {/* γ teaser */}

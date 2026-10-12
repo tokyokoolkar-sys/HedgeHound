@@ -1,13 +1,13 @@
-// Full-screen "pixel-grain crawl" transition (spike D1).
-// Progress 0→0.5: a noisy front rises from the bottom to the top; everything it passes breaks into
-// pixels and grain and drops out. At 0.5 the whole frame is grain (the scene swaps underneath).
-// Progress 0.5→1: a second front rises and the next scene resolves out of the grain behind it.
+// Full-screen "grain crawl" transition (spike D1), locked to the scroll.
+// Nothing here reads the clock: the front, its ragged edge and every flicker are functions of the
+// scroll progress, so the crawl moves only while you scroll and freezes the moment you stop.
+// Progress 0→0.5: a ragged front rises; what it passes breaks into fine grain and goes dark,
+// leaving sparse stars that shimmer as you scroll. 0.5→1: a second front rebuilds the next scene.
 import { Effect, EffectAttribute } from "postprocessing"
 import { Uniform, Vector2 } from "three"
 
 const fragment = /* glsl */ `
 uniform float uProgress;
-uniform float uTime;
 uniform float uMode;   // 0 pixel, 1 dither, 2 mixed
 uniform vec2 uRes;
 
@@ -26,37 +26,38 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
 
   bool out_ = p < 0.5;
   float ph = out_ ? p * 2.0 : (p - 0.5) * 2.0;
+  // "Scroll time": the only animation clock. Drifts the edge noise as the front climbs.
+  float s = p * 6.0;
 
-  // Ragged front: low-frequency fbm across x, slowly crawling.
-  float ragged = (fbm(vec2(uv.x * 5.0, uTime * 0.25)) - 0.5) * 0.22 + (fbm(vec2(uv.x * 23.0, uTime * 0.9)) - 0.5) * 0.06;
-  float front = mix(-0.3, 1.3, ph) + ragged;
-  float behind = smoothstep(0.0, 0.28, front - uv.y);      // 1 = the front has passed this row
-  float amount = out_ ? behind : 1.0 - behind;               // 1 = fully dissolved
-  float edge = exp(-pow((uv.y - front) / 0.07, 2.0));        // the crawling band itself
+  // Static ragged edge: the front only ever advances, so a bite never grows back mid-scroll.
+  float ragged = (fbm(vec2(uv.x * 4.0, 7.0)) - 0.5) * 0.18 + (fbm(vec2(uv.x * 17.0, 3.0)) - 0.5) * 0.05;
+  float front = mix(-0.45, 1.45, ph) + ragged;
+  // How strongly this row is being eaten: bites start well ahead of the front and thicken behind it.
+  float hunger = smoothstep(-0.12, 0.4, front - uv.y);
+  float amount = out_ ? hunger : 1.0 - hunger;
 
-  // Block size per mode (in px).
-  float maxBlock = uMode < 0.5 ? 28.0 : (uMode < 1.5 ? 3.0 : 14.0);
-  float k = max(amount, edge * 0.9);
-  float block = max(1.0, floor(mix(1.0, maxBlock, k * k)));
   vec2 px = uv * uRes;
-  vec2 cell = floor(px / block);
-  vec2 sampleUv = (cell * block + block * 0.5) / uRes;
-  vec4 col = texture2D(inputBuffer, sampleUv);
+  // Bites, not a slide: every cell has its own fixed moment. Once the hunger passes it, the cell is
+  // gone and stays gone, so each bit of scroll takes new bites out of the picture.
+  float bigSize = uMode < 0.5 ? 26.0 : (uMode < 1.5 ? 14.0 : 18.0);
+  float smallSize = uMode < 0.5 ? 26.0 : 4.0;
+  float bigBite = step(hash(floor(px / bigSize) + 17.0), amount * 0.85);
+  float smallBite = step(hash(floor(px / smallSize) + 3.0), amount);
+  float eaten = max(bigBite, smallBite);
 
-  // Dropout: per block (pixel mode) or per fine grain cell (dither / mixed), shimmering near the band.
-  float grainSize = uMode < 0.5 ? block : 2.0;
-  vec2 gcell = floor(px / grainSize);
-  float flicker = floor(uTime * 18.0) * edge;
-  float n = hash(gcell + flicker * 13.7);
-  float keep = step(amount * 1.02, n);
-  col.rgb *= keep;
+  vec4 col = inputColor;
+  // Pixel mode: what survives near the front also turns blocky.
+  if (uMode < 0.5 && amount > 0.02) {
+    vec2 cell = floor(px / 10.0);
+    col = texture2D(inputBuffer, (cell * 10.0 + 5.0) / uRes);
+  }
+  col.rgb *= 1.0 - eaten;
 
-  // Grain where dissolved: sparse cold sparks, so the void reads as dust, not a black wipe.
-  float spark = step(0.992, hash(gcell * 1.37 + floor(uTime * 9.0))) * amount;
-  col.rgb += vec3(0.85, 0.92, 1.0) * spark * 0.55;
+  // Where it is dissolved: sparse cold stars that twinkle with the scroll, not a cloud.
+  float star = step(0.9965, hash(floor(px / 2.0) * 1.37 + 11.0));
+  float tw = 0.5 + 0.5 * sin(hash(floor(px / 2.0)) * 40.0 + s * 9.0);
+  col.rgb += vec3(0.62, 0.70, 1.0) * star * tw * eaten * 0.5;
 
-  // A faint scanning glow on the crawling edge.
-  col.rgb += vec3(0.50, 0.86, 1.0) * edge * 0.03 * (0.6 + 0.4 * hash(gcell + floor(uTime * 30.0)));
 
   outputColor = vec4(col.rgb, inputColor.a);
 }
@@ -68,8 +69,7 @@ export class CrawlEffect extends Effect {
       attributes: EffectAttribute.CONVOLUTION,
       uniforms: new Map<string, Uniform>([
         ["uProgress", new Uniform(0)],
-        ["uTime", new Uniform(0)],
-        ["uMode", new Uniform(2)],
+        ["uMode", new Uniform(1)],
         ["uRes", new Uniform(new Vector2(1, 1))],
       ]),
     })
