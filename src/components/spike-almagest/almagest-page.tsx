@@ -7,6 +7,7 @@ import { ShimmerText } from "@/components/shimmer-text"
 import { SourceTag } from "@/components/edition/source-tag"
 import { useScan } from "@/lib/scan/use-scan"
 import { applyCrawl } from "./pixel-mask"
+import { dockFor, placeCoins, topCoins } from "./radar-layout"
 import { TYPE_PAIRS, band, clamp01, smooth, useSky, type GrainMode, type TypePair } from "./state"
 import type { RadarCoin, Reading } from "./sky"
 import "./almagest.css"
@@ -81,6 +82,10 @@ const CARDS = [
   },
 ]
 
+function coinsFor(rows: Array<{ symbol: string; net_apr: number; status: RadarCoin["status"] }>): RadarCoin[] {
+  return rows.map((r) => ({ symbol: r.symbol, net: r.net_apr, status: r.status }))
+}
+
 export function AlmagestPage() {
   const scan = useScan()
   const search = useSearch({ strict: false }) as { type?: string; grain?: string }
@@ -91,22 +96,25 @@ export function AlmagestPage() {
   const setGrain = (g: GrainMode) => void navigate({ to: ".", search: (p: object) => ({ ...p, grain: g }), replace: true })
   const [labelHost, setLabelHost] = useState<HTMLElement | null>(null)
   const [open, setOpen] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => setIsMobile(window.matchMedia("(max-width: 767px)").matches), [])
   useEffect(() => setOpen(!window.matchMedia("(max-width: 767px)").matches), [])
 
   const symbols = useMemo(() => {
     const list = scan.rows.map((r) => r.symbol).slice(0, 30)
     return list.slice(0, list.length - (list.length % 5))
   }, [scan.rows])
-  const coins = useMemo<RadarCoin[]>(
-    () => scan.rows.map((r) => ({ symbol: r.symbol, net: r.net_apr, status: r.status })),
-    [scan.rows],
-  )
+  const coins = useMemo<RadarCoin[]>(() => coinsFor(scan.rows), [scan.rows])
   const reading = useMemo<Reading | null>(() => {
     const ok = scan.rows.filter((r) => r.status === "ok").sort((a, b) => b.net_apr - a.net_apr)[0]
     const top = ok ?? [...scan.rows].sort((a, b) => b.net_apr - a.net_apr)[0]
     if (!top) return null
     return { symbol: top.symbol, net: top.net_apr, ok: top.status === "ok", live: scan.live, ts: scan.ts ?? undefined, stale: scan.stale }
   }, [scan.rows, scan.live, scan.ts, scan.stale])
+  const radarPlaced = useMemo(() => placeCoins(coinsFor(scan.rows)), [scan.rows])
+  const radarAnchor = useMemo(() => radarPlaced.find((k) => k.symbol === reading?.symbol) ?? null, [radarPlaced, reading])
+  const radarTop = useMemo(() => topCoins(radarPlaced, reading?.symbol), [radarPlaced, reading])
+  const radarDock = useMemo(() => dockFor(radarAnchor, isMobile), [radarAnchor, isMobile])
 
   // Spacers
   const secHero = useRef<HTMLElement>(null)
@@ -396,6 +404,35 @@ export function AlmagestPage() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Radar labels + the reading: plain DOM, projected onto the radar each frame by sky.tsx. */}
+        <div className="a-proj" aria-hidden={false}>
+          {radarTop.map((k) => (
+            <div key={k.symbol} className="a-coin-label" data-kind="coin" data-px={k.x} data-py={k.y} data-alert={k.status === "ok" ? "" : undefined}>
+              {k.symbol} <span>{k.net.toFixed(1)}%</span>
+            </div>
+          ))}
+          {reading && radarAnchor && (
+            <div id="a-callout" className="a-callout" data-kind="callout" data-px={radarDock[0]} data-py={radarDock[1]} data-dock={isMobile ? "below" : "right"} style={{ visibility: "hidden" }}>
+              <div className="a-callout-card">
+                <p className="a-mono" style={{ margin: 0, color: "var(--a-faint)", fontSize: 9.5 }}>
+                  Loudest {reading.ok ? "clean scent" : "reading · building history"}
+                </p>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginTop: 6, flexWrap: "wrap" }}>
+                  <span className="a-display" style={{ fontSize: "1.6rem" }}>
+                    {reading.symbol}
+                  </span>
+                  <span className="a-mono" style={{ fontSize: 14, letterSpacing: "0.06em", color: reading.ok ? "var(--a-orange)" : "var(--a-star)" }}>
+                    {reading.net.toFixed(1)}% net
+                  </span>
+                </div>
+                <div style={{ marginTop: 8 }}>
+                  <SourceTag kind={reading.live ? "live" : "sample"} ts={reading.ts} stale={reading.stale} />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Transition: the field, cycling in staggered groups. */}

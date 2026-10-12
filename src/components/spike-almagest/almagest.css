@@ -236,13 +236,32 @@ body:has(.almagest) {
   color: var(--a-dim);
 }
 
-.a-callout {
-  position: relative;
+.a-proj {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.a-proj > [data-px] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+
+/* The anchor point is the element's top-left; inner offsets place the text around it. */
+.a-callout .a-callout-card {
   transform: translate(0, -50%);
 }
 
-.a-callout[data-dock="below"] {
+.a-callout[data-dock="below"] .a-callout-card {
   transform: translate(-50%, 8px);
+}
+
+.a-proj .a-coin-label {
+  opacity: 0;
 }
 
 .a-callout-card {

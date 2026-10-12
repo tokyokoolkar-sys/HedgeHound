@@ -7,9 +7,9 @@ import { EffectComposer, Noise, Vignette } from "@react-three/postprocessing"
 import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 import { SVGLoader } from "three-stdlib"
-import { SourceTag } from "@/components/edition/source-tag"
 import { CMA, CMA_LINES, magToPx, project } from "./canis-major"
 import { applyStardust } from "./pixel-mask"
+import { R_OUT, dockFor, placeCoins } from "./radar-layout"
 import { CrawlEffect } from "./transition-effect"
 import { SKY, band, smooth, useSky } from "./state"
 
@@ -425,40 +425,17 @@ void main() {
   gl_FragColor = vec4(pow(max(vColor * a, vec3(0.0)), vec3(2.2)), 1.0);
 }`
 
-function hashAngle(sym: string) {
-  let h = 2166136261
-  for (let i = 0; i < sym.length; i++) h = Math.imul(h ^ sym.charCodeAt(i), 16777619)
-  return ((h >>> 0) / 4294967296) * Math.PI * 2
-}
 
-const R_OUT = 3.6
-
-function Radar({ coins, portal, reading }: { coins: RadarCoin[]; portal: Portal; reading: Reading | null }) {
-  const callout = useRef<HTMLDivElement>(null)
+function Radar({ coins, reading }: { coins: RadarCoin[]; reading: Reading | null }) {
+  const { camera, size } = useThree()
+  const proj = useMemo(() => new THREE.Vector3(), [])
   const group = useRef<THREE.Group>(null)
   const sweepRef = useRef<THREE.Mesh>(null)
-  const labels = useRef<Array<HTMLDivElement | null>>([])
 
-  const placed = useMemo(
-    () =>
-      coins.slice(0, 40).map((c) => {
-        const a = hashAngle(c.symbol)
-        const r = R_OUT - 2.8 * Math.min(1, Math.abs(c.net) / 60) - 0.25
-        return { ...c, a, x: Math.cos(a) * r, y: Math.sin(a) * r }
-      }),
-    [coins],
-  )
-  const top = useMemo(
-    () => [...placed].filter((k) => k.symbol !== reading?.symbol).sort((a, b) => Math.abs(b.net) - Math.abs(a.net)).slice(0, 5),
-    [placed, reading],
-  )
+  const placed = useMemo(() => placeCoins(coins), [coins])
   const anchor = useMemo(() => placed.find((k) => k.symbol === reading?.symbol) ?? null, [placed, reading])
   const mobile = useSky.getState().mobile
-  // The reading sits outside the ring (right on desktop, below on mobile), joined to its coin by a leader.
-  const dock = useMemo<[number, number]>(
-    () => (anchor ? (mobile ? [0, -R_OUT - 0.5] : [R_OUT + 0.35, Math.max(-1.6, Math.min(1.6, anchor.y))]) : [0, 0]),
-    [anchor, mobile],
-  )
+  const dock = useMemo(() => dockFor(anchor, mobile), [anchor, mobile])
   const leader = useMemo(() => {
     const g = new THREE.BufferGeometry()
     g.setAttribute("position", new THREE.Float32BufferAttribute([0, 0, 0, 0, 0, 0], 3))
@@ -555,8 +532,15 @@ function Radar({ coins, portal, reading }: { coins: RadarCoin[]; portal: Portal;
     pointMat.uniforms.uOpacity.value = appear
     ringMat.opacity = 0.22 * appear
     sweepMat.uniforms.uO.value = s.reduced ? 0.6 : appear
-    const lo = band(s.beta, 0.2, 0.35) * (1 - band(s.beta, 0.88, 1))
-    labels.current.forEach((el) => el && (el.style.opacity = String(s.reduced ? 1 : lo)))
+    const lo = g.visible ? (s.reduced ? 1 : band(s.beta, 0.2, 0.35) * (1 - band(s.beta, 0.88, 1))) : 0
+    // Project the page's DOM labels onto the radar (local radar coords in data-px / data-py).
+    g.updateMatrixWorld()
+    document.querySelectorAll<HTMLElement>(".a-proj [data-px]").forEach((el) => {
+      proj.set(Number(el.dataset.px), Number(el.dataset.py), 0)
+      g.localToWorld(proj).project(camera)
+      el.style.transform = `translate3d(${((proj.x * 0.5 + 0.5) * size.width).toFixed(1)}px, ${((-proj.y * 0.5 + 0.5) * size.height).toFixed(1)}px, 0)`
+      if (el.dataset.kind === "coin") el.style.opacity = String(lo)
+    })
     // Callout: the leader draws out from the coin first, then the card resolves at the end of it.
     const cp = s.reduced ? 1 : band(s.beta, 0.32, 0.62) * (1 - band(s.beta, 0.86, 0.96))
     if (anchor) {
@@ -567,7 +551,8 @@ function Radar({ coins, portal, reading }: { coins: RadarCoin[]; portal: Portal;
       leaderMat.opacity = lt > 0 ? 0.45 : 0
     }
     // The reading gathers out of star specks at the end of the line.
-    if (callout.current) applyStardust(callout.current, band(cp, 0.3, 1))
+    const callout = document.getElementById("a-callout")
+    if (callout) applyStardust(callout, g.visible ? band(cp, 0.3, 1) : 0)
   })
 
   return (
@@ -577,37 +562,8 @@ function Radar({ coins, portal, reading }: { coins: RadarCoin[]; portal: Portal;
         <circleGeometry args={[R_OUT, 64, 0, 1.1]} />
       </mesh>
       <points geometry={pointGeo} material={pointMat} frustumCulled={false} />
-      {top.map((k, i) => (
-        <Html key={k.symbol} portal={portal} position={[k.x, k.y, 0]} zIndexRange={[5, 0]} style={{ pointerEvents: "none" }}>
-          <div ref={(el) => void (labels.current[i] = el)} className="a-coin-label" data-alert={k.status === "ok" ? "" : undefined}>
-            {k.symbol} <span>{k.net.toFixed(1)}%</span>
-          </div>
-        </Html>
-      ))}
       {anchor && reading && (
         <lineSegments geometry={leader} material={leaderMat} />
-      )}
-      {anchor && reading && (
-        <Html portal={portal} position={[dock[0], dock[1], 0]} zIndexRange={[6, 0]} style={{ pointerEvents: "none" }}>
-          <div ref={callout} className="a-callout" data-dock={mobile ? "below" : "right"} style={{ visibility: "hidden" }}>
-            <div className="a-callout-card">
-              <p className="a-mono" style={{ margin: 0, color: "var(--a-faint)", fontSize: 9.5 }}>
-                Loudest {reading.ok ? "clean scent" : "reading · building history"}
-              </p>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginTop: 6, flexWrap: "wrap" }}>
-                <span className="a-display" style={{ fontSize: "1.6rem" }}>
-                  {reading.symbol}
-                </span>
-                <span className="a-mono" style={{ fontSize: 14, letterSpacing: "0.06em", color: reading.ok ? "var(--a-orange)" : "var(--a-star)" }}>
-                  {reading.net.toFixed(1)}% net
-                </span>
-              </div>
-              <div style={{ marginTop: 8 }}>
-                <SourceTag kind={reading.live ? "live" : "sample"} ts={reading.ts} stale={reading.stale} />
-              </div>
-            </div>
-          </div>
-        </Html>
       )}
     </group>
   )
@@ -660,7 +616,7 @@ export default function AlmagestSky({ coins, labels, reading }: { coins: RadarCo
       <DeepSky />
       <GlassHound />
       <CanisMajor portal={portal} />
-      <Radar coins={coins} portal={portal} reading={reading} />
+      <Radar coins={coins} reading={reading} />
       <Rig />
       <Post />
     </Canvas>
