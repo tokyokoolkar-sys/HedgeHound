@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AlmagestRouteImport } from './routes/[_]almagest'
 import { Route as KitchenRouteImport } from './routes/[_]kitchen'
 import { Route as DenRouteImport } from './routes/den'
 import { Route as UniverseRouteImport } from './routes/universe'
@@ -17,6 +18,11 @@ import { Route as UniverseRouteImport } from './routes/universe'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlmagestRoute = AlmagestRouteImport.update({
+  id: '/_almagest',
+  path: '/_almagest',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KitchenRoute = KitchenRouteImport.update({
@@ -37,12 +43,14 @@ const UniverseRoute = UniverseRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/_almagest': typeof AlmagestRoute
   '/_kitchen': typeof KitchenRoute
   '/den': typeof DenRoute
   '/universe': typeof UniverseRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/_almagest': typeof AlmagestRoute
   '/_kitchen': typeof KitchenRoute
   '/den': typeof DenRoute
   '/universe': typeof UniverseRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_almagest': typeof AlmagestRoute
   '/_kitchen': typeof KitchenRoute
   '/den': typeof DenRoute
   '/universe': typeof UniverseRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/_kitchen' | '/den' | '/universe'
+  fullPaths: '/' | '/_almagest' | '/_kitchen' | '/den' | '/universe'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/_kitchen' | '/den' | '/universe'
-  id: '__root__' | '/' | '/_kitchen' | '/den' | '/universe'
+  to: '/' | '/_almagest' | '/_kitchen' | '/den' | '/universe'
+  id: '__root__' | '/' | '/_almagest' | '/_kitchen' | '/den' | '/universe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AlmagestRoute: typeof AlmagestRoute
   KitchenRoute: typeof KitchenRoute
   DenRoute: typeof DenRoute
   UniverseRoute: typeof UniverseRoute
@@ -76,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_almagest': {
+      id: '/_almagest'
+      path: '/_almagest'
+      fullPath: '/_almagest'
+      preLoaderRoute: typeof AlmagestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_kitchen': {
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AlmagestRoute: AlmagestRoute,
   KitchenRoute: KitchenRoute,
   DenRoute: DenRoute,
   UniverseRoute: UniverseRoute,
