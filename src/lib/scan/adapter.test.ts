@@ -1,11 +1,23 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { EMBER_REASONS, LAYOUT } from "../scent.ts";
+import { DEFAULT_BOOK, EMBER_REASONS, LAYOUT } from "../scent.ts";
 import { colorFor, FULL_BRIGHT_APR, toStars, UNCHARTED_RING, unchartedPos } from "./adapter.ts";
 import { normalizeScan, secondsToNextPoll } from "./normalize.ts";
+import {
+  BACKOFF_STEPS_MS,
+  isStale,
+  nextMisses,
+  refetchIntervalMs,
+  SCAN_REFETCH_MS,
+  scanKey,
+  scanQueryString,
+  staleTimeMs,
+  STALE_AFTER_MS,
+} from "./query.ts";
 import { sampleScan } from "./sample.ts";
 import type { ScanResult, ScanRow } from "./types.ts";
+import { DEFAULT_SCAN_PARAMS } from "./types.ts";
 
 // A real /api/scan response, recorded from the local scanner (see notes/T40.md).
 const wire: unknown = JSON.parse(
@@ -259,5 +271,102 @@ describe("sample fallback", () => {
     assert.ok(field.stars.every((s) => s.charted));
     const lists = Object.fromEntries(field.embers.map((e) => [e.symbol, e.list]));
     assert.deepEqual(lists, { BOT: "zero", H100: "young", DUST: "thin" });
+  });
+});
+
+describe("scan query: cost", () => {
+  it("defaults to the Edition's DEFAULT_BOOK cost, so live and sample nets share one cost", () => {
+    assert.equal(DEFAULT_SCAN_PARAMS.cost, DEFAULT_BOOK.cost);
+    assert.equal(DEFAULT_SCAN_PARAMS.cost, 0.3);
+    assert.equal(DEFAULT_SCAN_PARAMS.hold, DEFAULT_BOOK.hold);
+    assert.equal(DEFAULT_SCAN_PARAMS.lev, DEFAULT_BOOK.lev);
+  });
+
+  it("sends cost=0.3 with the other knobs", () => {
+    const qs = new URLSearchParams(scanQueryString(DEFAULT_SCAN_PARAMS));
+    assert.equal(qs.get("cost"), "0.3");
+    assert.equal(qs.get("min"), "1");
+    assert.equal(qs.get("hold"), "72");
+    assert.equal(qs.get("lev"), "2");
+  });
+
+  it("puts cost in the query key, so a different cost is a different cache entry", () => {
+    const a = scanKey(DEFAULT_SCAN_PARAMS);
+    const b = scanKey({ ...DEFAULT_SCAN_PARAMS, cost: 0.2 });
+    assert.equal(a[0], "scan");
+    assert.equal(a[1].cost, 0.3);
+    assert.notDeepEqual(a, b);
+    assert.equal(new URLSearchParams(scanQueryString({ ...DEFAULT_SCAN_PARAMS, cost: 0.2 })).get("cost"), "0.2");
+  });
+
+  it("the sample fallback is computed at the same cost", () => {
+    // ARB sample row: net = gross - cost / hold * 8760.
+    const arb = sampleScan().rows.find((r) => r.symbol === "ARB") as ScanRow;
+    const drag = (DEFAULT_SCAN_PARAMS.cost / DEFAULT_SCAN_PARAMS.hold) * 8760;
+    assert.ok(Math.abs(arb.gross_apr - arb.net_apr - drag) < 0.11);
+  });
+});
+
+describe("offline backoff", () => {
+  it("polls every 30 s while live or before the first answer", () => {
+    assert.equal(refetchIntervalMs(undefined), 30_000);
+    assert.equal(refetchIntervalMs({ live: true, misses: 0 }), SCAN_REFETCH_MS);
+    assert.equal(refetchIntervalMs({ live: true }), 30_000);
+  });
+
+  it("walks 30 s, 2 min, 5 min and stays at the 5 min cap", () => {
+    assert.deepEqual([...BACKOFF_STEPS_MS], [30_000, 120_000, 300_000]);
+    const waits = [1, 2, 3, 4, 5, 50].map((misses) => refetchIntervalMs({ live: false, misses }));
+    assert.deepEqual(waits, [30_000, 120_000, 300_000, 300_000, 300_000, 300_000]);
+  });
+
+  it("treats a fallback with no count as the first miss", () => {
+    assert.equal(refetchIntervalMs({ live: false }), 30_000);
+    assert.equal(refetchIntervalMs({ live: false, misses: 0 }), 30_000);
+  });
+
+  it("counts consecutive misses and resets on the first live answer", () => {
+    let last: { live: boolean; misses: number } | undefined;
+    const seen: number[] = [];
+    for (const live of [false, false, false, false, true, false]) {
+      last = { live, misses: nextMisses(last, { live }) };
+      seen.push(refetchIntervalMs(last));
+    }
+    assert.deepEqual(seen, [30_000, 120_000, 300_000, 300_000, 30_000, 30_000]);
+  });
+
+  it("counts the requests in 3 minutes: three, not six", () => {
+    // Request at t=0; each answer is a miss and schedules the next one.
+    let t = 0;
+    let last: { live: boolean; misses: number } | undefined;
+    const at: number[] = [];
+    while (t <= 180_000) {
+      at.push(t);
+      last = { live: false, misses: nextMisses(last, { live: false }) };
+      t += refetchIntervalMs(last);
+    }
+    assert.deepEqual(at, [0, 30_000, 150_000]);
+  });
+
+  it("holds off focus/remount refetches for the same backoff step while offline", () => {
+    assert.equal(staleTimeMs(undefined), 25_000);
+    assert.equal(staleTimeMs({ live: true, misses: 0 }), 25_000);
+    assert.equal(staleTimeMs({ live: false, misses: 2 }), 120_000);
+  });
+});
+
+describe("isStale", () => {
+  const ts = 1_700_000_000_000;
+  it("flags a reading older than 300 s on the client clock", () => {
+    assert.equal(STALE_AFTER_MS, 300_000);
+    assert.equal(isStale(ts, ts + 300_000), false);
+    assert.equal(isStale(ts, ts + 300_001), true);
+    assert.equal(isStale(ts, ts + 10_000), false);
+  });
+
+  it("is false without a clock (server, first client render) or without a reading", () => {
+    assert.equal(isStale(ts, null), false);
+    assert.equal(isStale(null, ts), false);
+    assert.equal(isStale(ts, ts - 5_000), false);
   });
 });

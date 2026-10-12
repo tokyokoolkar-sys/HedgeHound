@@ -1,5 +1,6 @@
 import { sampleScan } from "./sample.ts"
 import { normalizeScan } from "./normalize.ts"
+import { scanQueryString } from "./query.ts"
 import type { ScanParams, ScanResult } from "./types.ts"
 import { DEFAULT_SCAN_PARAMS } from "./types.ts"
 
@@ -20,11 +21,7 @@ export async function fetchScan(
   signal?: AbortSignal,
 ): Promise<ScanResult> {
   try {
-    const qs = new URLSearchParams({
-      min: String(params.min),
-      hold: String(params.hold),
-      lev: String(params.lev),
-    })
+    const qs = scanQueryString(params)
     const timeout = AbortSignal.timeout(TIMEOUT_MS)
     const res = await fetch(`${BASE}/api/scan?${qs}`, {
       signal: signal ? AbortSignal.any([signal, timeout]) : timeout,

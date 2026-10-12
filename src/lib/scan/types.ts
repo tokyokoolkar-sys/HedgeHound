@@ -1,3 +1,5 @@
+import { DEFAULT_BOOK } from "../scent.ts"
+
 /**
  * Shapes of the local scanner's `GET /api/scan` (verified against a recorded response in
  * `__fixtures__/scan.json`; PLAN §1, WhaleHunterAlt `docs/FINDINGS.md`).
@@ -51,10 +53,20 @@ export type ScanWire = {
 }
 
 /** Query inputs. These are the knobs `/api/scan` takes, and they form the query key. */
-export type ScanParams = { min: number; hold: number; lev: number }
+export type ScanParams = {
+  min: number
+  hold: number
+  /** Round-trip cost in percent of notional (`/api/scan?cost=`). */
+  cost: number
+  lev: number
+}
 
-/** Same defaults as the WhaleHunterAlt page this was ported from. */
-export const DEFAULT_SCAN_PARAMS: ScanParams = { min: 1, hold: 72, lev: 2 }
+/**
+ * `min`, `hold`, `lev` as in the WhaleHunterAlt page this was ported from. `cost` is the
+ * Edition's `DEFAULT_BOOK` cost (0.30), not the server's own default (0.2), so live and
+ * sample nets are computed with the same round-trip cost.
+ */
+export const DEFAULT_SCAN_PARAMS: ScanParams = { min: 1, hold: 72, cost: DEFAULT_BOOK.cost, lev: 2 }
 
 /** The scanner polls the exchanges every 300 s. */
 export const SCANNER_POLL_SECONDS = 300
@@ -71,4 +83,9 @@ export type ScanResult = {
   ts: number | null
   /** The scanner's own error text, or why the sample is showing. */
   err: string | null
+  /**
+   * Consecutive fallback answers in a row (0 after a live one). Set by `useScan` and read
+   * by the refetch interval to back off while the scanner is off.
+   */
+  misses?: number
 }
