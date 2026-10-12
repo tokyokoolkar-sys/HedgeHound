@@ -182,7 +182,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 |---|---|---|---|
 | T00 | H | partial | RUNBOOK + servers verified; dev wrapper fix not committed (owner decision pending); lint has 1 pre-existing error; see notes/T00.md |
 | T00b | H | partial | PRODUCT.md done; Impeccable c63b8dd installed as markdown only (no scripts/hooks); teach/init needs interactive session; skill-listed check pending a fresh session; see notes/T00b.md |
-| T01 | H | todo | |
+| T01 | H | done | /api proxy to :8000; :8080/api/scan matches :8000 (notes/T01.md) |
 | T02 | H | todo | |
 | T03 | H | todo | |
 | T04 | H | todo | |
