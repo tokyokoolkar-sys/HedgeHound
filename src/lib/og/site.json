@@ -1,0 +1,6 @@
+{
+  "title": "HedgeHound",
+  "card": "custom",
+  "color": "ff6a1a",
+  "description": "A delta-neutral hound that sniffs funding-rate spreads between exchanges."
+}

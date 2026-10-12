@@ -1,0 +1,153 @@
+@import "@fontsource-variable/syne/wght.css";
+@import "@fontsource-variable/fraunces/wght.css";
+@import "@fontsource-variable/fraunces/wght-italic.css";
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #090705;
+  --color-surface: #16110c;
+  --color-fg: #f6f0e6;
+  --color-muted: #b3a498;
+  --color-faint: #7a6d60;
+  --color-line: #3a2e24;
+  --color-brand: #ff6a1a;
+  --color-ember: #ffb15a;
+  --color-scorch: #c2410c;
+  --color-clay: #e07a64;
+  --color-cream: #f3ead7;
+  --color-cream-2: #e6d9c4;
+  --color-ink: #1c140e;
+  --color-ink-soft: #5c4a3a;
+  --font-sans: "Syne Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces Variable", Palatino, "Palatino Linotype", serif;
+  --text-mega: clamp(2.7rem, 11vw, 8.5rem);
+  --text-mega--line-height: 0.84;
+  --text-mega--letter-spacing: -0.045em;
+  --text-huge: clamp(2.4rem, 6vw, 5.25rem);
+  --text-huge--line-height: 0.9;
+  --text-huge--letter-spacing: -0.04em;
+  --radius-card: 1.25rem;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html {
+    background: var(--color-bg);
+    color: var(--color-fg);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-fg);
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-brand);
+    color: var(--color-bg);
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 3px;
+  }
+}
+
+.night {
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(ellipse at 50% 18%, #4a1c0a 0%, transparent 52%),
+    radial-gradient(ellipse at 88% 80%, #2a1208 0%, transparent 42%),
+    radial-gradient(ellipse at 8% 70%, #1a0d08 0%, transparent 36%);
+}
+
+.paper {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  background-image:
+    radial-gradient(ellipse at 12% 0%, #fffaf2 0%, transparent 46%),
+    radial-gradient(ellipse at 100% 100%, #e4d0b0 0%, transparent 42%);
+}
+
+.dropcap::first-letter {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  float: left;
+  font-size: 3.3em;
+  line-height: 0.76;
+  padding: 0.04em 0.08em 0 0;
+  color: var(--color-scorch);
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 46s linear infinite;
+}
+
+.marquee-rev {
+  animation-direction: reverse;
+  animation-duration: 58s;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(6px, -12px, 0);
+  }
+  100% {
+    transform: translate3d(-5px, 8px, 0);
+  }
+}
+
+.float-chip {
+  animation: drift 9s ease-in-out infinite;
+}
+
+@keyframes scent {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
+
+.scroll-hint {
+  animation: scent 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .float-chip,
+  .scroll-hint {
+    animation: none;
+  }
+}

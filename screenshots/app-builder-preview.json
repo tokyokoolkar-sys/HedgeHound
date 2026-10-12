@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "HedgeHound",
+      "hasCanvas": false,
+      "bodyTextLen": 3884,
+      "bodyTextHash": "96287ca4d30effc33fd22403fe77cf92c05c3af2078ab4e6b85fc5b7bee9115c",
+      "bodyTextPrefix": "HedgeHound Story Sky Den SNIFF Phase 0 · paper only Hedge Hound ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "HedgeHound",
+      "hasCanvas": true,
+      "bodyTextLen": 3884,
+      "bodyTextHash": "814357b07ba050db7863b67d09192513efbe8b5646feebb4e6d296fdf83bd129",
+      "bodyTextPrefix": "HedgeHound Story Sky Den SNIFF Phase 0 · paper only Hedge Hound ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
