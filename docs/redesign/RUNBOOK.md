@@ -15,17 +15,13 @@ Two servers, one browser. Start the scanner first, then the app.
 - Stop with Ctrl+C in its terminal.
 
 ## App
-- Intended command: `npm run dev` (runs `scripts/with-app-env.mjs`, which merges `.grok/app-env.json`, i.e. `VITE_AUTH_ENABLED=false`).
-- **Current status: `npm run dev` fails on Windows** with `spawn vite ENOENT`. See `docs/redesign/notes/T00.md`. Until the owner approves a wrapper fix, run the same server directly (PowerShell):
-  ```powershell
-  cd E:\ataspace\BuiltwGrok\HedgeHound
-  $env:VITE_AUTH_ENABLED = "false"
-  node node_modules\vite\bin\vite.js dev --host 0.0.0.0 --port 8080 --strictPort
-  ```
-  Git Bash equivalent: `VITE_AUTH_ENABLED=false node node_modules/vite/bin/vite.js dev --host 0.0.0.0 --port 8080 --strictPort`
+- Command: `npm run dev`. It runs `scripts/with-app-env.mjs`, which merges `.grok/app-env.json` (`VITE_AUTH_ENABLED=false`) into the environment, then starts `node node_modules/vite/bin/vite.js dev --host 0.0.0.0 --port 8080 --strictPort`.
+- Windows: works since T00 (package.json runs vite through `node node_modules/vite/bin/vite.js`, so no shell is needed; wrapper file unchanged).
+- Check the env reached Vite: `curl http://localhost:8080/__app-env` returns `{"VITE_AUTH_ENABLED":"false",...}`.
 - Routes to check: `/`, `/universe`, `/den` (all 200).
-- `/api/scan` on `:8080` returns 404 until T01 adds the dev proxy to `vite.config.ts`. After T01 it must return the same JSON as `:8000`.
+- `/api/scan` on `:8080` is proxied to `:8000` (vite.config.ts, T01). It returns the same JSON as `:8000`.
 - Stop with Ctrl+C in its terminal.
+- `npm run build` and `npm run preview` now go through the same wrapper, but neither has been run since the change.
 
 ## LIVE vs SAMPLE
 - Today the UI shows only a static sample (`src/lib/scent.ts`). Nothing reads the scanner yet, so there is no LIVE view until T40. The labels are added in T13 (`SourceTag`).

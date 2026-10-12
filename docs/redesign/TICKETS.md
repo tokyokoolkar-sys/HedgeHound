@@ -180,7 +180,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 ## Status
 | ID | Owner | Status | Notes |
 |---|---|---|---|
-| T00 | H | partial | RUNBOOK + servers verified; dev wrapper fix not committed (owner decision pending); lint has 1 pre-existing error; see notes/T00.md |
+| T00 | H | done | npm run dev boots on Windows via package.json; RUNBOOK; wrapper unchanged (notes/T00.md) |
 | T00b | H | partial | PRODUCT.md done; Impeccable c63b8dd installed as markdown only (no scripts/hooks); teach/init needs interactive session; skill-listed check pending a fresh session; see notes/T00b.md |
 | T01 | H | done | /api proxy to :8000; :8080/api/scan matches :8000 (notes/T01.md) |
 | T02 | H | done | 12 packages added, typecheck ok, no peer errors (notes/T02.md) |
