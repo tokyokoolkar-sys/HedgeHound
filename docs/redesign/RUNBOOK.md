@@ -42,3 +42,13 @@ curl http://localhost:8080/api/scan   -> 404 until T01, then equal to :8000
 ## Checks
 - `npm run typecheck`
 - `npm run lint`
+
+## Impeccable (design skill + hook)
+- Skill: `.claude/skills/impeccable/` from `pbakaus/impeccable@c63b8dd7dd5a5f3c32eaabe1af76d0694f863ed2` (engine 0.1.14).
+- Engine binary: downloaded once by the launcher and SHA-256 verified, cached at `%USERPROFILE%\.impeccable\bin\0.1.14\impeccable.exe` (sha256 `38e09451694973ba664a24e67e1502a6913e6d0e533a0a5ae1e04c5963a804b1`). A fresh machine fetches it on first run.
+- Boot check: `.claude/skills/impeccable/scripts/impeccable context`
+- Hook: after every Edit/Write on a UI file it runs the detector and adds a short note. At Stop it runs a full deep pass. Quiet mode is on, so clean files say nothing.
+  - Status: `.claude/skills/impeccable/scripts/impeccable hooks status`
+  - Off/on: `… hooks off` / `… hooks on`
+  - Shared config: `.impeccable/config.json` (committed). Machine-local: `.claude/settings.local.json` (hook manifest) and `.impeccable/config.local.json`, both ignored.
+- Exceptions: record one only for something the owner approved, e.g. `… hooks ignore-value overused-font Inter --reason "user confirmed: vega preset"`. Never add one just to silence a real issue.
