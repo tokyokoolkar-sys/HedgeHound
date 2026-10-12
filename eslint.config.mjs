@@ -43,6 +43,13 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
+  // shadcn/magicui generated primitives export variants alongside components.
+  {
+    files: ["src/components/ui/**", "src/components/magicui/**"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
   // Disable rules that conflict with Prettier formatting.
   prettier,
 );
