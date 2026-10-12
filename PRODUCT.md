@@ -37,15 +37,18 @@ A delta-neutral funding-spread tool that shows its own workings: live local meas
 
 Phase 0 of the HedgeHound redesign (PLAN.md section 1 and 4.4). The site is a front end for the local scanner.
 
-- **Paper only.** No order placement, no exchange keys, no order code. Phase 0 never gets any. Trade decisions stay manual.
+- **Phase 0, paper only.** No order placement, no exchange keys, and no order code. None may be added in Phase 0. Trade decisions stay manual.
 - **Local scanner.** Python scanner at `http://127.0.0.1:8000` (`GET /api/scan`, 300 s polls). The app reaches it through the dev proxy at `/api` (`vite.config.ts`), so the browser never calls port 8000 directly.
-- **Data not yet available.** Per-venue hourly rates, 24 h volume and open interest, and history for trails (`/api/history`) need owner approval and a scanner change (PLAN section 1, T41). Until then those figures show SAMPLE or are hidden.
-- **Source labels.** Every on-screen number carries a source tag: **LIVE** (from `/api/scan`), **PAPER** (the local paper book, kept in the browser), or **SAMPLE** (static layout sample, or the fallback when the scanner is off). A number without a tag is a bug.
+- **Available live today:** net/gross APR, long/short venue, persistence, n24, hours since flip, status, stale flag, and the filtered lists (`meta.skipped_zero/young/thin`).
+- **Not yet available:** per-venue hourly rates, per-venue volume/OI, and 24 h history trails. These stay SAMPLE or hidden until the read-only `/api/history` endpoint and extra fields (ticket T41) are approved and built (PLAN section 1).
+- **Data honesty.** Every on-screen number is LIVE (from `/api/scan`), PAPER (the local paper book, kept in the browser) or SAMPLE (static layout sample, or the fallback when the scanner is off), and carries a visible tag saying which. A number without a tag is a bug.
 - **Works with the scanner off.** Scanner down means a clearly labelled SAMPLE state, not an error page.
-- **Rendering.** TanStack Start with server-rendered text (the mega title is the LCP element). One persistent WebGL canvas (`SkyStage`) mounted once in the root layout, with section 3D drawn through drei `View`. No `window`, `document`, three or GSAP at module top level.
+- **Terminology:** "scent" = an alerting spread; "embers" = coins filtered out on purpose; "the Den" = the paper desk; long leg / short leg = the two venues of one hedge.
+- **Rendering and constraints.** TanStack Start with server-rendered text (SSR; the mega title is the LCP element). One persistent WebGL canvas (`SkyStage`) mounted once in the root layout for all 3D, with section 3D drawn through drei `View`. No `window`, `document`, three or GSAP at module top level.
 - **Motion.** GSAP owns scroll-linked motion; `motion` owns micro-interactions. `prefers-reduced-motion: reduce` shows a static sky with no scrubbed motion and no boot sequence.
 - **Devices.** 390x844 phone width with no horizontal scroll. Quality tiers (high, mid, low) reduce 3D cost on weaker devices.
 - **Scope.** Local only. The demo gate is off by default and is not security.
+- **Open decision:** whether the scanner backend should ever serve the built front end.
 
 ## Brand Commitments
 
