@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type MutableRefObject } from "react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
+import { SourceTag } from "@/components/edition/source-tag";
 import { Tear } from "@/components/tear";
 import { WebglBoundary } from "@/components/webgl-boundary";
 import { palette } from "@/lib/palette";
@@ -199,6 +200,7 @@ export function HeroFilm() {
                 <span className="text-brand">{r.netApr.toFixed(1)}%</span>
               </Link>
             ))}
+            <SourceTag kind="sample" className="text-muted" />
           </div>
           <p className="scroll-hint mt-8 text-xs font-bold tracking-wide text-faint">Scroll the scent</p>
         </div>
@@ -248,6 +250,7 @@ export function HeroFilm() {
           <div className="para-mid md:col-span-5">
             <div className="rounded-card border border-ink/10 bg-cream-2/80 p-5 backdrop-blur-sm">
               <p className="font-serif text-xl italic text-ink">ARB, in this field sample</p>
+              <SourceTag kind="sample" className="mt-2 text-ink-soft" />
               <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <dt className="text-ink-soft">Lighter hour</dt>
@@ -344,6 +347,7 @@ export function HeroFilm() {
             >
               HUB
             </p>
+            <SourceTag kind="sample" className="absolute bottom-2 left-2 z-20 text-muted" />
             <div className="hub-chart pointer-events-none absolute inset-0 z-0 opacity-80">
               {charts ? (
                 <ResponsiveContainer width="100%" height="100%">
@@ -388,6 +392,9 @@ export function HeroFilm() {
             </div>
           </div>
         </div>
+        <p className="px-5 pb-2 text-center">
+          <SourceTag kind="sample" className="text-faint" />
+        </p>
         <Marquee items={TAPE} />
         <Marquee reverse items={[...TAPE].reverse()} />
         <p className="px-5 py-8 text-center text-xs leading-relaxed text-faint">
