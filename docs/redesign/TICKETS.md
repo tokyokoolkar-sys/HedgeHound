@@ -200,7 +200,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T10–T15 | O | todo | |
 | T20–T27 | S | todo | |
 | T30–T35 | S/H | todo | |
-| T40 | S | todo | |
+| T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |
 | T41 | S | blocked: owner OK | |
 | T50–T51 | H | todo | |
 | T52 | O | todo | |

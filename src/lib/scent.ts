@@ -1,4 +1,13 @@
-/** Field sample shaped like the local scanner. Not a live poll. */
+/**
+ * Field sample shaped like the local scanner. Not a live poll.
+ *
+ * Split (T40):
+ *  - LAYOUT: sector, 3D position and blurb per coin, plus LINKS (art direction).
+ *  - SAMPLE: static figures. `allRows()`, `boardRows()`, `trailFor()`, `CLOSED`, `REBALANCE`
+ *    and `OPEN_SEED` are all derived from or part of the sample and are SAMPLE data.
+ *    `trailFor()` synthesizes its points from a seeded RNG; it never reads a measurement.
+ *  - Live data lives in `src/lib/scan`.
+ */
 
 export const HOURS_YEAR = 8760
 export const MIN_VOL = 250_000
@@ -47,6 +56,11 @@ export type Star = {
   blurb: string
 }
 
+/** Layout half of a Star: art direction only. */
+export type Layout = Pick<Star, "sector" | "pos" | "blurb">
+/** Figures half of a Star: static sample numbers. */
+export type SampleFigures = Omit<Star, keyof Layout>
+
 export const SECTORS: Record<Sector, { name: string; line: string }> = {
   canis: {
     name: "Canis",
@@ -66,31 +80,84 @@ export const SECTORS: Record<Sector, { name: string; line: string }> = {
   },
 }
 
-export const STARS: Star[] = [
-  { symbol: "SOL", sector: "canis", lighterHr: 0.00007, binanceHr: 0.000026, status: "building history", n24: 110, hoursSinceFlip: 9.2, windowH: 8.4, calm: 0.9, volL: 42e6, volB: 180e6, oiL: 8e6, oiB: 22e6, stale: false, pos: [0.55, 1.28, 0.2], blurb: "Ear of the hound. The sample is still short of a day." },
-  { symbol: "ETH", sector: "canis", lighterHr: 0.000041, binanceHr: 0.00001, status: "building history", n24: 86, hoursSinceFlip: 6.4, windowH: 6.8, calm: 0.92, volL: 80e6, volB: 900e6, oiL: 20e6, oiB: 80e6, stale: false, pos: [0.95, 0.68, 0.05], blurb: "Crown. A modest gap, and the tape is still filling in." },
-  { symbol: "BTC", sector: "canis", lighterHr: 0.00001, binanceHr: 0.000028, status: "building history", n24: 48, hoursSinceFlip: 4.1, windowH: 3.6, calm: 0.94, volL: 120e6, volB: 2.4e9, oiL: 40e6, oiB: 200e6, stale: false, pos: [1.95, 0.32, 0.12], blurb: "The nose. Deepest book, smallest argument between the hours." },
-  { symbol: "BNB", sector: "canis", lighterHr: 0.00002, binanceHr: 0.000008, status: "building history", n24: 22, hoursSinceFlip: 2.2, windowH: 1.6, calm: 0.88, volL: 6e6, volB: 40e6, oiL: 2e6, oiB: 9e6, stale: false, pos: [0.72, 0.02, -0.06], blurb: "Throat. Too few polls to trust the average." },
-  { symbol: "AVAX", sector: "canis", lighterHr: 0.000062, binanceHr: 0.000012, status: "ok", n24: 168, hoursSinceFlip: 15.5, windowH: 22.4, calm: 0.93, volL: 4e6, volB: 28e6, oiL: 1.2e6, oiB: 6e6, stale: false, pos: [-0.15, -0.28, 0.1], blurb: "Shoulder. Real pair, small gap." },
-  { symbol: "LINK", sector: "canis", lighterHr: 0.000021, binanceHr: 0.000065, status: "ok", n24: 172, hoursSinceFlip: 20.1, windowH: 23.2, calm: 0.91, volL: 5e6, volB: 36e6, oiL: 1.5e6, oiB: 8e6, stale: false, pos: [-1.05, 0.18, 0], blurb: "Haunch. Binance is the richer hour." },
-  { symbol: "DOGE", sector: "canis", lighterHr: 0.000055, binanceHr: 0.000015, status: "ok", n24: 180, hoursSinceFlip: 11.4, windowH: 23.6, calm: 0.9, volL: 9e6, volB: 70e6, oiL: 2e6, oiB: 12e6, stale: false, pos: [-1.95, 0.82, 0.22], blurb: "Tail. Familiar coin, thin spread after the ticket." },
-  { symbol: "TIA", sector: "hedge", lighterHr: 0.00007, binanceHr: 0.000016, status: "ok", n24: 166, hoursSinceFlip: 13.2, windowH: 22.8, calm: 0.9, volL: 3e6, volB: 18e6, oiL: 0.8e6, oiB: 4e6, stale: false, pos: [-2.15, 1.2, -0.35], blurb: "Lighter's hour is richer. Close to the bar, not over it at 72h." },
-  { symbol: "ARB", sector: "hedge", lighterHr: 0.000098, binanceHr: 0.000016, status: "ok", n24: 188, hoursSinceFlip: 28.4, windowH: 23.8, calm: 0.98, volL: 8e6, volB: 42e6, oiL: 2.4e6, oiB: 11e6, stale: false, pos: [-3.05, 1.32, -1.05], blurb: "The loudest clean scent in this sample." },
-  { symbol: "NEAR", sector: "hedge", lighterHr: 0.000068, binanceHr: 0.00002, status: "ok", n24: 160, hoursSinceFlip: 10.6, windowH: 22.1, calm: 0.88, volL: 2.2e6, volB: 14e6, oiL: 0.6e6, oiB: 3e6, stale: false, pos: [-4.2, 0.82, -1.55], blurb: "Same direction as ARB, a smaller gap." },
-  { symbol: "OP", sector: "hedge", lighterHr: 0.000066, binanceHr: 0.000016, status: "ok", n24: 174, hoursSinceFlip: 17.8, windowH: 23.1, calm: 0.92, volL: 3.4e6, volB: 16e6, oiL: 0.9e6, oiB: 4.4e6, stale: false, pos: [-3.65, 0.12, -1.15], blurb: "Sign is steady. The round trip still eats the edge at a long hold." },
-  { symbol: "SEI", sector: "hedge", lighterHr: 0.00002, binanceHr: 0.000082, status: "ok", n24: 170, hoursSinceFlip: 14.2, windowH: 22.6, calm: 0.97, volL: 2.8e6, volB: 15e6, oiL: 0.7e6, oiB: 3.6e6, stale: false, pos: [-4.35, -0.55, -1.65], blurb: "Binance is the rich hour. The short belongs there if the net clears." },
-  { symbol: "SUI", sector: "hedge", lighterHr: 0.000018, binanceHr: 0.000092, status: "ok", n24: 192, hoursSinceFlip: 21.6, windowH: 23.9, calm: 0.98, volL: 7e6, volB: 38e6, oiL: 1.8e6, oiB: 9e6, stale: false, pos: [-3.1, -0.88, -0.65], blurb: "Flipped the other way from ARB. Lighter is the cheap hour." },
-  { symbol: "INJ", sector: "hedge", lighterHr: 0.000019, binanceHr: 0.000073, status: "ok", n24: 158, hoursSinceFlip: 8.8, windowH: 21.4, calm: 0.86, volL: 1.6e6, volB: 11e6, oiL: 0.4e6, oiB: 2.2e6, stale: false, pos: [-2.65, -1.55, -1.05], blurb: "Under the house bar unless you shorten the hold or the cost." },
-  { symbol: "APT", sector: "hedge", lighterHr: 0.000064, binanceHr: 0.000014, status: "ok", n24: 164, hoursSinceFlip: 12.4, windowH: 22.2, calm: 0.9, volL: 2e6, volB: 12e6, oiL: 0.5e6, oiB: 2.8e6, stale: false, pos: [-2.25, -0.28, -0.25], blurb: "Visible gap. Not payable at the default 72 hour hold." },
-  { symbol: "FLOKI", sector: "kennel", lighterHr: 0.00005, binanceHr: 0.000017, status: "ok", n24: 150, hoursSinceFlip: 6.2, windowH: 20.4, calm: 0.8, volL: 1.1e6, volB: 8e6, oiL: 0.2e6, oiB: 1.4e6, stale: false, pos: [3.05, 2.15, 1.25], blurb: "Kennel dust. The sign wanders." },
-  { symbol: "BONK", sector: "kennel", lighterHr: 0.000078, binanceHr: 0.00003, status: "ok", n24: 155, hoursSinceFlip: 5.4, windowH: 20.8, calm: 0.62, volL: 1.4e6, volB: 9e6, oiL: 0.25e6, oiB: 1.6e6, stale: false, pos: [3.55, 1.5, 1.45], blurb: "Big print, shaky persistence. Not a scent until it sits still." },
-  { symbol: "WIF", sector: "kennel", lighterHr: 0.00009, binanceHr: 0.000022, status: "ok", n24: 176, hoursSinceFlip: 16.8, windowH: 23.4, calm: 0.97, volL: 3e6, volB: 20e6, oiL: 0.7e6, oiB: 4e6, stale: false, pos: [2.65, 1.42, 0.85], blurb: "The kennel name that actually sat still." },
-  { symbol: "1000PEPE", sector: "kennel", lighterHr: 0.00012, binanceHr: 0.000025, status: "ok", n24: 184, hoursSinceFlip: 1.4, windowH: 23.5, calm: 0.42, volL: 6e6, volB: 40e6, oiL: 1.1e6, oiB: 7e6, stale: false, pos: [3.35, 0.78, 1.15], blurb: "The widest gap and the worst manners. It flipped within the hour." },
-  { symbol: "1000SHIB", sector: "kennel", lighterHr: 0.00006, binanceHr: 0.000018, status: "ok", n24: 162, hoursSinceFlip: 7.6, windowH: 21.8, calm: 0.84, volL: 1.8e6, volB: 12e6, oiL: 0.4e6, oiB: 2.4e6, stale: false, pos: [2.4, 0.62, 0.65], blurb: "Mapped with the 1000 prefix, same coin on both venues." },
-  { symbol: "BOT", sector: "embers", lighterHr: 0.00042, binanceHr: 0, status: "filtered", filterReason: "Binance printed an exact-zero funding rate. That is no signal — it used to fake four-digit APRs.", n24: 0, hoursSinceFlip: 0, windowH: 0, calm: 1, volL: 0.2e6, volB: 1e6, oiL: 40_000, oiB: 80_000, stale: false, pos: [-0.35, -2.25, -3.2], blurb: "Cold on purpose." },
-  { symbol: "H100", sector: "embers", lighterHr: 0.0002, binanceHr: 0.00004, status: "filtered", filterReason: "Less than 30 days since Binance onboarded it. The risk rule skips new listings.", n24: 0, hoursSinceFlip: 0, windowH: 0, calm: 1, volL: 0.8e6, volB: 2e6, oiL: 0.2e6, oiB: 0.4e6, stale: false, pos: [-1.7, -2.65, -2.7], blurb: "Too young to hedge." },
-  { symbol: "DUST", sector: "embers", lighterHr: 0.00015, binanceHr: 0.00001, status: "filtered", filterReason: "Both legs must clear $250k of 24h volume and $50k of open interest. This one does not.", n24: 0, hoursSinceFlip: 0, windowH: 0, calm: 1, volL: 40_000, volB: 90_000, oiL: 8_000, oiB: 20_000, stale: false, pos: [1.45, -2.5, -3.5], blurb: "Thin book. A hedge you cannot get out of is not a hedge." },
+/**
+ * Why a coin is a cold ember, by scanner list (`meta.skipped_*`). One string per list,
+ * shared by the SAMPLE embers below and by `lib/scan/adapter.ts` for live embers.
+ */
+export type EmberList = "zero" | "young" | "thin"
+export const EMBER_REASONS: Record<EmberList, string> = {
+  zero: "Binance printed an exact-zero funding rate. That is no signal — it used to fake four-digit APRs.",
+  young: "Less than 30 days since Binance onboarded it. The risk rule skips new listings.",
+  thin: "Both legs must clear $250k of 24h volume and $50k of open interest. This one does not.",
+}
+
+/**
+ * LAYOUT MAP: where each coin sits in the sky and what it says. Art direction, not data.
+ * Nothing here is a measurement. Live figures come from `lib/scan` (LIVE); everything in
+ * `SAMPLE` below is a static field sample and must be shown with a SAMPLE tag.
+ */
+export const LAYOUT: Record<string, Layout> = {
+  SOL: { sector: "canis", pos: [0.55, 1.28, 0.2], blurb: "Ear of the hound. The sample is still short of a day." },
+  ETH: { sector: "canis", pos: [0.95, 0.68, 0.05], blurb: "Crown. A modest gap, and the tape is still filling in." },
+  BTC: { sector: "canis", pos: [1.95, 0.32, 0.12], blurb: "The nose. Deepest book, smallest argument between the hours." },
+  BNB: { sector: "canis", pos: [0.72, 0.02, -0.06], blurb: "Throat. Too few polls to trust the average." },
+  AVAX: { sector: "canis", pos: [-0.15, -0.28, 0.1], blurb: "Shoulder. Real pair, small gap." },
+  LINK: { sector: "canis", pos: [-1.05, 0.18, 0], blurb: "Haunch. Binance is the richer hour." },
+  DOGE: { sector: "canis", pos: [-1.95, 0.82, 0.22], blurb: "Tail. Familiar coin, thin spread after the ticket." },
+  TIA: { sector: "hedge", pos: [-2.15, 1.2, -0.35], blurb: "Lighter's hour is richer. Close to the bar, not over it at 72h." },
+  ARB: { sector: "hedge", pos: [-3.05, 1.32, -1.05], blurb: "The loudest clean scent in this sample." },
+  NEAR: { sector: "hedge", pos: [-4.2, 0.82, -1.55], blurb: "Same direction as ARB, a smaller gap." },
+  OP: { sector: "hedge", pos: [-3.65, 0.12, -1.15], blurb: "Sign is steady. The round trip still eats the edge at a long hold." },
+  SEI: { sector: "hedge", pos: [-4.35, -0.55, -1.65], blurb: "Binance is the rich hour. The short belongs there if the net clears." },
+  SUI: { sector: "hedge", pos: [-3.1, -0.88, -0.65], blurb: "Flipped the other way from ARB. Lighter is the cheap hour." },
+  INJ: { sector: "hedge", pos: [-2.65, -1.55, -1.05], blurb: "Under the house bar unless you shorten the hold or the cost." },
+  APT: { sector: "hedge", pos: [-2.25, -0.28, -0.25], blurb: "Visible gap. Not payable at the default 72 hour hold." },
+  FLOKI: { sector: "kennel", pos: [3.05, 2.15, 1.25], blurb: "Kennel dust. The sign wanders." },
+  BONK: { sector: "kennel", pos: [3.55, 1.5, 1.45], blurb: "Big print, shaky persistence. Not a scent until it sits still." },
+  WIF: { sector: "kennel", pos: [2.65, 1.42, 0.85], blurb: "The kennel name that actually sat still." },
+  "1000PEPE": { sector: "kennel", pos: [3.35, 0.78, 1.15], blurb: "The widest gap and the worst manners. It flipped within the hour." },
+  "1000SHIB": { sector: "kennel", pos: [2.4, 0.62, 0.65], blurb: "Mapped with the 1000 prefix, same coin on both venues." },
+  BOT: { sector: "embers", pos: [-0.35, -2.25, -3.2], blurb: "Cold on purpose." },
+  H100: { sector: "embers", pos: [-1.7, -2.65, -2.7], blurb: "Too young to hedge." },
+  DUST: { sector: "embers", pos: [1.45, -2.5, -3.5], blurb: "Thin book. A hedge you cannot get out of is not a hedge." },
+}
+
+/**
+ * SAMPLE rows: a static field sample, shaped like the scanner but NOT a poll.
+ * Every figure here (hourly rates, volume, open interest, n24, flip hours) is SAMPLE.
+ */
+export const SAMPLE: SampleFigures[] = [
+  { symbol: "SOL", lighterHr: 0.00007, binanceHr: 0.000026, status: "building history", n24: 110, hoursSinceFlip: 9.2, windowH: 8.4, calm: 0.9, volL: 42e6, volB: 180e6, oiL: 8e6, oiB: 22e6, stale: false },
+  { symbol: "ETH", lighterHr: 0.000041, binanceHr: 0.00001, status: "building history", n24: 86, hoursSinceFlip: 6.4, windowH: 6.8, calm: 0.92, volL: 80e6, volB: 900e6, oiL: 20e6, oiB: 80e6, stale: false },
+  { symbol: "BTC", lighterHr: 0.00001, binanceHr: 0.000028, status: "building history", n24: 48, hoursSinceFlip: 4.1, windowH: 3.6, calm: 0.94, volL: 120e6, volB: 2.4e9, oiL: 40e6, oiB: 200e6, stale: false },
+  { symbol: "BNB", lighterHr: 0.00002, binanceHr: 0.000008, status: "building history", n24: 22, hoursSinceFlip: 2.2, windowH: 1.6, calm: 0.88, volL: 6e6, volB: 40e6, oiL: 2e6, oiB: 9e6, stale: false },
+  { symbol: "AVAX", lighterHr: 0.000062, binanceHr: 0.000012, status: "ok", n24: 168, hoursSinceFlip: 15.5, windowH: 22.4, calm: 0.93, volL: 4e6, volB: 28e6, oiL: 1.2e6, oiB: 6e6, stale: false },
+  { symbol: "LINK", lighterHr: 0.000021, binanceHr: 0.000065, status: "ok", n24: 172, hoursSinceFlip: 20.1, windowH: 23.2, calm: 0.91, volL: 5e6, volB: 36e6, oiL: 1.5e6, oiB: 8e6, stale: false },
+  { symbol: "DOGE", lighterHr: 0.000055, binanceHr: 0.000015, status: "ok", n24: 180, hoursSinceFlip: 11.4, windowH: 23.6, calm: 0.9, volL: 9e6, volB: 70e6, oiL: 2e6, oiB: 12e6, stale: false },
+  { symbol: "TIA", lighterHr: 0.00007, binanceHr: 0.000016, status: "ok", n24: 166, hoursSinceFlip: 13.2, windowH: 22.8, calm: 0.9, volL: 3e6, volB: 18e6, oiL: 0.8e6, oiB: 4e6, stale: false },
+  { symbol: "ARB", lighterHr: 0.000098, binanceHr: 0.000016, status: "ok", n24: 188, hoursSinceFlip: 28.4, windowH: 23.8, calm: 0.98, volL: 8e6, volB: 42e6, oiL: 2.4e6, oiB: 11e6, stale: false },
+  { symbol: "NEAR", lighterHr: 0.000068, binanceHr: 0.00002, status: "ok", n24: 160, hoursSinceFlip: 10.6, windowH: 22.1, calm: 0.88, volL: 2.2e6, volB: 14e6, oiL: 0.6e6, oiB: 3e6, stale: false },
+  { symbol: "OP", lighterHr: 0.000066, binanceHr: 0.000016, status: "ok", n24: 174, hoursSinceFlip: 17.8, windowH: 23.1, calm: 0.92, volL: 3.4e6, volB: 16e6, oiL: 0.9e6, oiB: 4.4e6, stale: false },
+  { symbol: "SEI", lighterHr: 0.00002, binanceHr: 0.000082, status: "ok", n24: 170, hoursSinceFlip: 14.2, windowH: 22.6, calm: 0.97, volL: 2.8e6, volB: 15e6, oiL: 0.7e6, oiB: 3.6e6, stale: false },
+  { symbol: "SUI", lighterHr: 0.000018, binanceHr: 0.000092, status: "ok", n24: 192, hoursSinceFlip: 21.6, windowH: 23.9, calm: 0.98, volL: 7e6, volB: 38e6, oiL: 1.8e6, oiB: 9e6, stale: false },
+  { symbol: "INJ", lighterHr: 0.000019, binanceHr: 0.000073, status: "ok", n24: 158, hoursSinceFlip: 8.8, windowH: 21.4, calm: 0.86, volL: 1.6e6, volB: 11e6, oiL: 0.4e6, oiB: 2.2e6, stale: false },
+  { symbol: "APT", lighterHr: 0.000064, binanceHr: 0.000014, status: "ok", n24: 164, hoursSinceFlip: 12.4, windowH: 22.2, calm: 0.9, volL: 2e6, volB: 12e6, oiL: 0.5e6, oiB: 2.8e6, stale: false },
+  { symbol: "FLOKI", lighterHr: 0.00005, binanceHr: 0.000017, status: "ok", n24: 150, hoursSinceFlip: 6.2, windowH: 20.4, calm: 0.8, volL: 1.1e6, volB: 8e6, oiL: 0.2e6, oiB: 1.4e6, stale: false },
+  { symbol: "BONK", lighterHr: 0.000078, binanceHr: 0.00003, status: "ok", n24: 155, hoursSinceFlip: 5.4, windowH: 20.8, calm: 0.62, volL: 1.4e6, volB: 9e6, oiL: 0.25e6, oiB: 1.6e6, stale: false },
+  { symbol: "WIF", lighterHr: 0.00009, binanceHr: 0.000022, status: "ok", n24: 176, hoursSinceFlip: 16.8, windowH: 23.4, calm: 0.97, volL: 3e6, volB: 20e6, oiL: 0.7e6, oiB: 4e6, stale: false },
+  { symbol: "1000PEPE", lighterHr: 0.00012, binanceHr: 0.000025, status: "ok", n24: 184, hoursSinceFlip: 1.4, windowH: 23.5, calm: 0.42, volL: 6e6, volB: 40e6, oiL: 1.1e6, oiB: 7e6, stale: false },
+  { symbol: "1000SHIB", lighterHr: 0.00006, binanceHr: 0.000018, status: "ok", n24: 162, hoursSinceFlip: 7.6, windowH: 21.8, calm: 0.84, volL: 1.8e6, volB: 12e6, oiL: 0.4e6, oiB: 2.4e6, stale: false },
+  { symbol: "BOT", lighterHr: 0.00042, binanceHr: 0, status: "filtered", filterReason: EMBER_REASONS.zero, n24: 0, hoursSinceFlip: 0, windowH: 0, calm: 1, volL: 0.2e6, volB: 1e6, oiL: 40_000, oiB: 80_000, stale: false },
+  { symbol: "H100", lighterHr: 0.0002, binanceHr: 0.00004, status: "filtered", filterReason: EMBER_REASONS.young, n24: 0, hoursSinceFlip: 0, windowH: 0, calm: 1, volL: 0.8e6, volB: 2e6, oiL: 0.2e6, oiB: 0.4e6, stale: false },
+  { symbol: "DUST", lighterHr: 0.00015, binanceHr: 0.00001, status: "filtered", filterReason: EMBER_REASONS.thin, n24: 0, hoursSinceFlip: 0, windowH: 0, calm: 1, volL: 40_000, volB: 90_000, oiL: 8_000, oiB: 20_000, stale: false },
 ]
+
+/** SAMPLE figures merged with their layout, in one record per coin. Still SAMPLE data. */
+export const STARS: Star[] = SAMPLE.map((figures) => {
+  const layout = LAYOUT[figures.symbol]
+  if (!layout) throw new Error(`No layout for sample symbol ${figures.symbol}`)
+  return { ...figures, ...layout }
+})
 
 export const LINKS: Array<[string, string]> = [
   ["SOL", "ETH"],
@@ -346,6 +413,7 @@ export type ClosedTrade = {
   adverse: number
 }
 
+/** SAMPLE: fabricated closed trades. Not the owner's paper book. */
 export const CLOSED: ClosedTrade[] = [
   { symbol: "WIF", hours: 54, long: "Binance", short: "Lighter", funding: 0.074, expected: 0.11, pricePnl: 0.012, variable: 0.06, exit: "Net fell under half the entry", adverse: 4.2 },
   { symbol: "OP", hours: 41, long: "Binance", short: "Lighter", funding: 0.041, expected: 0.07, pricePnl: -0.018, variable: 0.06, exit: "Sign flipped and held 3 hours", adverse: 9.1 },
@@ -355,10 +423,12 @@ export const CLOSED: ClosedTrade[] = [
   { symbol: "NEAR", hours: 28, long: "Binance", short: "Lighter", funding: 0.031, expected: 0.06, pricePnl: -0.009, variable: 0.06, exit: "Sign flipped and held 3 hours", adverse: 8.4 },
 ]
 
+/** SAMPLE: fabricated rebalance log. */
 export const REBALANCE = [
   { when: "12 Oct · 02:10", amount: 8, cost: 1, reason: "Top up the short leg" },
 ]
 
+/** SAMPLE: fabricated open positions. */
 export const OPEN_SEED = [
   {
     symbol: "ARB",

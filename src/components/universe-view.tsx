@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Line, LineChart, ResponsiveContainer } from "recharts";
+import { SourceTag } from "@/components/edition/source-tag";
 import { WebglBoundary } from "@/components/webgl-boundary";
 import { cn } from "@/lib/cn";
 import { palette } from "@/lib/palette";
@@ -39,6 +40,7 @@ function Dossier({
         <div>
           <p className="text-xs font-bold tracking-wide text-ember">{SECTORS[row.sector].name}</p>
           <h2 className="font-sans text-3xl font-extrabold tracking-tight">{row.symbol}</h2>
+          <SourceTag kind="sample" className="mt-1 text-muted" />
         </div>
         <button type="button" className={btnGhost} onClick={onClose}>
           Pull back

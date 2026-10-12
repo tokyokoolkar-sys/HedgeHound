@@ -1,4 +1,6 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { useState } from "react";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { SiteNav } from "@/components/nav";
@@ -24,19 +26,27 @@ export const Route = createRootRoute({
       { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
     ],
   }),
-  component: () => (
+  component: RootDocument,
+});
+
+function RootDocument() {
+  // One client per document: created in state so SSR requests never share cache.
+  const [queryClient] = useState(() => new QueryClient());
+  return (
     <html lang="en" className="bg-bg text-fg" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body className="bg-bg font-sans text-fg antialiased">
         <PreviewHostBridge />
-        <AuthProvider>
-          <SiteNav />
-          <Outlet />
-        </AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <SiteNav />
+            <Outlet />
+          </AuthProvider>
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>
-  ),
-});
+  );
+}

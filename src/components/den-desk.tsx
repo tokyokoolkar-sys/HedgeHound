@@ -10,6 +10,7 @@ import {
   Tooltip,
   XAxis,
 } from "recharts";
+import { SourceTag } from "@/components/edition/source-tag";
 import { palette } from "@/lib/palette";
 import { runMonte, type MonteIn, type MonteOut } from "@/lib/monte";
 import {
@@ -225,7 +226,8 @@ export function DenDesk() {
           <span className="block text-brand">brought back</span>
         </h1>
         <p className="max-w-sm font-serif text-xl italic text-ember">
-          A paper desk for a {money(CAPITAL, 0)} research budget. The numbers follow the scanner. They are not a live poll.
+          A paper desk for a {money(CAPITAL, 0)} research budget. The numbers follow the scanner. They are not a live poll.{" "}
+          <SourceTag kind="sample" className="align-middle text-muted" />
         </p>
       </div>
 
@@ -236,7 +238,9 @@ export function DenDesk() {
           <p className="mt-2 text-sm text-muted">Funding settles on the hour, not on every 5-minute poll.</p>
         </article>
         <article className="rounded-card border border-line bg-surface/80 p-4 backdrop-blur-md">
-          <p className="text-sm text-muted">Room before the kill switch</p>
+          <p className="flex flex-wrap items-center gap-2 text-sm text-muted">
+            Room before the kill switch <SourceTag kind="sample" />
+          </p>
           <p className="mt-1 font-sans text-4xl font-extrabold">{money(KILL_LOSS - used)}</p>
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-bg">
             <div className="h-full bg-brand" style={{ width: `${killPct}%` }} />
@@ -246,7 +250,9 @@ export function DenDesk() {
           </p>
         </article>
         <article className="rounded-card border border-line bg-surface/80 p-4 backdrop-blur-md">
-          <p className="text-sm text-muted">Scents at this bar</p>
+          <p className="flex flex-wrap items-center gap-2 text-sm text-muted">
+            Scents at this bar <SourceTag kind="sample" />
+          </p>
           <p className="mt-1 font-sans text-4xl font-extrabold text-brand">{alerts.length}</p>
           <p className="mt-2 text-sm text-muted">
             Net at least {book.minNet}%, persistence at least half, status ok. Drag right now is {drag.toFixed(1)} APR points.
@@ -268,7 +274,9 @@ export function DenDesk() {
         <article className="mt-6 rounded-card border border-brand/50 bg-surface/80 p-5 backdrop-blur-md md:p-7">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-bold text-ember">Loudest clean scent</p>
+              <p className="flex flex-wrap items-center gap-2 text-sm font-bold text-ember">
+                Loudest clean scent <SourceTag kind="sample" />
+              </p>
               <h2 className="mt-1 font-sans text-huge font-extrabold">{featured.symbol}</h2>
               <p className="mt-2 max-w-xl font-serif text-2xl italic text-ember">
                 Long {featured.long}, short {featured.short}.
@@ -295,13 +303,16 @@ export function DenDesk() {
       {trap && !trap.alert ? (
         <p className="mt-3 rounded-card border border-clay/40 bg-bg/50 p-4 text-sm leading-relaxed text-clay">
           {trap.symbol} prints {trap.grossApr.toFixed(1)}% gross and still is not a scent. Persistence is{" "}
-          {Math.round(trap.persistence * 100)}%. A spike is how the scanner used to lie.
+          {Math.round(trap.persistence * 100)}%. A spike is how the scanner used to lie.{" "}
+          <SourceTag kind="sample" />
         </p>
       ) : null}
 
       <section className="mt-8 grid gap-4 lg:grid-cols-5">
         <div className="rounded-card border border-line bg-surface/70 p-4 lg:col-span-3">
-          <h2 className="font-sans text-2xl font-extrabold">The board</h2>
+          <h2 className="flex flex-wrap items-center gap-3 font-sans text-2xl font-extrabold">
+            The board <SourceTag kind="sample" />
+          </h2>
           <p className="mt-1 text-sm text-muted">
             Same cuts as the local scanner. Ok rows under the net bar step out. Names still building a day of tape stay, snapshot only.
           </p>
@@ -385,13 +396,14 @@ export function DenDesk() {
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="font-sans text-huge font-extrabold">Paper book</h2>
+            <h2 className="font-sans text-huge font-extrabold">Sample paper book</h2>
+            <SourceTag kind="sample" className="mt-2 text-muted" />
             <p className="mt-2 max-w-xl text-sm text-muted">
               Two open hedges and six closed ones. Notional {money(20, 0)} a leg. Entry already paid about 0.15%. The other 0.15% waits for the exit. Fixed transfer costs live in their own pile.
             </p>
           </div>
           <button type="button" className={btnGhost} onClick={() => exportCsv(opens)}>
-            Export CSV
+            Export sample CSV
           </button>
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -477,6 +489,7 @@ export function DenDesk() {
 
       <section className="mt-12 rounded-card border border-line bg-surface/60 p-4 md:p-6">
         <h2 className="font-sans text-huge font-extrabold">A year of what-ifs</h2>
+        <SourceTag kind="sample" className="mt-2 text-muted" />
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
           Four thousand made-up years, the same machine as the funding playbook. Change a slider and the odds move. It is not a forecast. Phase 0 exists to replace these guesses with the tape.
         </p>
