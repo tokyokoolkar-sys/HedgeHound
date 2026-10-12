@@ -208,7 +208,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T10–T15 | O | todo | |
 | T20–T27 | S | todo | |
 | T30–T35 | S/H | todo | |
-| T40b | S | todo | owner-approved cleanup after T40 |
+| T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |
 | T41 | S | blocked: owner OK | |
 | T50–T51 | H | todo | |
