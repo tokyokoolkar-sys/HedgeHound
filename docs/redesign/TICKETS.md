@@ -180,7 +180,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 ## Status
 | ID | Owner | Status | Notes |
 |---|---|---|---|
-| T00 | H | todo | |
+| T00 | H | blocked | `npm run dev`: with-app-env.mjs spawn vite ENOENT on Windows; see notes/T00.md |
 | T00b | H | todo | |
 | T01 | H | todo | |
 | T02 | H | todo | |
