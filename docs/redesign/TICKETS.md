@@ -88,9 +88,9 @@ npm i @fontsource-variable/bricolage-grotesque @fontsource-variable/jetbrains-mo
 ## P2 — Foundation [O] (Opus builds; nobody else edits these files)
 - **T10** tokens + type scale + `.parchment`, `.glass`, `.hud` utilities in `styles.css`; `lib/palette.ts` mirror; map shadcn/magicui CSS vars to tokens. → Impeccable critique on `/_kitchen`.
 - **T11** `lib/motion/*`: client-only GSAP registration (ScrollTrigger, SplitText, ScrambleText, DrawSVG), `SmoothScroll` provider, `useReducedMotion`, quality tier detection → store.
-- **T12** `components/stage/*` + `lib/stage/*`: store, waypoints for all 10 chapters + sky/den modes, SkyStage, Starfield (instanced, `uScanY` flare), Constellation (from adapter), Nebula (per S2), CameraRig, ScanSweep, Effects, Dust.
-- **T13** `components/edition/*` primitives (Chapter, Plate, Sheet, TornEdge, MegaTitle, SwashHeading, ChapterIndex, Hud, SourceTag, GlassPanel, FeatureTable, ScanLine); `content/edition.ts`; **stub files for all 10 chapters** (title + swash only) wired into `routes/index.tsx`; new `nav/site-nav.tsx` shell.
-- **T14** Overture + BootSequence + hound-mark (S4) + glass Edition card.
+- **T12** `components/stage/*` + `lib/stage/*`: store, waypoints for all 10 chapters + sky/den modes, SkyStage, Starfield (instanced, `uScanY` flare), Constellation (from adapter), Nebula (S2: custom fbm quad + `.sky-floor` CSS fallback; write uniforms through the material ref), CameraRig, ScanSweep, Effects, Dust.
+- **T13** `components/edition/*` primitives (Chapter, Plate, Sheet, TornEdge, MegaTitle, SwashHeading, ChapterIndex, Hud, SourceTag, GlassPanel (S3 two-layer + Addendum normal-map rim), FeatureTable, ScanLine); `content/edition.ts`; **stub files for all 10 chapters** (title + swash only) wired into `routes/index.tsx`; new `nav/site-nav.tsx` shell.
+- **T14** Overture + BootSequence + hound-mark (S4 option b: LiquidMetal shader as a material inside SkyStage via a View, no own canvas; add `@paper-design/shaders` as a direct dependency; pre-bake the image processing; static poster on low tier / reduced motion) + glass Edition card.
 - **T15** Sniff chapter + `objects/radar.tsx` = **reference implementation**. → Impeccable full critique; fold the fixes into the primitives; tag `foundation-v1`.
 
 ---

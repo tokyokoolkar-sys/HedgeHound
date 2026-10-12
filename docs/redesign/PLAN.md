@@ -109,7 +109,7 @@ All fonts load through `@fontsource*` packages (local-first, no Google CDN at ru
 5. **Reticle cursor** (desktop, optional): a 24px crosshair ring follows the pointer with spring lag and snaps onto stars on hover.
 
 ### 2.6 What makes it feel like *space* (depth stack, back → front)
-1. Nebula wash: a ShaderGradient or custom fbm shader, very low contrast, slow drift.
+1. Nebula wash: a custom fbm shader on a full-screen quad inside SkyStage (S2), very low contrast, slow drift. A CSS gradient floor (`.sky-floor`) covers SSR first paint, low tier and reduced motion.
 2. Far stars: instanced points, ~6k (quality-tiered). Parallax 0.15× scroll and pointer.
 3. Constellation stars = coins (sized by |net APR|, twinkle amplitude by 1−persistence) with lines drawn in.
 4. Hero instrument (3D object of the chapter), with MeshTransmission/metal materials catching bloom.
@@ -141,7 +141,7 @@ Copy follows `PRODUCT.md`: every number on screen is LIVE, PAPER or SAMPLE and c
 ## 4. Technical architecture
 
 ### 4.1 Principles
-1. **One WebGL canvas for the whole app** (`SkyStage`), mounted once in `__root.tsx`, client-only, persistent across routes. Section 3D objects render through **drei `<View>`** tracked to DOM boxes, so there's no new `<Canvas>` per section. *(S1)* The View **is** the box: `<View ref className>`. `track={ref}` is silently ignored in drei 10.7.9. DOM children of a View don't render, so overlays go in a sibling wrapper (and they block 3D pointer events where they sit). Page content sits in a `relative z-10` wrapper above the fixed z-0 canvas. Exceptions need a spike result: ShaderGradient (S2) and LiquidMetal (S4) may need their own small canvas, and only while on screen.
+1. **One WebGL canvas for the whole app** (`SkyStage`), mounted once in `__root.tsx`, client-only, persistent across routes. Section 3D objects render through **drei `<View>`** tracked to DOM boxes, so there's no new `<Canvas>` per section. *(S1)* The View **is** the box: `<View ref className>`. `track={ref}` is silently ignored in drei 10.7.9. DOM children of a View don't render, so overlays go in a sibling wrapper (and they block 3D pointer events where they sit). Page content sits in a `relative z-10` wrapper above the fixed z-0 canvas. **No exceptions** (decided after S2/S4): the nebula is a custom shader in SkyStage (S2), and the liquid-metal hound mark runs the `@paper-design/shaders` LiquidMetal fragment shader as a material inside SkyStage through a View (S4 option b, T14). Anything else that wants a canvas needs a new spike.
 2. **SSR-safe:** everything that touches `window`/WebGL/GSAP lives behind `<ClientOnly>` or a dynamic `import()` inside `useEffect`. Text content is server-rendered (LCP = mega title, not the canvas).
 3. **GSAP owns scroll** (ScrollTrigger + SplitText + ScrambleText + DrawSVG). **`motion` owns component micro-interactions** (menus, hovers, mount/unmount, magicui internals). They never animate the same element.
 4. **Lenis** for smooth scroll, driven from `gsap.ticker`. `ScrollTrigger.update` runs on Lenis scroll. *(S5)* While Lenis is active, SkyStage runs `frameloop="never"` and is advanced from an `afterScroll` hook right after `lenis.raf`, so 3D and DOM agree on the same frame (otherwise 1 frame of lag); `"always"` otherwise, `"demand"` under reduced motion. Call `lenis.reset()` before `destroy()` (stale `html.lenis` class otherwise). A debounced `ResizeObserver` on `<body>` calls `ScrollTrigger.refresh()` so late fonts/content don't leave triggers stale.
@@ -222,7 +222,7 @@ Inside, one GSAP timeline per chapter, `scrub: 0.8`, trigger = chapter wrapper, 
 
 **SourceTag**: `<SourceTag kind="live" ts={…} />` → mono chip `LIVE · 12:04`, `SAMPLE`, `PAPER`. **Required** next to any figure.
 
-**GlassPanel** (DOM liquid glass, our own, see S3): `backdrop-filter: blur(18px) saturate(1.4)` + an SVG `feTurbulence → feDisplacementMap` edge refraction (Chromium; others fall back to blur) + inner rim highlight (two inset box-shadows), top specular gradient, 1px `--line` border, tint `rgb(12 18 36 / .35)`. Props: `radius`, `tint`, `refract` (0–1).
+**GlassPanel** (DOM liquid glass, our own, see S3 + its Addendum): **two sibling layers**, because the single filter chain costs ~100 fps at 3 panels in Chromium. (1) Interior: plain `backdrop-filter: blur(18px) saturate(1.4)`, masked to exclude the rim band. (2) Rim layer, masked to a 26 px band: `backdrop-filter: url(#rim) blur(3px) saturate(1.4)`, where `#rim` = `feImage` normal map (displacement along the outward normal, profile `5·e^(−0.8d) + e^(−0.15d)`, ported from dashersw/liquid-glass-js, MIT) → `feDisplacementMap` scale `refract · 30` px. Chromium only (detected after mount via `navigator.userAgentData.brands`); Safari/Firefox get the interior blur only. Plus inner rim highlight (two inset box-shadows), top specular gradient, 1px `--line` border, tint `rgb(12 18 36 / .35)`, and a solid-tint fallback under `prefers-reduced-transparency: reduce` or no `backdrop-filter`. Props: `radius`, `tint`, `refract` (0–0.5, default 0.4; above ~0.8 the rim streaks). The `.glass` utility lives in `styles.css`.
 
 **TornEdge**: procedurally generated path (seeded value noise, 3 octaves, amplitude 10–28px) + fibre edge (`feTurbulence baseFrequency .9` displacement 3px) + paper texture. Variants `top | bottom`, `seed`. Replaces the zigzag `Tear`.
 
@@ -245,9 +245,9 @@ Inside, one GSAP timeline per chapter, `scrub: 0.8`, trigger = chapter wrapper, 
 | **motion** (add, required by magicui) | menus, hover, magicui internals, HoundMenu port | anything scroll-scrubbed |
 | **shadcn/ui** (CLI, Radix flavour, matches installed Radix) | button, card, table, tabs, tooltip, hover-card, slider, sheet, dialog, command, badge, scroll-area, separator, sonner, toggle-group | — |
 | **magicui** (via shadcn CLI) | `number-ticker` (APRs), `border-beam` (scanning card border), `marquee` (symbol tape), `animated-beam` (two-leg diagram), `orbiting-circles` (venues around a coin), `hyper-text` (HUD decode alt), `ripple` (radar ping, DOM fallback), `meteors` (rare shooting stars, Overture only) | particles/stars (3D owns that) |
-| **@shadergradient/react** (add) | Nebula wash (S2 decides: inside SkyStage vs own low-dpr canvas vs custom shader) | foreground |
-| **liquid-glass-js** (dashersw) | **Reference only** (MIT): copy the edge/rim/base refraction math into GlassPanel (DOM) and a 3D glass shader. It samples the page with html2canvas, a still DOM screenshot that most likely cannot see our live WebGL sky (S3 confirms in 30 min) | runtime dependency |
-| **paper-design/liquid-logo** | Liquid-metal **hound mark** in the Overture + loader. It's a Next.js app built on Paper Shaders. Try `@paper-design/shaders-react` `LiquidMetal` with our SVG first; fall back to porting the shader (S4) | body content |
+| ~~@shadergradient/react~~ | **Removed after S2**: built for three 0.169/R3F 8, its shaders fail on three 0.186; nebula is a custom fbm shader | — |
+| **liquid-glass-js** (dashersw, `github.com/dashersw/liquid-glass-js`, MIT) | **Reference only**: its normal-direction rim/edge refraction profile is ported into GlassPanel (S3 Addendum). Note: the npm package `liquid-glass-js` is a **different** project (eamonliu) | runtime dependency |
+| **@paper-design/shaders** (via `shaders-react`, Apache-2.0) | Liquid-metal **hound mark** in the Overture + loader: the exported `liquidMetalFragmentShader` + `toProcessedLiquidMetal` as a material inside SkyStage (S4 option b). `colorBack` alpha 0, `--starlight` tint at 50%. Pre-bake the image processing (~0.8 s cold) so it doesn't stall the boot sequence | body content; its own canvas |
 
 ---
 
@@ -309,7 +309,7 @@ LCP < 2.5 s (SSR'd mega title), JS for 3D lazy after first paint, `frameloop` pa
 5. Display face: **Bricolage Grotesque** (alt: keep Syne everywhere).
 
 ## 9. Risks
-- **Two/three WebGL contexts** (ShaderGradient, LiquidMetal) → GPU memory, context loss on mobile. Mitigated by S2/S4 and the single-canvas rule.
+- **Extra WebGL contexts**: resolved by S2/S4. One canvas, no exceptions. The legacy hero/universe canvases go when T33/T51 replace them.
 - **TanStack Start SSR + R3F/drei** → hydration errors. Mitigated by S1 and `<ClientOnly>`.
 - **Lenis + sticky + ScrollTrigger on iOS Safari** (address bar resize) → `ScrollTrigger.config({ ignoreMobileResize: true })`, `svh` units, S5.
 - **Scope creep**: ten chapters is a lot. P3 tickets are independent, so ship I–III + VIII + X first if time is short.
