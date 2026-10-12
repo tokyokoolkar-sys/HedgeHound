@@ -335,8 +335,8 @@ export function AlmagestPage() {
         {/* α · Canis Major */}
         <div
           ref={alphaRef}
-          className="a-glass"
-          style={{ position: "absolute", left: "max(16px, 7vw)", bottom: "9svh", width: "min(470px, calc(100vw - 32px))", padding: "26px 28px", visibility: "hidden" }}
+          className="a-plain"
+          style={{ position: "absolute", left: "max(16px, 7vw)", bottom: "9svh", width: "min(470px, calc(100vw - 32px))", padding: 0, visibility: "hidden" }}
         >
           <p className="a-mono" style={{ margin: 0, color: "var(--a-dim)" }}>
             <span className="a-greek" style={{ fontSize: 14 }}>α</span> · Canis Major
@@ -362,7 +362,7 @@ export function AlmagestPage() {
           className="a-beta"
           style={{ visibility: "hidden" }}
         >
-          <div className="a-glass" style={{ padding: "26px 28px" }}>
+          <div className="a-plain" style={{ padding: 0 }}>
             <div ref={betaTitleRef}>
               <p className="a-mono" style={{ margin: 0, color: "var(--a-dim)" }}>
                 <span className="a-greek" style={{ fontSize: 14 }}>β</span> · Sniff

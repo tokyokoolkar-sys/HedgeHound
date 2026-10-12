@@ -209,3 +209,54 @@ export function applyResolve(el: HTMLElement, p: number, origin: "left" | "top" 
   setBlock(BLOCKS[k])
   el.style.filter = "url(#a-pixelate)"
 }
+
+// ---------------------------------------------------------------- stardust (bare text)
+// Subtle: text gathers out of fine 2px specks scattered like faint stars, dim and slightly soft at
+// first, densifying into crisp glyphs. Scroll picks the frame; no timers.
+const D_CELL = 2
+const D_TILE = 80
+const D_FRAMES = 32
+let dustCache: string[] | null = null
+
+function dustFrames() {
+  if (dustCache) return dustCache
+  let seed = 9001
+  const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296)
+  const rank = Array.from({ length: D_TILE * D_TILE }, () => rnd())
+  dustCache = Array.from({ length: D_FRAMES }, (_, k) => {
+    const coverage = Math.pow((k + 1) / D_FRAMES, 1.7)
+    const c = document.createElement("canvas")
+    c.width = c.height = D_TILE * D_CELL
+    const ctx = c.getContext("2d")!
+    ctx.fillStyle = "#000"
+    rank.forEach((r, i) => {
+      if (r < coverage) ctx.fillRect((i % D_TILE) * D_CELL, Math.floor(i / D_TILE) * D_CELL, D_CELL, D_CELL)
+    })
+    return c.toDataURL("image/png")
+  })
+  return dustCache
+}
+
+export function applyStardust(el: HTMLElement, p: number) {
+  if (p <= 0) {
+    el.style.visibility = "hidden"
+    return
+  }
+  el.style.visibility = "visible"
+  el.style.opacity = String(0.35 + 0.65 * Math.min(1, p * 1.2))
+  el.style.filter = p >= 0.98 ? "" : `blur(${((1 - p) * 1.6).toFixed(2)}px)`
+  if (p >= 0.98) {
+    el.style.maskImage = ""
+    el.style.webkitMaskImage = ""
+    return
+  }
+  const frames = dustFrames()
+  const img = `url(${frames[Math.min(D_FRAMES - 1, Math.floor(p * D_FRAMES))]})`
+  const size = `${D_TILE * D_CELL}px`
+  el.style.maskImage = img
+  el.style.webkitMaskImage = img
+  el.style.maskSize = size
+  el.style.setProperty("-webkit-mask-size", size)
+  el.style.maskRepeat = "repeat"
+  el.style.setProperty("-webkit-mask-repeat", "repeat")
+}

@@ -9,7 +9,7 @@ import * as THREE from "three"
 import { SVGLoader } from "three-stdlib"
 import { SourceTag } from "@/components/edition/source-tag"
 import { CMA, CMA_LINES, magToPx, project } from "./canis-major"
-import { applyResolve } from "./pixel-mask"
+import { applyStardust } from "./pixel-mask"
 import { CrawlEffect } from "./transition-effect"
 import { SKY, band, smooth, useSky } from "./state"
 
@@ -566,10 +566,8 @@ function Radar({ coins, portal, reading }: { coins: RadarCoin[]; portal: Portal;
       leader.attributes.position.needsUpdate = true
       leaderMat.opacity = lt > 0 ? 0.45 : 0
     }
-    // The card element inside the callout grows from where the line touches it.
-    const card = callout.current?.querySelector<HTMLElement>(".a-callout-card")
-    if (callout.current) callout.current.style.visibility = cp > 0.3 ? "visible" : "hidden"
-    if (card) applyResolve(card, band(cp, 0.3, 1), mobile ? "top" : "left")
+    // The reading gathers out of star specks at the end of the line.
+    if (callout.current) applyStardust(callout.current, band(cp, 0.3, 1))
   })
 
   return (
@@ -592,7 +590,7 @@ function Radar({ coins, portal, reading }: { coins: RadarCoin[]; portal: Portal;
       {anchor && reading && (
         <Html portal={portal} position={[dock[0], dock[1], 0]} zIndexRange={[6, 0]} style={{ pointerEvents: "none" }}>
           <div ref={callout} className="a-callout" data-dock={mobile ? "below" : "right"} style={{ visibility: "hidden" }}>
-            <div className="a-glass a-callout-card">
+            <div className="a-callout-card">
               <p className="a-mono" style={{ margin: 0, color: "var(--a-faint)", fontSize: 9.5 }}>
                 Loudest {reading.ok ? "clean scent" : "reading · building history"}
               </p>

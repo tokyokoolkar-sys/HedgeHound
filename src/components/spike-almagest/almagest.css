@@ -246,9 +246,13 @@ body:has(.almagest) {
 }
 
 .a-callout-card {
-  min-width: 220px;
-  padding: 14px 16px;
-  border-radius: 14px;
+  min-width: 200px;
+  padding: 0 0 0 12px;
+}
+
+/* Copy sits straight on the sky (owner decision): no card, no border. */
+.a-plain {
+  position: relative;
 }
 
 .a-coin-label {
