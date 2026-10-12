@@ -64,7 +64,7 @@ npm i @fontsource-variable/bricolage-grotesque @fontsource-variable/jetbrains-mo
 ## P1 — Spikes (timebox 45–60 min each; output = `docs/redesign/spikes/<ID>.md` with a decision + snippet)
 
 ### S1 [S] One persistent canvas + drei View under TanStack Start SSR
-- Mount a `<ClientOnly>` `SkyStage` in `__root.tsx` (fixed, inset 0, z 0, `eventSource={document.body}`, `<View.Port/>`). Render 1 full-screen background view + 2 `<View track={ref}>` boxes in a test route. Navigate between routes: the canvas must **not** remount (log the mount count).
+- Mount a `<ClientOnly>` `SkyStage` in `__root.tsx` (fixed, inset 0, z 0, `eventSource={document.body}`, `<View.Port/>`). Render 1 full-screen background view + 2 `<View ref className>` boxes (S1: `track={ref}` is ignored in drei 10.7.9) in a test route. Navigate between routes: the canvas must **not** remount (log the mount count).
 - **Answer:** hydration warnings? remount? pointer events through DOM?
 
 ### S2 [S] Nebula: ShaderGradient vs custom shader
@@ -81,7 +81,7 @@ npm i @fontsource-variable/bricolage-grotesque @fontsource-variable/jetbrains-mo
 
 ### S5 [S] Scroll stack
 - Lenis (driven by `gsap.ticker`, `lagSmoothing(0)`) + ScrollTrigger + CSS sticky plates + a scrubbed SplitText title + store writes read in `useFrame`. Test Chrome, Firefox, and iOS Safari if available (or Chrome mobile emulation). Use `ScrollTrigger.config({ ignoreMobileResize: true })` and `svh`.
-- **Answer:** final `smooth-scroll.tsx` + `gsap.client.ts` snippets; any jank sources.
+- **Answer:** final `smooth-scroll.tsx` + `gsap-browser.ts` snippets (no `*.client.*` names, S5); any jank sources.
 
 ---
 
@@ -190,7 +190,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 - typecheck, lint, prettier; remove dead files (`hero-film.tsx`, `tear.tsx`, old three scenes) only after their replacements are merged; delete `/_kitchen`.
 
 ### T52 [O] Review & polish
-- Impeccable critique + polish across the Edition; side-by-side with the Shopify reference frames; perf profile per tier; a11y (headings order, focus visible, SplitText aria, contrast on parchment and glass); honesty sweep (every number tagged). Optional: Emil Kowalski `review-animations`.
+- Impeccable critique + polish across the Edition; side-by-side with the Shopify reference frames; perf profile per tier; a11y (headings order, focus visible, SplitText aria, contrast on parchment and glass); honesty sweep (every number tagged); **real iPhone Safari check** of the scroll stack (S5 only had emulation). Optional: Emil Kowalski `review-animations`.
 
 ---
 

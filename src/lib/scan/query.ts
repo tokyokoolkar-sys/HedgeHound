@@ -17,8 +17,11 @@ export const SCAN_STALE_MS = 25_000
  */
 export const BACKOFF_STEPS_MS = [30_000, 120_000, 300_000] as const
 
-/** A LIVE reading older than this many ms is shown STALE (the scanner polls every 300 s). */
-export const STALE_AFTER_MS = SCANNER_POLL_SECONDS * 1000
+/**
+ * A LIVE reading older than this many ms is shown STALE. The scanner polls every 300 s plus the
+ * poll's own duration, and we refetch every 30 s, so 300 s would flash STALE on a healthy scanner.
+ */
+export const STALE_AFTER_MS = (SCANNER_POLL_SECONDS + 60) * 1000
 
 /** TanStack query key. Every knob that changes the request is in it. */
 export function scanKey(p: ScanParams) {

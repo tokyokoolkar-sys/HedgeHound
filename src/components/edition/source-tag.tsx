@@ -29,7 +29,7 @@ type Props = {
   kind: SourceKind
   /** Epoch milliseconds of the reading (the scanner reports seconds; convert in the data layer). */
   ts?: number
-  /** LIVE reading older than one scanner poll (300 s). The data layer decides; the tag only shows it. */
+  /** LIVE reading older than one scanner poll plus slack (360 s). The data layer decides; the tag only shows it. */
   stale?: boolean
   className?: string
 }

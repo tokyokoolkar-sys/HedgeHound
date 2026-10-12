@@ -141,10 +141,10 @@ Copy follows `PRODUCT.md`: every number on screen is LIVE, PAPER or SAMPLE and c
 ## 4. Technical architecture
 
 ### 4.1 Principles
-1. **One WebGL canvas for the whole app** (`SkyStage`), mounted once in `__root.tsx`, client-only, persistent across routes. Section 3D objects render through **drei `<View>`** tracked to DOM boxes, so there's no new `<Canvas>` per section. Exceptions need a spike result: ShaderGradient (S2) and LiquidMetal (S4) may need their own small canvas, and only while on screen.
+1. **One WebGL canvas for the whole app** (`SkyStage`), mounted once in `__root.tsx`, client-only, persistent across routes. Section 3D objects render through **drei `<View>`** tracked to DOM boxes, so there's no new `<Canvas>` per section. *(S1)* The View **is** the box: `<View ref className>`. `track={ref}` is silently ignored in drei 10.7.9. DOM children of a View don't render, so overlays go in a sibling wrapper (and they block 3D pointer events where they sit). Page content sits in a `relative z-10` wrapper above the fixed z-0 canvas. Exceptions need a spike result: ShaderGradient (S2) and LiquidMetal (S4) may need their own small canvas, and only while on screen.
 2. **SSR-safe:** everything that touches `window`/WebGL/GSAP lives behind `<ClientOnly>` or a dynamic `import()` inside `useEffect`. Text content is server-rendered (LCP = mega title, not the canvas).
 3. **GSAP owns scroll** (ScrollTrigger + SplitText + ScrambleText + DrawSVG). **`motion` owns component micro-interactions** (menus, hovers, mount/unmount, magicui internals). They never animate the same element.
-4. **Lenis** for smooth scroll, driven from `gsap.ticker`. `ScrollTrigger.update` runs on Lenis scroll.
+4. **Lenis** for smooth scroll, driven from `gsap.ticker`. `ScrollTrigger.update` runs on Lenis scroll. *(S5)* While Lenis is active, SkyStage runs `frameloop="never"` and is advanced from an `afterScroll` hook right after `lenis.raf`, so 3D and DOM agree on the same frame (otherwise 1 frame of lag); `"always"` otherwise, `"demand"` under reduced motion. Call `lenis.reset()` before `destroy()` (stale `html.lenis` class otherwise). A debounced `ResizeObserver` on `<body>` calls `ScrollTrigger.refresh()` so late fonts/content don't leave triggers stale.
 5. **CSS `position: sticky`** for plates (not GSAP `pin`). Sheets scroll over them with a higher z-index. GSAP only scrubs reveals and writes progress to the store. That's cheaper and avoids pin-spacer bugs with Lenis.
 6. **Zustand stage store** is the only bridge DOM → 3D. Chapters write `{chapter, progress}`, and the 3D reads it in `useFrame` via `getState()`, so 3D never re-renders React on scroll.
 7. **Quality tiers** `high | mid | low` picked from drei `PerformanceMonitor` + `navigator.hardwareConcurrency` + viewport width. `prefers-reduced-motion` → static sky, no scrub, no boot sequence, instant reveals.
@@ -159,7 +159,7 @@ src/
     scent.ts                    → layout map (sector, pos, blurb, links) + SAMPLE data; trailFor() only for SAMPLE
     scan/types.ts api.ts use-scan.ts adapter.ts history.ts
     stage/store.ts waypoints.ts quality.ts
-    motion/gsap.client.ts smooth-scroll.tsx use-reduced-motion.ts split.ts
+    motion/gsap-browser.ts smooth-scroll.tsx use-reduced-motion.ts split.ts
   components/
     ui/                         shadcn (generated)
     magicui/                    magicui (generated; restyled to tokens)
@@ -210,13 +210,13 @@ type StageState = {
   plateHeight="170svh"       // scroll distance the plate stays sticky
 />
 ```
-Inside, one GSAP timeline per chapter, `scrub: 0.8`, trigger = chapter wrapper:
+Inside, one GSAP timeline per chapter, `scrub: 0.8`, trigger = chapter wrapper, `start: "top 80%"`, `end: "bottom 50%"` (the only values that line the table up with the sheet geometry, S5). Chapter I uses `start: "top top"`, or it loads at progress ≈ .4 and its reveal never plays. Never name a file `*.client.*` (TanStack Start import protection breaks `vite build`, S5). SplitText `mask: "lines"` clips glyphs at lh .84: pad the line class and pull it back with a negative margin.
 | progress | what |
 |---|---|
 | 0.00 | store.chapter = index; fire scan-line (`scanAt = now`); ScrambleText the index item |
 | 0.00–0.22 | mega title SplitText chars `yPercent 120→0`, stagger .018, ease `power3.out`; mask gradient sweeps (scanned-in look) |
 | 0.12–0.32 | swash subtitle: `filter blur(14px)→0`, `opacity 0→1`, y 24→0 |
-| 0.00–1.00 | `store.progress` written on update |
+| 0.00–1.00 | `store.progress` = raw ScrollTrigger `self.progress` from `onUpdate` (not `tl.progress()`; the CameraRig damps it) |
 | 0.55–0.80 | title drifts up `yPercent −30` and fades to .25 while the sheet rises over it |
 | 0.60→ | sheet (in normal flow after the sticky plate) overlaps via `margin-top: -40svh; z-index: 10` |
 

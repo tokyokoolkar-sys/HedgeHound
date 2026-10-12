@@ -5,7 +5,7 @@ import { SourceTag } from "@/components/edition/source-tag";
 import { Tear } from "@/components/tear";
 import { WebglBoundary } from "@/components/webgl-boundary";
 import { palette } from "@/lib/palette";
-import { allRows, DEFAULT_BOOK, STARS, trailFor } from "@/lib/scent";
+import { allRows, DEFAULT_BOOK, MIN_OI, MIN_VOL, STARS, trailFor, usdCompact } from "@/lib/scent";
 import { btn, btnGhost } from "@/lib/ui";
 
 const PEEK = allRows().filter((r) => r.alert);
@@ -18,11 +18,11 @@ const HUB_CHART = trailFor(STARS.find((s) => s.symbol === "ARB") ?? STARS[0]).ma
 const CLOUD = [
   { word: "Persistence", left: "4%", top: "12%" },
   { word: "144 samples", left: "18%", top: "78%" },
-  { word: "0.30% round trip", left: "72%", top: "16%" },
+  { word: `${DEFAULT_BOOK.cost.toFixed(2)}% round trip`, left: "72%", top: "16%" },
   { word: "2× isolated", left: "80%", top: "70%" },
   { word: "30-day listing", left: "8%", top: "48%" },
-  { word: "$250k volume", left: "62%", top: "84%" },
-  { word: "$50k open interest", left: "70%", top: "42%" },
+  { word: `${usdCompact(MIN_VOL)} volume`, left: "62%", top: "84%" },
+  { word: `${usdCompact(MIN_OI)} open interest`, left: "70%", top: "42%" },
   { word: "Sign flip", left: "40%", top: "8%" },
   { word: "Poll · 5 min", left: "84%", top: "48%" },
   { word: "Status ok", left: "14%", top: "88%" },

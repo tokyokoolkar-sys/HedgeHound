@@ -574,7 +574,7 @@ export function DenDesk() {
       </section>
 
       <p className="mt-10 max-w-3xl text-xs leading-relaxed text-faint">
-        Not financial advice. HedgeHound does not place orders and it will not help reach an exchange you are not allowed to use. Check the venue’s terms and your local rules before any real money. At this size the honest outcome of a working spread is a few dollars a year, plus whatever you learned, plus maybe a points program. Field sample, shaped like the scanner’s rules — the Windows poller still owns the tape.
+        Not financial advice. HedgeHound does not place orders and it will not help reach an exchange you are not allowed to use. Check the venue’s terms and your local rules before any real money. At this size this is a classroom, not a paycheck. No figure on this page is a forecast. Field sample, shaped like the scanner’s rules — the Windows poller still owns the tape.
       </p>
     </div>
   );

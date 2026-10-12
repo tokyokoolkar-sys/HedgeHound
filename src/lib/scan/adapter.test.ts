@@ -357,10 +357,11 @@ describe("offline backoff", () => {
 
 describe("isStale", () => {
   const ts = 1_700_000_000_000;
-  it("flags a reading older than 300 s on the client clock", () => {
-    assert.equal(STALE_AFTER_MS, 300_000);
-    assert.equal(isStale(ts, ts + 300_000), false);
-    assert.equal(isStale(ts, ts + 300_001), true);
+  it("flags a reading older than 360 s on the client clock", () => {
+    assert.equal(STALE_AFTER_MS, 360_000);
+    assert.equal(isStale(ts, ts + 330_000), false);
+    assert.equal(isStale(ts, ts + 360_000), false);
+    assert.equal(isStale(ts, ts + 360_001), true);
     assert.equal(isStale(ts, ts + 10_000), false);
   });
 
