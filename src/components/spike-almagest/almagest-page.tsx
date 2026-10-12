@@ -2,8 +2,11 @@
 // Text is server-rendered; the canvas and the scroll engine load on the client only.
 import { ClientOnly, useNavigate, useSearch } from "@tanstack/react-router"
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react"
+import { LogosCarousel } from "@/components/logos-carousel"
+import { ShimmerText } from "@/components/shimmer-text"
+import { SourceTag } from "@/components/edition/source-tag"
 import { useScan } from "@/lib/scan/use-scan"
-import { applyCrawl, applyReveal } from "./pixel-mask"
+import { applyCrawl } from "./pixel-mask"
 import { TYPE_PAIRS, band, clamp01, smooth, useSky, type GrainMode, type TypePair } from "./state"
 import type { RadarCoin, Reading } from "./sky"
 import "./almagest.css"
@@ -90,6 +93,10 @@ export function AlmagestPage() {
   const [open, setOpen] = useState(true)
   useEffect(() => setOpen(!window.matchMedia("(max-width: 767px)").matches), [])
 
+  const symbols = useMemo(() => {
+    const list = scan.rows.map((r) => r.symbol).slice(0, 30)
+    return list.slice(0, list.length - (list.length % 5))
+  }, [scan.rows])
   const coins = useMemo<RadarCoin[]>(
     () => scan.rows.map((r) => ({ symbol: r.symbol, net: r.net_apr, status: r.status })),
     [scan.rows],
@@ -114,6 +121,10 @@ export function AlmagestPage() {
   const betaTitleRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
   const endRef = useRef<HTMLDivElement>(null)
+  const heroTitleRef = useRef<HTMLDivElement>(null)
+  const alphaTitleRef = useRef<HTMLDivElement>(null)
+  const betaHeadRef = useRef<HTMLDivElement>(null)
+  const carouselRef = useRef<HTMLDivElement>(null)
   const coordRef = useRef<HTMLSpanElement>(null)
   const indexRef = useRef<HTMLDivElement>(null)
   const lenisRef = useRef<{ scrollTo: (t: number, o?: { immediate?: boolean }) => void } | null>(null)
@@ -180,23 +191,31 @@ export function AlmagestPage() {
         // Hero: resolves on load, dissolves into depth as the hound recedes.
         if (hero) {
           revealWords(hero, intro * (1 - band(h, 0.12, 0.42)), reduced)
+          const ht = intro * (1 - band(h, 0.12, 0.42))
+          fade(heroTitleRef.current, ht, (1 - ht) * 14, (1 - ht) * 18)
           fade(heroRef.current, 1 - band(h, 0.3, 0.5), 0, -band(h, 0, 0.5) * 60)
         }
         fade(cueRef.current, intro * (1 - band(h, 0.02, 0.12)))
 
         // α panel: words resolve after the constellation forms; the crawl eats it from below.
+        // α card: no effect, it simply travels with the scroll: up from below the screen, rests, then
+        // carries on up and out while the crawl eats the sky behind it.
         if (alpha && alphaRef.current) {
-          const card = reduced ? (a > 0.4 ? 1 : 0) : band(a, 0.38, 0.47)
-          revealWords(alpha, band(a, 0.45, 0.58), reduced)
-          if (c > 0 && c < 0.5 && !reduced) {
-            alphaRef.current.style.visibility = "visible"
-            applyCrawl(alphaRef.current, -0.3 + 1.6 * (c * 2), "out")
-          } else if (c >= 0.5) {
-            alphaRef.current.style.visibility = "hidden"
-          } else {
-            applyReveal(alphaRef.current, card)
-          }
+          const vh = window.innerHeight
+          const enter = reduced ? (a > 0.4 ? 1 : 0) : smooth(band(a, 0.34, 0.5))
+          const exit = reduced ? (c > 0.2 ? 1 : 0) : smooth(band(c, 0.0, 0.42))
+          const yPx = (1 - enter) * vh * 0.95 - exit * vh * 1.05
+          const el = alphaRef.current
+          el.style.visibility = enter <= 0.001 || exit >= 0.999 ? "hidden" : "visible"
+          el.style.transform = `translateY(${yPx.toFixed(1)}px)`
+          revealWords(alpha, band(a, 0.44, 0.56), reduced)
+          const tt = band(a, 0.42, 0.52)
+          fade(alphaTitleRef.current, reduced ? 1 : tt, (1 - tt) * 10, 0)
         }
+
+        // Symbols the hound is watching, while the screen is all grain.
+        const co = reduced ? 0 : band(c, 0.26, 0.38) * (1 - band(c, 0.62, 0.74))
+        fade(carouselRef.current, co, (1 - co) * 8, (1 - co) * 16)
 
         // β panel: the second crawl front builds the glass, then the words and cards resolve.
         if (betaRef.current) {
@@ -204,7 +223,9 @@ export function AlmagestPage() {
           const out = band(b, 0.86, 1)
           fade(betaRef.current, shown ? 1 - out : 0, out * 10, -out * 40)
           applyCrawl(betaRef.current, !reduced && c >= 0.5 && c < 1 ? -0.3 + 1.6 * ((c - 0.5) * 2) : null, "in")
-          if (betaTitle) revealWords(betaTitle, band(c, 0.8, 1) * 0.5 + band(b, 0, 0.16) * 0.5, reduced)
+          const bp = band(c, 0.8, 1) * 0.5 + band(b, 0, 0.16) * 0.5
+          if (betaTitle) revealWords(betaTitle, bp, reduced)
+          fade(betaHeadRef.current, reduced ? 1 : bp, (1 - bp) * 12, (1 - bp) * 14)
           cards.forEach((card, i) => {
             const t = reduced ? (b > 0.1 ? 1 : 0) : smooth(band(b, 0.16 + i * 0.07, 0.34 + i * 0.07))
             fade(card, t, (1 - t) * 12, (1 - t) * 26)
@@ -286,9 +307,13 @@ export function AlmagestPage() {
 
         {/* Overture */}
         <div ref={heroRef} style={{ position: "absolute", left: 0, right: 0, bottom: "16svh", textAlign: "center", padding: "0 16px" }}>
-          <h1 className="a-display" data-shimmer style={{ fontSize: "clamp(3.2rem, 9vw, 8.5rem)", margin: 0 }}>
-            <Words text="HedgeHound" />
-          </h1>
+          <div ref={heroTitleRef} style={{ opacity: 0 }}>
+            <ShimmerText className="a-shimmer-title" duration={2.4} delay={1.2}>
+              <h1 className="a-display" style={{ fontSize: "clamp(3.2rem, 9vw, 8.5rem)", margin: 0 }}>
+                HedgeHound
+              </h1>
+            </ShimmerText>
+          </div>
           <p className="a-mono" style={{ marginTop: 18, color: "var(--a-dim)" }}>
             <Words text="A funding-spread observatory · paper only" />
           </p>
@@ -306,9 +331,13 @@ export function AlmagestPage() {
           <p className="a-mono" style={{ margin: 0, color: "var(--a-dim)" }}>
             <span className="a-greek" style={{ fontSize: 14 }}>α</span> · Canis Major
           </p>
-          <h2 className="a-display" data-shimmer style={{ fontSize: "clamp(2.2rem, 3.6vw, 3.4rem)", margin: "14px 0 14px" }}>
-            <Words text="The hound in the sky" />
-          </h2>
+          <div ref={alphaTitleRef} style={{ margin: "14px 0 14px" }}>
+            <ShimmerText className="a-shimmer-title" duration={2.4} delay={0.6}>
+              <h2 className="a-display" style={{ fontSize: "clamp(2.2rem, 3.6vw, 3.4rem)", margin: 0 }}>
+                The hound in the sky
+              </h2>
+            </ShimmerText>
+          </div>
           <p className="a-body" style={{ margin: 0 }}>
             <Words text="Every coin is a star. Brightness is the spread it carries; a steady light is a spread that stays." />
           </p>
@@ -328,9 +357,13 @@ export function AlmagestPage() {
               <p className="a-mono" style={{ margin: 0, color: "var(--a-dim)" }}>
                 <span className="a-greek" style={{ fontSize: 14 }}>β</span> · Sniff
               </p>
-              <h2 className="a-display" data-shimmer style={{ fontSize: "clamp(2.6rem, 5vw, 4.6rem)", margin: "12px 0 10px" }}>
-                <Words text="Sniff" />
-              </h2>
+              <div ref={betaHeadRef} style={{ margin: "12px 0 10px" }}>
+                <ShimmerText className="a-shimmer-title" duration={2.2} delay={0.6}>
+                  <h2 className="a-display" style={{ fontSize: "clamp(2.6rem, 5vw, 4.6rem)", margin: 0 }}>
+                    Sniff
+                  </h2>
+                </ShimmerText>
+              </div>
               <p className="a-body" style={{ margin: 0, fontStyle: "italic", fontSize: "clamp(1.2rem, 1.4vw, 1.45rem)", color: "var(--a-star)" }}>
                 <Words text="Every five minutes, the hound lifts its nose." />
               </p>
@@ -353,6 +386,23 @@ export function AlmagestPage() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Transition: the field, cycling in staggered groups. */}
+        <div ref={carouselRef} className="a-carousel" style={{ opacity: 0, visibility: "hidden" }}>
+          <p className="a-mono" style={{ margin: 0, color: "var(--a-faint)" }}>
+            <span className="a-greek">α → β</span> · on the hound’s nose
+          </p>
+          {symbols.length > 0 && (
+            <LogosCarousel count={5} stagger={0.12} interval={2200} duration={700}>
+              {symbols.map((sym) => (
+                <span key={sym} className="a-symbol">
+                  {sym}
+                </span>
+              ))}
+            </LogosCarousel>
+          )}
+          <SourceTag kind={scan.live ? "live" : "sample"} ts={scan.ts ?? undefined} stale={scan.stale} />
         </div>
 
         {/* γ teaser */}

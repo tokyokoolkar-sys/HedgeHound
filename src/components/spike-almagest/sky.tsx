@@ -268,19 +268,6 @@ void main() {
 function GlassHound() {
   const geo = useHoundGeometry()
   const ref = useRef<THREE.Group>(null)
-  const glow = useMemo(
-    () =>
-      new THREE.ShaderMaterial({
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        uniforms: { uO: { value: 1 }, uC: { value: C.star.clone().lerp(C.cool, 0.5) } },
-        vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-        fragmentShader: `uniform float uO; uniform vec3 uC; varying vec2 vUv;
-          void main(){ float d = length(vUv - 0.5) * 2.0; float a = (exp(-d*d*3.2) * 0.32 + exp(-d*d*14.0) * 0.22) * uO; gl_FragColor = vec4(pow(max(uC * a, vec3(0.0)), vec3(2.2)), 1.0); }`,
-      }),
-    [],
-  )
   const glass = useMemo(
     () =>
       new THREE.ShaderMaterial({
@@ -313,43 +300,13 @@ function GlassHound() {
     const u = glass.uniforms.uLight.value as THREE.Vector2
     u.set(THREE.MathUtils.damp(u.x, 0.3 + s.pointer[0] * 0.8, 3, dt), THREE.MathUtils.damp(u.y, 0.5 + s.pointer[1] * 0.6, 3, dt))
     glass.uniforms.uO.value = o
-    glow.uniforms.uO.value = o
   })
   return (
     <group ref={ref}>
-      <mesh position={[0, -0.1, -1.2]} material={glow}>
-        <planeGeometry args={[7, 7]} />
-      </mesh>
       <mesh geometry={geo}>
         <primitive object={glass} attach="material" />
       </mesh>
     </group>
-  )
-}
-
-/** A faint cold haze behind the hound, so the glass has something to bend. */
-function Haze() {
-  const mat = useMemo(
-    () =>
-      new THREE.ShaderMaterial({
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        uniforms: { uO: { value: 1 }, uC: { value: C.cool.clone() } },
-        vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-        fragmentShader: `uniform float uO; uniform vec3 uC; varying vec2 vUv;
-          void main(){ float d = length(vUv - 0.5) * 2.0; float a = exp(-d*d*3.6) * 0.035 * uO; gl_FragColor = vec4(pow(max(uC * a, vec3(0.0)), vec3(2.2)), 1.0); }`,
-      }),
-    [],
-  )
-  useFrame(() => {
-    const s = useSky.getState()
-    mat.uniforms.uO.value = 1 - band(s.hero, 0.2, 0.9)
-  })
-  return (
-    <mesh position={[0, 0.2, -6]} material={mat}>
-      <planeGeometry args={[22, 22]} />
-    </mesh>
   )
 }
 
@@ -385,7 +342,7 @@ function CanisMajor({ portal }: { portal: Portal }) {
     })
     return f
   }, [pos, order])
-  const mat = useMemo(() => starMaterial({ persp: true, spread: 3.4, halo: 0.5 }), [])
+  const mat = useMemo(() => starMaterial({ persp: true, spread: 1, halo: 0.35 }), [])
 
   // Lines are redrawn each frame; each segment draws in sequence after its stars arrive.
   const lineGeo = useMemo(() => {
@@ -693,7 +650,6 @@ export default function AlmagestSky({ coins, labels, reading }: { coins: RadarCo
       onCreated={({ gl }) => gl.setClearColor(SKY.void)}
     >
       <DeepSky />
-      <Haze />
       <GlassHound />
       <CanisMajor portal={portal} />
       <Radar coins={coins} portal={portal} reading={reading} />

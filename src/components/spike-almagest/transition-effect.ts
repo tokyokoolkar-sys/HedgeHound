@@ -54,9 +54,13 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
   col.rgb *= 1.0 - eaten;
 
   // Where it is dissolved: sparse cold stars that twinkle with the scroll, not a cloud.
-  float star = step(0.9965, hash(floor(px / 2.0) * 1.37 + 11.0));
-  float tw = 0.5 + 0.5 * sin(hash(floor(px / 2.0)) * 40.0 + s * 9.0);
-  col.rgb += vec3(0.62, 0.70, 1.0) * star * tw * eaten * 0.5;
+  // Two sizes of star; each one shimmers on its own phase as you scroll.
+  vec2 sc = floor(px / 2.0);
+  float star = step(0.993, hash(sc * 1.37 + 11.0));
+  float bright = step(0.9985, hash(floor(px / 3.0) * 2.11 + 5.0));
+  float ph_ = hash(sc + 4.0) * 6.2831;
+  float tw = pow(0.5 + 0.5 * sin(ph_ + s * (6.0 + hash(sc) * 10.0)), 2.0);
+  col.rgb += vec3(0.70, 0.78, 1.0) * (star * 0.55 + bright * 1.1) * (0.25 + 0.75 * tw) * eaten;
 
 
   outputColor = vec4(col.rgb, inputColor.a);
