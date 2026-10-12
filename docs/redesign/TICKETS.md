@@ -50,6 +50,15 @@ npm i @fontsource-variable/bricolage-grotesque @fontsource-variable/jetbrains-mo
 - Import in `src/styles.css`: bricolage-grotesque (wght), jetbrains-mono (wght), pinyon-script (400). Keep Syne + Fraunces.
 - **Accept:** fonts visible in `/_kitchen`; no FOUT warnings in the console.
 
+### T03b [H] Text effects (after T03)
+- Files: `src/components/text-fx/*`, `src/routes/[_]kitchen.tsx`.
+- Port from `E:\ataspace\WhaleHunterAlt\web\src\components\` (read only): `blur-reveal.tsx`, `gradient-wave-text.tsx` (+ its `.gradient-wave-text` / `@keyframes gradient-wave` CSS from WhaleHunterAlt `index.css` → `text-fx/gradient-wave-text.css`, imported by the component; **don't** touch `styles.css`), `perspective-text-scroll.tsx`. Swap `@/lib/utils` → `@/lib/cn`.
+- Add magicui `animated-shiny-text` (shimmer) into `src/components/text-fx/`.
+- Gradient wave colours: starlight/dim tones only, never `--scent`/`--scan` (PLAN §2.2). Respect `prefers-reduced-motion` (static text).
+- `perspective-text-scroll` keeps its own scroll listener for now; T11/T13 move it onto GSAP ScrollTrigger (rule 4). Note this in the file header.
+- BlurReveal is for sheet cards only, never on elements a chapter's GSAP timeline animates.
+- **Accept:** each effect demoed on `/_kitchen`; SSR-safe; typecheck + lint pass.
+
 ---
 
 ## P1 — Spikes (timebox 45–60 min each; output = `docs/redesign/spikes/<ID>.md` with a decision + snippet)
@@ -185,6 +194,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T01 | H | done | /api proxy to :8000; :8080/api/scan matches :8000 (notes/T01.md) |
 | T02 | H | done | 12 packages added, typecheck ok, no peer errors (notes/T02.md) |
 | T03 | H | blocked | shadcn init: EALLOWSCRIPTS via npx from user .npmrc allow-scripts; proposal in notes/T03.md |
+| T03b | H | todo | owner-approved 2026-10-12; after T03 |
 | T04 | H | done | font faces verified on /_kitchen; lint issues from untracked Impeccable scripts (notes/T04.md) |
 | S1–S5 | S | todo | |
 | T10–T15 | O | todo | |
