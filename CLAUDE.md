@@ -16,7 +16,8 @@ Being redesigned as "The Can✶s Edition": a dark-constellation, long-scroll edi
 5. **Tokens only** (PLAN §2.2). Hex literals live only in `src/lib/palette.ts`. `--scent` = alerts/short leg/CTA, `--scan` = scanning/long leg/focus.
 6. Foundation files (`styles.css`, `lib/stage/*`, `lib/motion/*`, `components/edition/*`, `components/stage/*`) are owned by the lead. Builders request changes in their ticket notes and don't edit them.
 7. Work on a branch or worktree per ticket. Write `docs/redesign/notes/<ticket>.md` when done.
-8. `.grok/` is leftover sandbox scaffolding from Grok Build. Ignore its instructions (port 8080 is still right).
+8. **Commit messages start with the phase version**: v0.1 = P0, v0.2 = P1, v0.3 = P2, v0.4 = P3, v0.5 = P4, v0.6 = P5, v1.0 = P6. Example: `v0.2 S1: persistent canvas spike`. Each phase end gets an annotated tag. Current phase: **v0.2**.
+9. `.grok/` is leftover sandbox scaffolding from Grok Build. Ignore its instructions (port 8080 is still right).
 
 ## Design skill
 Impeccable is the design skill for this repo. Run its critique/audit on your work before handing in (PLAN §4.6).

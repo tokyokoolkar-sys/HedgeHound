@@ -166,6 +166,14 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 - Port `api.ts`; `use-scan.ts` with TanStack Query (30s); `adapter.ts` `toStars()` per PLAN §4.4; unit test for the adapter with a recorded `/api/scan` JSON fixture (save a real response to `src/lib/scan/__fixtures__/scan.json`).
 - Grep and fix every place showing `scent.ts` figures without a SAMPLE tag.
 
+### T40b [S] Data-honesty cleanup (owner-approved 2026-10-12)
+- Files: `lib/scan/*`, `components/hero-film.tsx`, `components/den-desk.tsx`.
+- `cost` joins the scan query (`/api/scan?cost=`) and the query key, defaulting to `DEFAULT_BOOK` cost (0.30), so live and sample nets use the same cost.
+- Copy: the hero ARB "83% APR" is read from the sample row, not hard-coded. Reword "What the hound brought back" and "A few dollars a year if the edge is real" so neither reads as a result or yield claim. CSV filename `hedgehound-paper.csv` → `hedgehound-sample.csv`.
+- Offline backoff: while the fallback is showing, refetch at 30 s → 2 min → 5 min (cap); go back to 30 s on the first live answer. No 502 spam in the console with the scanner off.
+- Stale: `useScan` exposes `stale` (live `ts` older than 300 s, client clock only). Pass it to `<SourceTag stale>` wherever a LIVE tag is rendered.
+- **Accept:** typecheck/lint/test green; scanner on → LIVE; scanner off → SAMPLE with at most one network error per backoff step; adapter tests extended for cost.
+
 ### T41 [S] Scanner endpoints (**only after the owner says yes**; edits `E:\ataspace\WhaleHunterAlt\scanner\server.py`)
 - Stdlib only, read-only, no schema changes. Add `GET /api/history?sym=ARB&hours=24` → `[{ts, l, b, spread_apr}]` from the `s` table. Add `lighter_hr, binance_hr` (latest) to scan rows; return the per-venue vol/OI the server already computes, if available in `state`.
 - Bump nothing else. Record a new fixture. Update `docs/FINDINGS.md` with the new fields.
@@ -200,6 +208,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T10–T15 | O | todo | |
 | T20–T27 | S | todo | |
 | T30–T35 | S/H | todo | |
+| T40b | S | todo | owner-approved cleanup after T40 |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |
 | T41 | S | blocked: owner OK | |
 | T50–T51 | H | todo | |
