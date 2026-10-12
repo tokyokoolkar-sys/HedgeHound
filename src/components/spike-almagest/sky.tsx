@@ -538,7 +538,9 @@ function Radar({ coins, reading }: { coins: RadarCoin[]; reading: Reading | null
     document.querySelectorAll<HTMLElement>(".a-proj [data-px]").forEach((el) => {
       proj.set(Number(el.dataset.px), Number(el.dataset.py), 0)
       g.localToWorld(proj).project(camera)
-      el.style.transform = `translate3d(${((proj.x * 0.5 + 0.5) * size.width).toFixed(1)}px, ${((-proj.y * 0.5 + 0.5) * size.height).toFixed(1)}px, 0)`
+      // Offset the element itself (not its content), so masks and filters cover the whole text.
+      const offset = el.dataset.dock === "below" ? " translate(-50%, 8px)" : el.dataset.kind === "callout" ? " translate(0, -50%)" : ""
+      el.style.transform = `translate3d(${((proj.x * 0.5 + 0.5) * size.width).toFixed(1)}px, ${((-proj.y * 0.5 + 0.5) * size.height).toFixed(1)}px, 0)${offset}`
       if (el.dataset.kind === "coin") el.style.opacity = String(lo)
     })
     // Callout: the leader draws out from the coin first, then the card resolves at the end of it.
