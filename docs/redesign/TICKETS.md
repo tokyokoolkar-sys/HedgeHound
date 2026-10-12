@@ -193,7 +193,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T00b | H | done | PRODUCT.md refreshed via /impeccable init; Impeccable c63b8dd + launcher + design hook (quiet) installed; see notes/T00b.md |
 | T01 | H | done | /api proxy to :8000; :8080/api/scan matches :8000 (notes/T01.md) |
 | T02 | H | done | 12 packages added, typecheck ok, no peer errors (notes/T02.md) |
-| T03 | H | blocked | shadcn init: EALLOWSCRIPTS via npx from user .npmrc allow-scripts; proposal in notes/T03.md |
+| T03 | H | done | shadcn 4.21.4 vega via local binary; 15 shadcn + 8 magicui on /_kitchen; cn declined; lint: pre-existing error + 4 warnings (notes/T03.md) |
 | T03b | H | todo | owner-approved 2026-10-12; after T03 |
 | T04 | H | done | font faces verified on /_kitchen; lint issues from untracked Impeccable scripts (notes/T04.md) |
 | S1–S5 | S | todo | |
