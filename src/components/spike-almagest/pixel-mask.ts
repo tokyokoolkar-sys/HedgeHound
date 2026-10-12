@@ -79,7 +79,7 @@ const R_TILE = 40
 const R_FRAMES = 32
 let revealCache: string[] | null = null
 
-function revealFrames() {
+export function revealFrames() {
   if (revealCache) return revealCache
   let seed = 4242
   const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296)
@@ -122,4 +122,55 @@ export function applyReveal(el: HTMLElement, p: number) {
   el.style.maskPosition = "0 0"
   el.style.setProperty("-webkit-mask-position", "0 0")
   return true
+}
+
+// ---------------------------------------------------------------- resolve (callout card)
+// The card emerges from the star field: first a scatter of pixels, then it fills in as big blocks and
+// sharpens step by step (roughly 240p → 480p → 720p → crisp). Pixelation is an SVG filter
+// (#a-pixelate, defined once on the page) whose block size the scroll steps down.
+const BLOCKS = [24, 16, 12, 8, 5, 3, 2]
+
+function setBlock(size: number) {
+  const f = document.getElementById("a-pixelate")
+  if (!f) return
+  const flood = f.querySelector("feFlood")
+  const comp = f.querySelector("feComposite[data-tile]")
+  const morph = f.querySelector("feMorphology")
+  const half = String(Math.floor(size / 2))
+  flood?.setAttribute("x", half)
+  flood?.setAttribute("y", half)
+  comp?.setAttribute("width", String(size))
+  comp?.setAttribute("height", String(size))
+  morph?.setAttribute("radius", String(size / 2))
+}
+
+export function applyResolve(el: HTMLElement, p: number) {
+  if (p <= 0) {
+    el.style.visibility = "hidden"
+    return
+  }
+  el.style.visibility = "visible"
+  // 1. scatter: random pixels appear, like stars catching light.
+  const cover = Math.min(1, p / 0.35)
+  if (cover < 1) {
+    const frames = revealFrames()
+    const img = `url(${frames[Math.min(frames.length - 1, Math.floor(cover * frames.length))]})`
+    el.style.maskImage = img
+    el.style.webkitMaskImage = img
+    el.style.maskSize = "200px"
+    el.style.setProperty("-webkit-mask-size", "200px")
+    el.style.maskRepeat = "repeat"
+    el.style.setProperty("-webkit-mask-repeat", "repeat")
+  } else {
+    el.style.maskImage = ""
+    el.style.webkitMaskImage = ""
+  }
+  // 2. resolution: block size steps down, then the filter comes off.
+  if (p >= 0.96) {
+    el.style.filter = ""
+    return
+  }
+  const k = Math.min(BLOCKS.length - 1, Math.floor(Math.max(0, (p - 0.3) / 0.66) * BLOCKS.length))
+  setBlock(BLOCKS[k])
+  el.style.filter = "url(#a-pixelate)"
 }

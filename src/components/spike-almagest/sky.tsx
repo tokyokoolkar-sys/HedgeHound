@@ -9,7 +9,7 @@ import * as THREE from "three"
 import { SVGLoader } from "three-stdlib"
 import { SourceTag } from "@/components/edition/source-tag"
 import { CMA, CMA_LINES, magToPx, project } from "./canis-major"
-import { applyReveal } from "./pixel-mask"
+import { applyResolve } from "./pixel-mask"
 import { CrawlEffect } from "./transition-effect"
 import { SKY, band, smooth, useSky } from "./state"
 
@@ -461,9 +461,9 @@ function Radar({ coins, portal, reading }: { coins: RadarCoin[]; portal: Portal;
   )
   const leader = useMemo(() => {
     const g = new THREE.BufferGeometry()
-    if (anchor) g.setAttribute("position", new THREE.Float32BufferAttribute([anchor.x, anchor.y, 0, dock[0], dock[1], 0], 3))
+    g.setAttribute("position", new THREE.Float32BufferAttribute([0, 0, 0, 0, 0, 0], 3))
     return g
-  }, [anchor, dock])
+  }, [])
   const leaderMat = useMemo(() => new THREE.LineBasicMaterial({ color: C.star, transparent: true, opacity: 0, depthWrite: false }), [])
 
   const pointGeo = useMemo(() => {
@@ -557,9 +557,16 @@ function Radar({ coins, portal, reading }: { coins: RadarCoin[]; portal: Portal;
     sweepMat.uniforms.uO.value = s.reduced ? 0.6 : appear
     const lo = band(s.beta, 0.2, 0.35) * (1 - band(s.beta, 0.88, 1))
     labels.current.forEach((el) => el && (el.style.opacity = String(s.reduced ? 1 : lo)))
-    const co = s.reduced ? 1 : band(s.beta, 0.36, 0.5) * (1 - band(s.beta, 0.86, 0.96))
-    if (callout.current) applyReveal(callout.current, co)
-    leaderMat.opacity = 0.4 * Math.min(1, co * 3)
+    // Callout: the leader draws out from the coin first, then the card resolves at the end of it.
+    const cp = s.reduced ? 1 : band(s.beta, 0.32, 0.62) * (1 - band(s.beta, 0.86, 0.96))
+    if (anchor) {
+      const lt = smooth(band(cp, 0, 0.3))
+      const arr = leader.attributes.position.array as Float32Array
+      arr.set([anchor.x, anchor.y, 0, anchor.x + (dock[0] - anchor.x) * lt, anchor.y + (dock[1] - anchor.y) * lt, 0])
+      leader.attributes.position.needsUpdate = true
+      leaderMat.opacity = lt > 0 ? 0.45 : 0
+    }
+    if (callout.current) applyResolve(callout.current, band(cp, 0.3, 1))
   })
 
   return (

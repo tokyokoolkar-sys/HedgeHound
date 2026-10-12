@@ -275,6 +275,16 @@ export function AlmagestPage() {
       </ClientOnly>
 
       <div ref={setLabelHost} className="a-labels" />
+      {/* Pixelate filter for the radar callout; block size is stepped by the scroll (pixel-mask.ts). */}
+      <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+        <filter id="a-pixelate" x="0" y="0" width="100%" height="100%">
+          <feFlood x="12" y="12" width="1" height="1" />
+          <feComposite data-tile="" width="24" height="24" />
+          <feTile result="tiles" />
+          <feComposite in="SourceGraphic" in2="tiles" operator="in" />
+          <feMorphology operator="dilate" radius="12" />
+        </filter>
+      </svg>
 
       {/* Scroll track: heights set the pace of each scene. */}
       <div className="a-track">
