@@ -185,7 +185,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T01 | H | done | /api proxy to :8000; :8080/api/scan matches :8000 (notes/T01.md) |
 | T02 | H | done | 12 packages added, typecheck ok, no peer errors (notes/T02.md) |
 | T03 | H | blocked | shadcn init: npm EALLOWSCRIPTS on npm install step; see notes/T03.md |
-| T04 | H | todo | |
+| T04 | H | partial | 3 font imports verified in browser; /_kitchen display waits on blocked T03 (notes/T04.md) |
 | S1–S5 | S | todo | |
 | T10–T15 | O | todo | |
 | T20–T27 | S | todo | |
