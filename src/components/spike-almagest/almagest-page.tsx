@@ -100,10 +100,6 @@ export function AlmagestPage() {
   useEffect(() => setIsMobile(window.matchMedia("(max-width: 767px)").matches), [])
   useEffect(() => setOpen(!window.matchMedia("(max-width: 767px)").matches), [])
 
-  const symbols = useMemo(() => {
-    const list = scan.rows.map((r) => r.symbol).slice(0, 30)
-    return list.slice(0, list.length - (list.length % 5))
-  }, [scan.rows])
   const coins = useMemo<RadarCoin[]>(() => coinsFor(scan.rows), [scan.rows])
   const reading = useMemo<Reading | null>(() => {
     const ok = scan.rows.filter((r) => r.status === "ok").sort((a, b) => b.net_apr - a.net_apr)[0]
@@ -115,6 +111,14 @@ export function AlmagestPage() {
   const radarAnchor = useMemo(() => radarPlaced.find((k) => k.symbol === reading?.symbol) ?? null, [radarPlaced, reading])
   const radarTop = useMemo(() => topCoins(radarPlaced, reading?.symbol), [radarPlaced, reading])
   const radarDock = useMemo(() => dockFor(radarAnchor, isMobile), [radarAnchor, isMobile])
+  // Carousel: every coin except the one already featured as the reading, with its net APR.
+  const carousel = useMemo(() => {
+    const list = scan.rows
+      .filter((r) => r.symbol !== reading?.symbol)
+      .slice(0, 30)
+      .map((r) => ({ symbol: r.symbol, net: r.net_apr, alert: r.status === "ok" }))
+    return list.slice(0, list.length - (list.length % 5))
+  }, [scan.rows, reading])
 
   // Spacers
   const secHero = useRef<HTMLElement>(null)
@@ -440,11 +444,12 @@ export function AlmagestPage() {
           <p className="a-mono" style={{ margin: 0, color: "var(--a-faint)" }}>
             <span className="a-greek">α → β</span> · on the hound’s nose
           </p>
-          {symbols.length > 0 && (
+          {carousel.length > 0 && (
             <LogosCarousel count={5} stagger={0.12} interval={2200} duration={700}>
-              {symbols.map((sym) => (
-                <span key={sym} className="a-symbol">
-                  {sym}
+              {carousel.map((c) => (
+                <span key={c.symbol} className="a-symbol" data-alert={c.alert ? "" : undefined}>
+                  {c.symbol}
+                  <span className="a-symbol-net">{`${c.net >= 0 ? "" : "−"}${Math.abs(c.net).toFixed(1)}%`}</span>
                 </span>
               ))}
             </LogosCarousel>

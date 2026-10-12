@@ -315,6 +315,24 @@ body:has(.almagest) {
   white-space: nowrap;
 }
 
+.a-symbol {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Net APR under each symbol: orange only when the coin is alerting, dim while it builds history. */
+.a-symbol-net {
+  font-size: 0.68em;
+  letter-spacing: 0.12em;
+  color: var(--a-faint);
+}
+
+.a-symbol[data-alert] .a-symbol-net {
+  color: var(--a-orange);
+}
+
 .a-shimmer-title {
   --shimmer-contrast: rgb(255 255 255 / 1) !important;
   color: rgb(244 241 234 / 0.82);
