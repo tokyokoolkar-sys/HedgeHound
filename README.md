@@ -43,7 +43,7 @@ The full design system, starting with the owner's taste, is in **[DESIGN.md](DES
 
 ## Run it locally
 
-You need Node 22+ and Python 3. Everything runs on your own machine.
+You need Node.js (tested with v26) and Python 3. Everything runs on your own machine.
 
 ```bash
 npm install
