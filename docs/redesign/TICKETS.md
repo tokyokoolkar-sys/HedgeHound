@@ -86,12 +86,35 @@ npm i @fontsource-variable/bricolage-grotesque @fontsource-variable/jetbrains-mo
 ---
 
 ## P2 — Foundation [O] (Opus builds; nobody else edits these files)
-- **T10** tokens + type scale + `.parchment`, `.glass`, `.hud` utilities in `styles.css`; `lib/palette.ts` mirror; map shadcn/magicui CSS vars to tokens. → Impeccable critique on `/_kitchen`.
-- **T11** `lib/motion/*`: client-only GSAP registration (ScrollTrigger, SplitText, ScrambleText, DrawSVG), `SmoothScroll` provider, `useReducedMotion`, quality tier detection → store.
-- **T12** `components/stage/*` + `lib/stage/*`: store, waypoints for all 10 chapters + sky/den modes, SkyStage, Starfield (instanced, `uScanY` flare), Constellation (from adapter), Nebula (S2: custom fbm quad + `.sky-floor` CSS fallback; write uniforms through the material ref), CameraRig, ScanSweep, Effects, Dust.
-- **T13** `components/edition/*` primitives (Chapter, Plate, Sheet, TornEdge, MegaTitle, SwashHeading, ChapterIndex, Hud, SourceTag, GlassPanel (S3 two-layer + Addendum normal-map rim), FeatureTable, ScanLine); `content/edition.ts`; **stub files for all 10 chapters** (title + swash only) wired into `routes/index.tsx`; new `nav/site-nav.tsx` shell.
-- **T14** Overture + BootSequence + hound-mark (S4 option b: LiquidMetal shader as a material inside SkyStage via a View, no own canvas; add `@paper-design/shaders` as a direct dependency; pre-bake the image processing; static poster on low tier / reduced motion) + glass Edition card.
-- **T15** Sniff chapter + `objects/radar.tsx` = **reference implementation**. → Impeccable full critique; fold the fixes into the primitives; tag `foundation-v1`.
+> **Rescoped 2026-10-13 for the Almagest direction (D1).** Build to `DESIGN.md` (read "The owner's taste" first). Port proven code from branch `D1-almagest` (`src/components/spike-almagest/*`) rather than rewriting it from scratch. The earlier T10 branch (`T10`, parchment/glass tokens) is superseded: keep only its plumbing (lockstep test, shadcn mapping approach, `text-muted` → `text-dim`, Fraunces/Inter removal), redo the values.
+- **T10** tokens + type to `DESIGN.md`:
+  - `@theme` colours: void, starlight (+ dim/faint), chart line, scan cyan, scent orange, star tints
+  - Noto Serif Display + JetBrains Mono via `@fontsource`; retire Bricolage, Fraunces, Pinyon and Syne
+  - type scale: hero / chapter / title / subtitle / body / label / figure
+  - `palette.ts` mirror + lockstep test
+  - shadcn mapping: primary = starlight, CTA variant = scent, ring = scan
+  - no `.parchment`, `.glass` or `.sky-floor`
+  - Impeccable critique on `/_kitchen`; critique answers from 2026-10-12 still apply (orange = alerts only, 11px HUD minimum)
+- **T11** `lib/motion/*`:
+  - Lenis on `gsap.ticker` (S5 settings, `lenis.reset()` before destroy)
+  - section progress from offsets + `ResizeObserver` (fixed-stage model, PLAN §4.1.5)
+  - `useReducedMotion`, quality tier → store
+  - no ScrollTrigger timelines on copy
+- **T12** `components/stage/*` + `lib/stage/*`:
+  - store and waypoints for overture + α–κ + sky/den modes
+  - SkyStage: one canvas; post = CrawlEffect + Noise + Vignette, **no Bloom**; shader output linearized
+  - Starfield (shell + flight + dust, wrap and fade), CameraRig (pointer parallax)
+  - `objects/canis-major.tsx` (J2000, Bayer labels via static `<Html>`), `objects/glass-hound.tsx` (custom glass shader, exponential recede)
+  - ported from D1
+- **T13** `components/edition/*` primitives:
+  - Chapter (fixed-stage), ChapterIndex (α–κ), Hud, SourceTag (exists)
+  - ShimmerTitle (`@spell/shimmer-text`), Rise, Stardust, ProjectedLabel (DOM projected per frame, never `<Html>` for refreshing data), bite-mask
+  - `@spell/logos-carousel` (with the `<style>` fix)
+  - `content/edition.ts`; **stub files for all chapters** (overture + α–κ) wired into `routes/index.tsx`; `nav/site-nav.tsx` shell (no glass pill: wordmark + links on the sky)
+- **T14** Overture + α Canis Major:
+  - glass hound → constellation burst → copy rising with the scroll
+  - the α→β bite crawl with the symbol carousel (net APR, tagged, featured coin excluded)
+- **T15** β Sniff chapter + `objects/radar.tsx` (sweep, pings, projected coin labels, the reading with leader line + Stardust) = **reference implementation**. → Impeccable full critique; fold the fixes into the primitives; tag `foundation-v1`.
 
 ---
 
@@ -204,8 +227,9 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T03 | H | done | shadcn 4.21.4 vega via local binary; 15 shadcn + 8 magicui on /_kitchen; cn declined; lint: pre-existing error + 4 warnings (notes/T03.md) |
 | T03b | H | done | 4 text effects ported to text-fx and demoed on /_kitchen; perspective scroll not visually verified (hidden pane) (notes/T03b.md) |
 | T04 | H | done | font faces verified on /_kitchen; lint issues from untracked Impeccable scripts (notes/T04.md) |
-| S1–S5 | S | todo | |
-| T10–T15 | O | todo | |
+| S1–S5 | S | done | S2/S3/S4 outcomes superseded by D1 (no nebula, no glass cards, custom glass hound) |
+| D1 | O | done | Almagest direction prototype: `/_almagest` on branch `D1-almagest`; written up as `DESIGN.md` |
+| T10–T15 | O | todo | rescoped to DESIGN.md (Almagest, D1) |
 | T20–T27 | S | todo | |
 | T30–T35 | S/H | todo | |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
