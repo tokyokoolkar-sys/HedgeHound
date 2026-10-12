@@ -144,33 +144,68 @@ function setBlock(size: number) {
   morph?.setAttribute("radius", String(size / 2))
 }
 
-export function applyResolve(el: HTMLElement, p: number) {
+// Grow frames: cells appear in order of distance from the origin (where the leader line meets the
+// card), with a slightly ragged edge, so the card spreads out of the line evenly until it is full size.
+const GROW_FRAMES = 40
+const GROW_CELL = 5
+const growCache = new Map<string, Array<string | undefined>>()
+
+function growFrame(w: number, h: number, ox: number, oy: number, k: number) {
+  const key = `${w}x${h}@${ox},${oy}`
+  let frames = growCache.get(key)
+  if (!frames) growCache.set(key, (frames = new Array(GROW_FRAMES)))
+  const hit = frames[k]
+  if (hit) return hit
+  const maxD = Math.max(Math.hypot(ox, oy), Math.hypot(w - ox, oy), Math.hypot(ox, h - oy), Math.hypot(w - ox, h - oy))
+  const t = (k + 1) / GROW_FRAMES
+  const c = document.createElement("canvas")
+  c.width = w
+  c.height = h
+  const ctx = c.getContext("2d")!
+  ctx.fillStyle = "#000"
+  for (let y = 0; y < h; y += GROW_CELL) {
+    for (let x = 0; x < w; x += GROW_CELL) {
+      const d = Math.hypot(x + GROW_CELL / 2 - ox, y + GROW_CELL / 2 - oy) / maxD
+      const jitter = cellRand(x / GROW_CELL, y / GROW_CELL, 29)
+      if (d <= t * 1.12 - jitter * 0.12) ctx.fillRect(x, y, GROW_CELL, GROW_CELL)
+    }
+  }
+  return (frames[k] = c.toDataURL("image/png"))
+}
+
+/**
+ * The card grows out of the leader line: pixels spread evenly from the attach point (left-middle,
+ * or top-centre when docked below) to full size, starting coarse and sharpening to crisp.
+ */
+export function applyResolve(el: HTMLElement, p: number, origin: "left" | "top" = "left") {
   if (p <= 0) {
     el.style.visibility = "hidden"
     return
   }
   el.style.visibility = "visible"
-  // 1. scatter: random pixels appear, like stars catching light.
-  const cover = Math.min(1, p / 0.35)
-  if (cover < 1) {
-    const frames = revealFrames()
-    const img = `url(${frames[Math.min(frames.length - 1, Math.floor(cover * frames.length))]})`
+  const w = Math.max(1, Math.round(el.offsetWidth))
+  const h = Math.max(1, Math.round(el.offsetHeight))
+  const grow = Math.min(1, p / 0.7)
+  if (grow < 1) {
+    const ox = origin === "left" ? 0 : Math.round(w / 2)
+    const oy = origin === "left" ? Math.round(h / 2) : 0
+    const img = `url(${growFrame(w, h, ox, oy, Math.min(GROW_FRAMES - 1, Math.floor(grow * GROW_FRAMES)))})`
     el.style.maskImage = img
     el.style.webkitMaskImage = img
-    el.style.maskSize = "200px"
-    el.style.setProperty("-webkit-mask-size", "200px")
-    el.style.maskRepeat = "repeat"
-    el.style.setProperty("-webkit-mask-repeat", "repeat")
+    el.style.maskSize = `${w}px ${h}px`
+    el.style.setProperty("-webkit-mask-size", `${w}px ${h}px`)
+    el.style.maskRepeat = "no-repeat"
+    el.style.setProperty("-webkit-mask-repeat", "no-repeat")
   } else {
     el.style.maskImage = ""
     el.style.webkitMaskImage = ""
   }
-  // 2. resolution: block size steps down, then the filter comes off.
   if (p >= 0.96) {
     el.style.filter = ""
     return
   }
-  const k = Math.min(BLOCKS.length - 1, Math.floor(Math.max(0, (p - 0.3) / 0.66) * BLOCKS.length))
+  // Coarse while it grows, sharpening as it reaches full size.
+  const k = Math.min(BLOCKS.length - 1, Math.floor((p / 0.96) * BLOCKS.length))
   setBlock(BLOCKS[k])
   el.style.filter = "url(#a-pixelate)"
 }

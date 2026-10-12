@@ -566,7 +566,10 @@ function Radar({ coins, portal, reading }: { coins: RadarCoin[]; portal: Portal;
       leader.attributes.position.needsUpdate = true
       leaderMat.opacity = lt > 0 ? 0.45 : 0
     }
-    if (callout.current) applyResolve(callout.current, band(cp, 0.3, 1))
+    // The card element inside the callout grows from where the line touches it.
+    const card = callout.current?.querySelector<HTMLElement>(".a-callout-card")
+    if (callout.current) callout.current.style.visibility = cp > 0.3 ? "visible" : "hidden"
+    if (card) applyResolve(card, band(cp, 0.3, 1), mobile ? "top" : "left")
   })
 
   return (
