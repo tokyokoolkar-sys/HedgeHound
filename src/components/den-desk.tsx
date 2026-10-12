@@ -164,7 +164,7 @@ function exportCsv(openNets: { symbol: string; net: number; funding: number }[])
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "hedgehound-paper.csv";
+  a.download = "hedgehound-sample.csv";
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -223,7 +223,7 @@ export function DenDesk() {
       <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
         <h1 className="font-sans text-huge font-extrabold">
           What the hound
-          <span className="block text-brand">brought back</span>
+          <span className="block text-brand">is sniffing at</span>
         </h1>
         <p className="max-w-sm font-serif text-xl italic text-ember">
           A paper desk for a {money(CAPITAL, 0)} research budget. The numbers follow the scanner. They are not a live poll.{" "}

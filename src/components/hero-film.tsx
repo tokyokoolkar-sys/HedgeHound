@@ -5,11 +5,14 @@ import { SourceTag } from "@/components/edition/source-tag";
 import { Tear } from "@/components/tear";
 import { WebglBoundary } from "@/components/webgl-boundary";
 import { palette } from "@/lib/palette";
-import { allRows, STARS, trailFor } from "@/lib/scent";
+import { allRows, DEFAULT_BOOK, STARS, trailFor } from "@/lib/scent";
 import { btn, btnGhost } from "@/lib/ui";
 
 const PEEK = allRows().filter((r) => r.alert);
 const TAPE = allRows().filter((r) => r.status === "ok");
+// The ARB card reads its figures from the sample row; nothing on it is typed in by hand.
+const ARB = allRows().find((r) => r.symbol === "ARB") ?? allRows()[0];
+const apr0 = (n: number) => `${Math.round(n)}%`;
 const HUB_CHART = trailFor(STARS.find((s) => s.symbol === "ARB") ?? STARS[0]).map((y, i) => ({ i, y }));
 
 const CLOUD = [
@@ -254,16 +257,17 @@ export function HeroFilm() {
               <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <dt className="text-ink-soft">Lighter hour</dt>
-                  <dd className="font-sans text-2xl font-extrabold text-scorch">83% APR</dd>
+                  <dd className="font-sans text-2xl font-extrabold text-scorch">{apr0(ARB.lighterApr)} APR</dd>
                 </div>
                 <div>
                   <dt className="text-ink-soft">Binance hour</dt>
-                  <dd className="font-sans text-2xl font-extrabold text-ink">14% APR</dd>
+                  <dd className="font-sans text-2xl font-extrabold text-ink">{apr0(ARB.binanceApr)} APR</dd>
                 </div>
               </dl>
               <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-                Short Lighter, long Binance. Gross gap about 72% APR. After a 0.30% round trip held for 72 hours,
-                net is about 35%. That is the scent. It is not a promise, and it is not an order.
+                Short {ARB.short}, long {ARB.long}. Gross gap about {apr0(ARB.grossApr)} APR. After a{" "}
+                {DEFAULT_BOOK.cost.toFixed(2)}% round trip held for {DEFAULT_BOOK.hold} hours, net is about{" "}
+                {apr0(ARB.netApr)}. That is the scent. It is not a promise, and it is not an order.
               </p>
               <p className="mt-4 font-serif text-lg italic text-ink">
                 hourly = rate / interval
@@ -379,8 +383,8 @@ export function HeroFilm() {
               position itself, which only deserves size when the gap pays its ticket.
             </p>
             <p className="agent-extra mt-4 max-w-md font-serif text-xl italic text-ember md:text-2xl">
-              At twenty dollars this is a classroom. A few dollars a year if the edge is real. Not a ladder from
-              twenty to a hundred.
+              At twenty dollars this is a classroom, not a paycheck. No figure here is a forecast. Not a ladder
+              from twenty to a hundred.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/universe" className={btn}>
