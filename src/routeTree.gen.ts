@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as KitchenRouteImport } from './routes/[_]kitchen'
 import { Route as DenRouteImport } from './routes/den'
 import { Route as UniverseRouteImport } from './routes/universe'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KitchenRoute = KitchenRouteImport.update({
+  id: '/_kitchen',
+  path: '/_kitchen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DenRoute = DenRouteImport.update({
@@ -31,30 +37,34 @@ const UniverseRoute = UniverseRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/_kitchen': typeof KitchenRoute
   '/den': typeof DenRoute
   '/universe': typeof UniverseRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/_kitchen': typeof KitchenRoute
   '/den': typeof DenRoute
   '/universe': typeof UniverseRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_kitchen': typeof KitchenRoute
   '/den': typeof DenRoute
   '/universe': typeof UniverseRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/den' | '/universe'
+  fullPaths: '/' | '/_kitchen' | '/den' | '/universe'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/den' | '/universe'
-  id: '__root__' | '/' | '/den' | '/universe'
+  to: '/' | '/_kitchen' | '/den' | '/universe'
+  id: '__root__' | '/' | '/_kitchen' | '/den' | '/universe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  KitchenRoute: typeof KitchenRoute
   DenRoute: typeof DenRoute
   UniverseRoute: typeof UniverseRoute
 }
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_kitchen': {
+      id: '/_kitchen'
+      path: '/_kitchen'
+      fullPath: '/_kitchen'
+      preLoaderRoute: typeof KitchenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/den': {
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  KitchenRoute: KitchenRoute,
   DenRoute: DenRoute,
   UniverseRoute: UniverseRoute,
 }
