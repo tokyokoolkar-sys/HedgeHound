@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import test from "node:test";
+import test, { after } from "node:test";
 import {
   appNameFromHost,
   createHeadInjector,
@@ -20,6 +20,18 @@ import {
 import { renderInstallPage } from "./grok-pwa-plugin.mjs";
 
 const TEMPLATE_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+// Head injection falls back to process.cwd() for src/lib/og/site.json and
+// public/og.* when a test passes no cwd. Run from an empty directory so the
+// repo's own identity files never leak into expectations. Tests that need
+// files pass an absolute temp root, and repo files are read via TEMPLATE_ROOT.
+const ORIGINAL_CWD = process.cwd();
+const ISOLATED_CWD = mkdtempSync(join(tmpdir(), "grok-pwa-test-cwd-"));
+process.chdir(ISOLATED_CWD);
+after(() => {
+  process.chdir(ORIGINAL_CWD);
+  rmSync(ISOLATED_CWD, { recursive: true, force: true });
+});
 
 test("injects before </head>", () => {
   const out = injectGrokPwaHead("<html><head><title>x</title></head><body></body></html>");
