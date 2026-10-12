@@ -194,7 +194,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T01 | H | done | /api proxy to :8000; :8080/api/scan matches :8000 (notes/T01.md) |
 | T02 | H | done | 12 packages added, typecheck ok, no peer errors (notes/T02.md) |
 | T03 | H | done | shadcn 4.21.4 vega via local binary; 15 shadcn + 8 magicui on /_kitchen; cn declined; lint: pre-existing error + 4 warnings (notes/T03.md) |
-| T03b | H | todo | owner-approved 2026-10-12; after T03 |
+| T03b | H | done | 4 text effects ported to text-fx and demoed on /_kitchen; perspective scroll not visually verified (hidden pane) (notes/T03b.md) |
 | T04 | H | done | font faces verified on /_kitchen; lint issues from untracked Impeccable scripts (notes/T04.md) |
 | S1–S5 | S | todo | |
 | T10–T15 | O | todo | |

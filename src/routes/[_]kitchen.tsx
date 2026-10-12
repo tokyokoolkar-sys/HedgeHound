@@ -24,6 +24,10 @@ import { OrbitingCircles } from "@/components/magicui/orbiting-circles";
 import { HyperText } from "@/components/magicui/hyper-text";
 import { Ripple } from "@/components/magicui/ripple";
 import { Meteors } from "@/components/magicui/meteors";
+import { BlurReveal } from "@/components/text-fx/blur-reveal";
+import { GradientWaveText } from "@/components/text-fx/gradient-wave-text";
+import { PerspectiveText } from "@/components/text-fx/perspective-text-scroll";
+import { AnimatedShinyText } from "@/components/text-fx/animated-shiny-text";
 
 // Throwaway specimen route (T04 / T03 / T03b). Deleted in T52.
 // Placeholder content only: no APR, yield or performance figures.
@@ -317,6 +321,28 @@ function KitchenPage() {
           <Row label="meteors">
             <div className="relative h-40 w-full max-w-md overflow-hidden rounded-xl border">
               <Meteors number={12} />
+            </div>
+          </Row>
+        </div>
+      </Section>
+
+      <Section title="text-fx (T03b)">
+        <div className="flex flex-col gap-10">
+          <Row label="blur-reveal (sheet cards only)">
+            <BlurReveal className="w-72 rounded-xl border p-4">Blur reveal card</BlurReveal>
+          </Row>
+
+          <Row label="gradient-wave-text">
+            <GradientWaveText className="text-4xl font-bold">Gradient wave</GradientWaveText>
+          </Row>
+
+          <Row label="animated-shiny-text">
+            <AnimatedShinyText className="text-2xl">Shiny text</AnimatedShinyText>
+          </Row>
+
+          <Row label="perspective-text-scroll (scrolls inside this box)">
+            <div className="h-[70vh] w-full overflow-y-auto rounded-xl border">
+              <PerspectiveText />
             </div>
           </Row>
         </div>
