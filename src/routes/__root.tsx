@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { useState } from "react";
 import { AuthProvider } from "@/lib/auth/provider";
-import { SiteNav } from "@/components/nav";
+import { SiteNav } from "@/components/nav/site-nav";
 import { ScrollEngine } from "@/lib/motion/scroll-engine";
 import { SkyHost } from "@/components/stage/sky-host";
 import appCss from "../styles.css?url";

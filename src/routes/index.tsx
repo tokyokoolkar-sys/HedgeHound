@@ -1,14 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HeroFilm } from "@/components/hero-film";
+import { Edition } from "@/components/edition/edition";
 
 export const Route = createFileRoute("/")({
-  component: Home,
+  component: Edition,
 });
-
-function Home() {
-  return (
-    <main>
-      <HeroFilm />
-    </main>
-  );
-}

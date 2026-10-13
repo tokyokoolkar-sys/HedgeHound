@@ -15,6 +15,7 @@ import { CanisMajor } from "../objects/canis-major"
 import { GlassHound } from "../objects/glass-hound"
 import { CameraRig } from "./camera-rig"
 import { Effects } from "./effects"
+import { Projector } from "./projector"
 import { Starfield } from "./starfield"
 
 const DPR: Record<Quality, [number, number]> = { high: [1, 1.75], mid: [1, 1.5], low: [1, 1] }
@@ -52,6 +53,7 @@ export default function SkyStage() {
           <GlassHound quality={quality} />
           {labelHost && <CanisMajor labelHost={labelHost} />}
           <CameraRig />
+          <Projector />
           <Effects />
         </Canvas>
       </div>
