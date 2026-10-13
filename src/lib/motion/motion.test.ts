@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
-import { activeIndex, band, clamp01, damp, sectionProgress, smooth } from "./math.ts"
+import { activeIndex, band, clamp01, damp, recedeDepth, sectionProgress, smooth } from "./math.ts"
 import { pickTier } from "./quality.ts"
 
 describe("scroll maths", () => {
@@ -28,6 +28,14 @@ describe("scroll maths", () => {
     assert.equal(smooth(0), 0)
     assert.equal(smooth(1), 1)
     assert.equal(smooth(0.5), 0.5)
+  })
+
+  it("recedeDepth is exponential: 0 → 1, slow first, clamped", () => {
+    assert.equal(recedeDepth(0), 0)
+    assert.ok(Math.abs(recedeDepth(1) - 1) < 1e-12)
+    assert.ok(recedeDepth(0.5) < 0.15)
+    assert.ok(recedeDepth(0.9) - recedeDepth(0.8) > recedeDepth(0.2) - recedeDepth(0.1))
+    assert.equal(recedeDepth(2), recedeDepth(1))
   })
 
   it("clamp01", () => {

@@ -5,6 +5,34 @@ import type { Quality } from "../motion/quality.ts"
 
 export type Mode = "edition" | "sky" | "den" | "quiet"
 export type { Quality }
+export type Grain = "dither" | "pixel"
+
+/**
+ * Scene channels: 0..1 values the chapters write from their scroll progress and the 3D objects read.
+ * They are the whole contract between copy and sky; objects never read the clock for choreography.
+ */
+export type Scene = {
+  /** Glass hound recede (0 = resting, 1 = gone). */
+  houndAway: number
+  /** Canis Major: shown at all (0/1), star formation, line draw-in, label fade, recede into depth. */
+  canisOn: number
+  canisForm: number
+  canisLines: number
+  canisLabels: number
+  canisAway: number
+  /** Distance flown through the dust layers (grows with scroll; drives parallax). */
+  flight: number
+}
+
+export const EMPTY_SCENE: Scene = {
+  houndAway: 0,
+  canisOn: 0,
+  canisForm: 0,
+  canisLines: 0,
+  canisLabels: 0,
+  canisAway: 0,
+  flight: 0,
+}
 
 export type StageState = {
   mode: Mode
@@ -24,6 +52,12 @@ export type StageState = {
   reduced: boolean
   /** True while Lenis is driving the scroll (wheel smoothing on, reduced motion off). */
   smooth: boolean
+  /** A page has asked for the sky (T12 decision a): SkyStage starts then and stays alive after. */
+  sky: boolean
+  /** Bite-crawl progress, 0..1 (0.5 = fully eaten, the scene swaps underneath). */
+  transition: number
+  grain: Grain
+  scene: Scene
   set: (p: Partial<Omit<StageState, "set">>) => void
 }
 
@@ -38,5 +72,9 @@ export const useStage = create<StageState>((set) => ({
   quality: "high",
   reduced: false,
   smooth: false,
+  sky: false,
+  transition: 0,
+  grain: "dither",
+  scene: EMPTY_SCENE,
   set: (p) => set(p),
 }))

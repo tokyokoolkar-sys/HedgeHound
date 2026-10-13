@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AuthProvider } from "@/lib/auth/provider";
 import { SiteNav } from "@/components/nav";
 import { ScrollEngine } from "@/lib/motion/scroll-engine";
+import { SkyHost } from "@/components/stage/sky-host";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -41,6 +42,8 @@ function RootDocument() {
         <QueryClientProvider client={queryClient}>
           {/* T11: smooth scroll + section progress for every page (effects only; nothing renders). */}
           <ScrollEngine />
+          {/* T12: the one sky canvas; dormant until a page calls useRequestSky(). */}
+          <SkyHost />
           <AuthProvider>
             <SiteNav />
             <Outlet />

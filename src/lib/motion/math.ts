@@ -25,6 +25,9 @@ export function activeIndex(progress: number[]) {
   return i
 }
 
+/** Exponential recede (glass hound): slow at first, then faster and smaller as it falls into depth. */
+export const recedeDepth = (away: number) => (Math.exp(clamp01(away) * 4.4) - 1) / (Math.exp(4.4) - 1)
+
 /** Frame-rate-independent exponential approach toward `target` (λ ≈ responsiveness per second). */
 export const damp = (current: number, target: number, lambda: number, dtSeconds: number) =>
   current + (target - current) * (1 - Math.exp(-lambda * dtSeconds))
