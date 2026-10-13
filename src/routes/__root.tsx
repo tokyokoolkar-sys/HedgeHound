@@ -3,6 +3,7 @@ import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-r
 import { useState } from "react";
 import { AuthProvider } from "@/lib/auth/provider";
 import { SiteNav } from "@/components/nav";
+import { ScrollEngine } from "@/lib/motion/scroll-engine";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -38,6 +39,8 @@ function RootDocument() {
       </head>
       <body className="bg-bg font-sans text-fg antialiased">
         <QueryClientProvider client={queryClient}>
+          {/* T11: smooth scroll + section progress for every page (effects only; nothing renders). */}
+          <ScrollEngine />
           <AuthProvider>
             <SiteNav />
             <Outlet />

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as KitchenRouteImport } from './routes/[_]kitchen'
+import { Route as MotionRouteImport } from './routes/[_]motion'
 import { Route as DenRouteImport } from './routes/den'
 import { Route as UniverseRouteImport } from './routes/universe'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const KitchenRoute = KitchenRouteImport.update({
   id: '/_kitchen',
   path: '/_kitchen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotionRoute = MotionRouteImport.update({
+  id: '/_motion',
+  path: '/_motion',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DenRoute = DenRouteImport.update({
@@ -38,12 +44,14 @@ const UniverseRoute = UniverseRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/_kitchen': typeof KitchenRoute
+  '/_motion': typeof MotionRoute
   '/den': typeof DenRoute
   '/universe': typeof UniverseRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/_kitchen': typeof KitchenRoute
+  '/_motion': typeof MotionRoute
   '/den': typeof DenRoute
   '/universe': typeof UniverseRoute
 }
@@ -51,20 +59,22 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_kitchen': typeof KitchenRoute
+  '/_motion': typeof MotionRoute
   '/den': typeof DenRoute
   '/universe': typeof UniverseRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/_kitchen' | '/den' | '/universe'
+  fullPaths: '/' | '/_kitchen' | '/_motion' | '/den' | '/universe'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/_kitchen' | '/den' | '/universe'
-  id: '__root__' | '/' | '/_kitchen' | '/den' | '/universe'
+  to: '/' | '/_kitchen' | '/_motion' | '/den' | '/universe'
+  id: '__root__' | '/' | '/_kitchen' | '/_motion' | '/den' | '/universe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   KitchenRoute: typeof KitchenRoute
+  MotionRoute: typeof MotionRoute
   DenRoute: typeof DenRoute
   UniverseRoute: typeof UniverseRoute
 }
@@ -83,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/_kitchen'
       fullPath: '/_kitchen'
       preLoaderRoute: typeof KitchenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_motion': {
+      id: '/_motion'
+      path: '/_motion'
+      fullPath: '/_motion'
+      preLoaderRoute: typeof MotionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/den': {
@@ -105,6 +122,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   KitchenRoute: KitchenRoute,
+  MotionRoute: MotionRoute,
   DenRoute: DenRoute,
   UniverseRoute: UniverseRoute,
 }
