@@ -232,7 +232,8 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T10 | O | done | DESIGN.md tokens + type; two fonts; legacy palette kept (1b); critique 19/28; notes/T10.md |
 | T11 | O | done | scroll engine: Lenis (wheel only, native touch), section progress, stage store, tiers; notes/T11.md |
 | T12 | O | done | sky stage: one dormant-until-asked canvas, starfield, glass hound, Canis Major, bite crawl, no bloom; notes/T12.md |
-| T13–T15 | O | todo | rescoped to DESIGN.md (Almagest, D1) |
+| T13 | O | done | building blocks + Edition skeleton on `/` (legacy home at /v1), new global nav; notes/T13.md |
+| T14–T15 | O | todo | rescoped to DESIGN.md (Almagest, D1) |
 | T20–T27 | S | todo | |
 | T30–T35 | S/H | todo | |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
