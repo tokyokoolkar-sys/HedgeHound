@@ -18,8 +18,6 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
-        // The one orange button: the primary call to action (DESIGN.md: orange = alerts / CTA only).
-        cta: "bg-scent text-void hover:bg-scent/85",
       },
       size: {
         default:

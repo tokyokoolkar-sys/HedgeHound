@@ -34,7 +34,7 @@ import { ShimmerText } from "@/components/shimmer-text";
 import { palette } from "@/lib/palette";
 
 // Throwaway specimen route (T04 / T03 / T03b). Deleted in T52.
-// Placeholder content only: no APR, yield or performance figures.
+// Placeholder content only: the one figure shown is tagged SAMPLE.
 export const Route = createFileRoute("/_kitchen")({
   component: KitchenPage,
 });
@@ -43,8 +43,8 @@ export const Route = createFileRoute("/_kitchen")({
 function KitchenPage() {
   return (
     <main className="min-h-dvh bg-void px-4 pt-24 pb-10 text-starlight md:px-10">
-      <h1 className="mb-2 text-2xl font-bold">/_kitchen</h1>
-      <p className="mb-10 max-w-prose text-v1-muted">
+      <h1 className="mb-2 text-title font-light-display">/_kitchen</h1>
+      <p className="mb-10 max-w-prose text-starlight-dim">
         Specimens for T10 (DESIGN.md tokens and type), T03 (shadcn and magicui) and T03b (text effects). Throwaway route, deleted in T52.
       </p>
 
@@ -293,22 +293,23 @@ function KitchenPage() {
 
 // ---------- T10: DESIGN.md tokens and type ----------
 
-type Swatch = { token: string; color: string; role: string; on: string; minimum: number };
+type Swatch = { token: string; color: string; role: string; on: string; minimum: number; kind: "text" | "non-text" | "none" };
 
 const DIM = `rgb(244 241 234 / ${palette.starlightDimAlpha})`;
 const FAINT = `rgb(244 241 234 / ${palette.starlightFaintAlpha})`;
 
-// Each swatch is checked against the surface it is meant for (critique fix: no context-free ratios).
+// Each swatch is checked against what it is used for: text needs 4.5:1 (WCAG 1.4.3, small text),
+// lines and other non-text marks need 3:1 (1.4.11). Faint is for lines only (T10 critique decision).
 const SWATCHES: Swatch[] = [
-  { token: "--color-void", color: palette.void, role: "the sky; the only background", on: "—", minimum: 0 },
-  { token: "--color-starlight", color: palette.starlight, role: "titles, primary text", on: "void", minimum: 4.5 },
-  { token: "--color-starlight-dim", color: DIM, role: "body, secondary text", on: "void", minimum: 4.5 },
-  { token: "--color-starlight-faint", color: FAINT, role: "captions, tertiary labels", on: "void", minimum: 3 },
-  { token: "--color-chart-line", color: palette.chartLine, role: "constellation lines, radar rings", on: "void", minimum: 3 },
-  { token: "--color-scan", color: palette.scan, role: "scanning · long leg · Bayer letters · focus", on: "void", minimum: 4.5 },
-  { token: "--color-scent", color: palette.scent, role: "alerts · short leg · CTA", on: "void", minimum: 4.5 },
-  { token: "--color-star-cool", color: palette.starCool, role: "star tint only, never UI", on: "—", minimum: 0 },
-  { token: "--color-star-warm", color: palette.starWarm, role: "star tint only, never UI", on: "—", minimum: 0 },
+  { token: "--color-void", color: palette.void, role: "the sky; the only background", on: "", minimum: 0, kind: "none" },
+  { token: "--color-starlight", color: palette.starlight, role: "titles, primary text", on: "void", minimum: 4.5, kind: "text" },
+  { token: "--color-starlight-dim", color: DIM, role: "body, captions, labels", on: "void", minimum: 4.5, kind: "text" },
+  { token: "--color-starlight-faint", color: FAINT, role: "lines, ticks, rings only (never text)", on: "void", minimum: 3, kind: "non-text" },
+  { token: "--color-chart-line", color: palette.chartLine, role: "constellation lines, radar rings", on: "void", minimum: 3, kind: "non-text" },
+  { token: "--color-scan", color: palette.scan, role: "scanning · long leg · Bayer letters · focus", on: "void", minimum: 4.5, kind: "text" },
+  { token: "--color-scent", color: palette.scent, role: "alerts · short leg (nothing else is orange)", on: "void", minimum: 4.5, kind: "text" },
+  { token: "--color-star-cool", color: palette.starCool, role: "star tint only, never UI", on: "", minimum: 0, kind: "none" },
+  { token: "--color-star-warm", color: palette.starWarm, role: "star tint only, never UI", on: "", minimum: 0, kind: "none" },
 ];
 
 function rgbOf(color: string): [number, number, number, number] {
@@ -354,8 +355,8 @@ function TokensSection() {
                 <p className="label text-starlight">{s.token}</p>
                 <p className="mt-1 text-sm text-starlight-dim">{s.role}</p>
                 {ratio !== null && (
-                  <p className={`label mt-1 ${pass ? "text-starlight-faint" : "text-scent"}`}>
-                    {ratio.toFixed(1)}:1 on {s.on} · {pass ? "pass" : "fail"} {s.minimum}:1
+                  <p className={`label mt-1 ${pass ? "text-starlight-dim" : "text-scent"}`}>
+                    {ratio.toFixed(1)}:1 on {s.on} · {pass ? "pass" : "fail"} {s.minimum}:1 {s.kind}
                   </p>
                 )}
               </div>
@@ -366,34 +367,34 @@ function TokensSection() {
 
       <div className="mt-16 flex flex-col gap-10">
         <div>
-          <p className="label mb-3 text-starlight-faint">text-hero · ShimmerText</p>
+          <p className="label mb-3 text-starlight-dim">text-hero · ShimmerText</p>
           <ShimmerText className="[--shimmer-contrast:rgb(255_255_255)]" duration={2.4} delay={0.8}>
             <span className="text-hero font-light-display text-starlight/85">HedgeHound</span>
           </ShimmerText>
         </div>
         <div>
-          <p className="label mb-3 text-starlight-faint">text-chapter</p>
+          <p className="label mb-3 text-starlight-dim">text-chapter</p>
           <p className="text-chapter font-light-display">Sniff</p>
         </div>
         <div>
-          <p className="label mb-3 text-starlight-faint">text-title</p>
+          <p className="label mb-3 text-starlight-dim">text-title</p>
           <p className="text-title font-light-display">The hound in the sky</p>
         </div>
         <div>
-          <p className="label mb-3 text-starlight-faint">text-subtitle · italic</p>
+          <p className="label mb-3 text-starlight-dim">text-subtitle · italic</p>
           <p className="text-subtitle italic">Every five minutes, the hound lifts its nose.</p>
         </div>
         <div className="max-w-[62ch]">
-          <p className="label mb-3 text-starlight-faint">text-body · starlight-dim</p>
+          <p className="label mb-3 text-starlight-dim">text-body · starlight-dim</p>
           <p className="text-body text-starlight-dim">
             Every coin is a star. Brightness is the spread it carries; a steady light is a spread that stays. Body
             copy sits straight on the sky, with no card behind it.
           </p>
         </div>
         <div>
-          <p className="label mb-3 text-starlight-faint">label · figure · Bayer letters</p>
+          <p className="label mb-3 text-starlight-dim">label · figure · bayer</p>
           <p className="label text-starlight-dim">
-            <span className="text-scan normal-case tracking-normal">α</span> · Canis Major · RA 06h 45m 09s · DEC −16° 43′
+            <span className="bayer">α</span> · Canis Major · RA 06h 45m 09s · DEC −16° 43′
           </p>
           <p className="figure mt-3">
             ARB <span className="text-scent">35.3% net</span> <SourceTag kind="sample" className="ml-2 align-middle" />
@@ -402,7 +403,7 @@ function TokensSection() {
       </div>
 
       <div className="mt-16 flex flex-wrap items-center gap-3">
-        <p className="label w-full text-starlight-faint">SourceTag states</p>
+        <p className="label w-full text-starlight-dim">SourceTag states</p>
         <SourceTag kind="sample" />
         <SourceTag kind="paper" />
         <SourceTag kind="live" ts={Date.UTC(2026, 9, 14, 5, 4)} />
@@ -410,7 +411,7 @@ function TokensSection() {
       </div>
 
       <div className="mt-16 overflow-hidden">
-        <p className="label mb-6 text-starlight-faint">@spell/logos-carousel · symbols</p>
+        <p className="label mb-6 text-starlight-dim">@spell/logos-carousel · symbols</p>
         <LogosCarousel count={5} stagger={0.12} interval={2200} duration={700} className="gap-5 sm:gap-10">
           {CAROUSEL.map((sym) => (
             <span key={sym} className="label text-base tracking-[0.3em] text-starlight">
@@ -421,8 +422,8 @@ function TokensSection() {
       </div>
 
       <div className="mt-16 flex flex-wrap items-center gap-3">
-        <p className="label w-full text-starlight-faint">shadcn mapping: primary = starlight, cta = scent, ring = scan</p>
-        <Button variant="cta">Open scanner</Button>
+        <p className="label w-full text-starlight-dim">shadcn mapping: primary = starlight, CTA = starlight hairline, ring = scan</p>
+        <Button variant="outline">Open scanner</Button>
         <Button>Primary</Button>
         <Button variant="outline">Outline</Button>
         <Button variant="ghost">Ghost</Button>
@@ -435,7 +436,7 @@ function TokensSection() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-16">
-      <h2 className="mb-6 border-b pb-2 font-mono text-sm tracking-[0.14em] uppercase">{title}</h2>
+      <h2 className="label mb-6 border-b pb-2 text-starlight">{title}</h2>
       {children}
     </section>
   );
@@ -444,7 +445,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="mb-3 font-mono text-xs text-faint">{label}</h3>
+      <h3 className="label mb-3 text-starlight-dim">{label}</h3>
       <div className="flex flex-wrap items-center gap-4">{children}</div>
     </div>
   );

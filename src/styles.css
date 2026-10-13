@@ -45,14 +45,18 @@
   --text-title--font-weight: 180;
   --text-subtitle: clamp(1.2rem, 1.4vw, 1.45rem);
   --text-subtitle--line-height: 1.3;
+  --text-subtitle--font-weight: 330;
   --text-body: clamp(1.05rem, 0.35vw + 0.95rem, 1.2rem);
   --text-body--line-height: 1.55;
+  --text-body--font-weight: 330;
   --text-label: 0.6875rem; /* 11px: the minimum for HUD and labels (T10 critique) */
   --text-label--line-height: 1.3;
   --text-label--letter-spacing: 0.22em;
   --text-figure: 0.875rem;
   --text-figure--line-height: 1.2;
   --text-figure--letter-spacing: 0.06em;
+  --text-bayer: 0.8125rem; /* 13px Greek letters: legible as α, not a */
+  --tracking-tag: 0.14em;
 
   /* v1 palette, kept as-is until the legacy pages are rebuilt (T10 decision 1b). Remove in T51.
      v1 `muted` is renamed `v1-muted`: `muted` belongs to shadcn's surface token. */
@@ -99,8 +103,20 @@
   font-family: var(--font-mono);
   font-size: var(--text-figure);
   font-weight: 300;
+  line-height: var(--text-figure--line-height);
   letter-spacing: var(--text-figure--letter-spacing);
   font-variant-numeric: tabular-nums;
+}
+
+/* Greek Bayer letters (α β γ …): mono, 13px, regular weight, never uppercased. */
+@utility bayer {
+  font-family: var(--font-mono);
+  font-size: var(--text-bayer);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--color-scan);
 }
 
 @layer base {

@@ -12,6 +12,12 @@ colors:
   star-cool: "#c9d6ff"
   star-warm: "#ffe2c4"
 typography:
+  bayer-letter:
+    fontFamily: "JetBrains Mono Variable, ui-monospace, monospace"
+    fontSize: "13px"
+    fontWeight: 400
+    lineHeight: 1
+    letterSpacing: "normal"
   display-hero:
     fontFamily: "Noto Serif Display Variable, serif"
     fontSize: "clamp(3.2rem, 9vw, 8.5rem)"
@@ -119,7 +125,7 @@ The palette is the night: one black, one starlight, and two signal colours with 
 
 ### Primary
 - **Void** `#010104`: the page and the sky. There is no other background.
-- **Starlight** `#f4f1ea`: all primary text and the brightest stars. Use it at 0.62 (`starlight-dim`) for body and secondary copy, and at 0.38 (`starlight-faint`) for captions and tertiary labels.
+- **Starlight** `#f4f1ea`: all primary text and the brightest stars. Use it at 0.62 (`starlight-dim`, 7:1) for body, captions and labels. `starlight-faint` (0.38, 3.1:1) is **for lines, ticks and rings only, never text** (T10 critique: small text needs 4.5:1).
 
 ### Signals (meaning only, never decoration)
 - **Scan cyan** `#7fdcff`: scanning and the long leg. Bayer letters (α β γ …), the radar sweep, the active chapter index and focus rings.
@@ -130,6 +136,7 @@ The palette is the night: one black, one starlight, and two signal colours with 
 - **Star cool / star warm** `#c9d6ff` / `#ffe2c4`: tints for star colour temperature only. Never used for UI.
 
 ### Named rules
+- **The Quiet Action Rule:** the main call to action ("Open scanner") is a **starlight hairline** button, not a filled or orange one. Orange stays purely "the hound smells something" (owner decision, T10 critique).
 - **The Two Signals Rule:** cyan means scanning or long, orange means alert or short. There is no green, no red, and no third accent.
 - **The Honest Number Rule:** every figure carries a SourceTag (LIVE · time / PAPER / SAMPLE). One tag may cover a group of figures from the same source.
 
@@ -177,6 +184,9 @@ No drop shadows and no glow. Post-processing is limited to the scroll-locked cra
 Hairlines and points. Lines are 1px chart lines; stars are round points with a tight core and a falloff that reaches zero before the sprite edge (no discs). Rounded corners only on the small SourceTag pill and the prototype options box. The glass hound is the only rounded solid: deep bevel, soft edges.
 
 ## Components
+
+### Buttons
+Quiet by default. The primary action is a starlight hairline (outline at 40% starlight, starlight text, cyan focus ring); a filled starlight button exists for rare emphasis. There is no orange button.
 
 ### SourceTag
 A mono pill reading `○ SAMPLE`, `◆ PAPER` or `● LIVE · 12:04`, with a dashed `◌ … · STALE` variant. It is required next to every figure or group of figures.

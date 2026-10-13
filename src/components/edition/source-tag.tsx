@@ -8,8 +8,8 @@ import { cn } from "@/lib/cn"
  * - paper:  the local paper book (browser storage)
  * - sample: static layout sample, synthesized, or the scanner-offline fallback
  *
- * Early slice of T13. Colours are neutral until T10 maps tokens; the scent/scan
- * accents are reserved for meaning (PLAN §2.2), so they are not used here.
+ * Early slice of T13. Colour is inherited, so the tag works on the sky and on legacy cream
+ * sections; the scent/scan accents are reserved for meaning (DESIGN.md), so they are not used here.
  */
 export type SourceKind = "live" | "paper" | "sample"
 
@@ -58,7 +58,7 @@ export function SourceTag({ kind, ts, stale = false, className }: Props) {
         // T10 critique: 11px minimum, LIVE at full strength, SAMPLE/PAPER a step quieter. Colour is
         // inherited so the tag works on the sky and on the legacy pages' cream sections alike.
         "inline-flex items-center gap-1 rounded-full border border-current/30 px-2 py-0.5",
-        "font-mono text-[11px] leading-none tracking-[0.14em] uppercase tabular-nums whitespace-nowrap",
+        "label font-normal leading-none tracking-tag whitespace-nowrap",
         kind === "live" ? "opacity-100" : "opacity-75",
         isStale && "border-dashed",
         className,
