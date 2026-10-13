@@ -229,7 +229,8 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T04 | H | done | font faces verified on /_kitchen; lint issues from untracked Impeccable scripts (notes/T04.md) |
 | S1–S5 | S | done | S2/S3/S4 outcomes superseded by D1 (no nebula, no glass cards, custom glass hound) |
 | D1 | O | done | Almagest direction prototype: `/_almagest` on branch `D1-almagest`; written up as `DESIGN.md` |
-| T10–T15 | O | todo | rescoped to DESIGN.md (Almagest, D1) |
+| T10 | O | done | DESIGN.md tokens + type; two fonts; legacy palette kept (1b); critique 19/28; notes/T10.md |
+| T11–T15 | O | todo | rescoped to DESIGN.md (Almagest, D1) |
 | T20–T27 | S | todo | |
 | T30–T35 | S/H | todo | |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |

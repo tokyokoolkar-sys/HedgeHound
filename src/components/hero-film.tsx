@@ -44,7 +44,7 @@ function Marquee({ reverse, items }: { reverse?: boolean; items: typeof TAPE }) 
       <div className={reverse ? "marquee-track marquee-rev gap-8 px-4" : "marquee-track gap-8 px-4"}>
         {row.map((r, i) => (
           <span key={`${r.symbol}-${i}`} className="flex items-center gap-3 whitespace-nowrap font-sans text-sm font-bold">
-            <span className={r.alert ? "text-fg" : "text-muted"}>{r.symbol}</span>
+            <span className={r.alert ? "text-fg" : "text-v1-muted"}>{r.symbol}</span>
             <span className={r.alert ? "text-brand" : "text-faint"}>{r.netApr.toFixed(1)}%</span>
             {r.alert ? <span className="text-ember">scent</span> : <span className="text-faint">quiet</span>}
           </span>
@@ -187,7 +187,7 @@ export function HeroFilm() {
             <span className="mr-1 font-serif text-5xl leading-none text-brand not-italic md:text-6xl">I</span>
             t does not chase price. It sniffs the hour.
           </p>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted md:text-base">
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-v1-muted md:text-base">
             Same coin, two venues. Long where hourly funding is cheaper, short where it is richer. The move
             cancels. The gap is the catch — if it lasts longer than the ticket.
           </p>
@@ -203,7 +203,7 @@ export function HeroFilm() {
                 <span className="text-brand">{r.netApr.toFixed(1)}%</span>
               </Link>
             ))}
-            <SourceTag kind="sample" className="text-muted" />
+            <SourceTag kind="sample" className="text-v1-muted" />
           </div>
           <p className="scroll-hint mt-8 text-xs font-bold tracking-wide text-faint">Scroll the scent</p>
         </div>
@@ -351,7 +351,7 @@ export function HeroFilm() {
             >
               HUB
             </p>
-            <SourceTag kind="sample" className="absolute bottom-2 left-2 z-20 text-muted" />
+            <SourceTag kind="sample" className="absolute bottom-2 left-2 z-20 text-v1-muted" />
             <div className="hub-chart pointer-events-none absolute inset-0 z-0 opacity-80">
               {charts ? (
                 <ResponsiveContainer width="100%" height="100%">
@@ -378,7 +378,7 @@ export function HeroFilm() {
           <div className="relative z-10">
             <p className="text-sm font-bold text-ember">The position</p>
             <h2 className="mt-2 font-sans text-huge font-extrabold">One coin. Two legs.</h2>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-muted md:text-base">
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-v1-muted md:text-base">
               The hub sits in front of the spread. It grows as you give the scroll away — a stand-in for the
               position itself, which only deserves size when the gap pays its ticket.
             </p>

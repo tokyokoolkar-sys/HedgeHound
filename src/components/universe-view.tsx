@@ -40,7 +40,7 @@ function Dossier({
         <div>
           <p className="text-xs font-bold tracking-wide text-ember">{SECTORS[row.sector].name}</p>
           <h2 className="font-sans text-3xl font-extrabold tracking-tight">{row.symbol}</h2>
-          <SourceTag kind="sample" className="mt-1 text-muted" />
+          <SourceTag kind="sample" className="mt-1 text-v1-muted" />
         </div>
         <button type="button" className={btnGhost} onClick={onClose}>
           Pull back
@@ -51,21 +51,21 @@ function Dossier({
         <>
           <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
             <div>
-              <dt className="text-muted">Net APR</dt>
+              <dt className="text-v1-muted">Net APR</dt>
               <dd className={cn("font-sans text-2xl font-extrabold", row.alert ? "text-brand" : "text-fg")}>
                 {row.netApr.toFixed(1)}%
               </dd>
             </div>
             <div>
-              <dt className="text-muted">Gross APR</dt>
+              <dt className="text-v1-muted">Gross APR</dt>
               <dd className="font-sans text-2xl font-extrabold">{row.grossApr.toFixed(1)}%</dd>
             </div>
             <div>
-              <dt className="text-muted">Lighter</dt>
+              <dt className="text-v1-muted">Lighter</dt>
               <dd className="font-bold">{row.lighterApr.toFixed(1)}% APR</dd>
             </div>
             <div>
-              <dt className="text-muted">Binance</dt>
+              <dt className="text-v1-muted">Binance</dt>
               <dd className="font-bold">{row.binanceApr.toFixed(1)}% APR</dd>
             </div>
           </dl>
@@ -79,27 +79,27 @@ function Dossier({
           <p className="mt-1 text-xs text-faint">Signed spread, APR, across the field sample.</p>
           <dl className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
             <div>
-              <dt className="text-muted">Persistence</dt>
+              <dt className="text-v1-muted">Persistence</dt>
               <dd className="font-bold">{Math.round(row.persistence * 100)}%</dd>
             </div>
             <div>
-              <dt className="text-muted">Since flip</dt>
+              <dt className="text-v1-muted">Since flip</dt>
               <dd className="font-bold">{row.hoursSinceFlip}h</dd>
             </div>
             <div>
-              <dt className="text-muted">Window</dt>
+              <dt className="text-v1-muted">Window</dt>
               <dd className="font-bold">{row.windowH}h · {row.n24} samples</dd>
             </div>
             <div>
-              <dt className="text-muted">Liq. distance</dt>
+              <dt className="text-v1-muted">Liq. distance</dt>
               <dd className="font-bold">~{row.liqDist.toFixed(1)}%</dd>
             </div>
             <div>
-              <dt className="text-muted">Lighter book</dt>
+              <dt className="text-v1-muted">Lighter book</dt>
               <dd className="font-bold">{usdCompact(row.volL)} · oi {usdCompact(row.oiL)}</dd>
             </div>
             <div>
-              <dt className="text-muted">Binance book</dt>
+              <dt className="text-v1-muted">Binance book</dt>
               <dd className="font-bold">{usdCompact(row.volB)} · oi {usdCompact(row.oiB)}</dd>
             </div>
           </dl>
@@ -110,7 +110,7 @@ function Dossier({
           </p>
         </>
       ) : null}
-      <p className="mt-2 text-sm leading-relaxed text-muted">{row.note}</p>
+      <p className="mt-2 text-sm leading-relaxed text-v1-muted">{row.note}</p>
       <div className="mt-4 flex flex-wrap gap-2">
         {row.status !== "filtered" ? (
           <button type="button" className={btn} onClick={onWatch}>
@@ -120,7 +120,7 @@ function Dossier({
         <span
           className={cn(
             "inline-flex min-h-11 items-center rounded-full px-4 text-sm font-bold",
-            row.alert ? "bg-brand/15 text-brand" : "bg-surface text-muted",
+            row.alert ? "bg-brand/15 text-brand" : "bg-surface text-v1-muted",
           )}
         >
           {row.alert ? "Alert-eligible" : row.status === "ok" ? "Not a scent" : row.status}
@@ -201,7 +201,7 @@ export function UniverseView({ initialStar }: { initialStar?: string }) {
 
       <aside className="absolute top-20 bottom-4 left-4 z-10 hidden w-56 overflow-auto lg:block">
         <p className="px-2 text-xs font-bold tracking-wide text-ember">The sky</p>
-        <p className="px-2 pt-1 text-xs leading-relaxed text-muted">
+        <p className="px-2 pt-1 text-xs leading-relaxed text-v1-muted">
           Move the pointer. Click a star. The camera goes in.
         </p>
         {groups.map((g) => (
@@ -222,7 +222,7 @@ export function UniverseView({ initialStar }: { initialStar?: string }) {
                 type="button"
                 className={cn(
                   "flex min-h-11 w-full items-center justify-between rounded-full px-3 text-left text-sm font-bold",
-                  focus?.type === "star" && focus.symbol === r.symbol ? "bg-surface text-brand" : "text-muted",
+                  focus?.type === "star" && focus.symbol === r.symbol ? "bg-surface text-brand" : "text-v1-muted",
                 )}
                 onClick={() => choose({ type: "star", symbol: r.symbol })}
               >
@@ -235,7 +235,7 @@ export function UniverseView({ initialStar }: { initialStar?: string }) {
       </aside>
 
       <div className="pointer-events-none absolute top-20 right-4 left-4 z-10 flex justify-center lg:left-64 lg:justify-start">
-        <p className="pointer-events-auto max-w-md rounded-full border border-line bg-bg/70 px-4 py-2 text-center text-xs font-bold text-muted backdrop-blur-md">
+        <p className="pointer-events-auto max-w-md rounded-full border border-line bg-bg/70 px-4 py-2 text-center text-xs font-bold text-v1-muted backdrop-blur-md">
           {sectorLine
             ? sectorLine.line
             : focused
