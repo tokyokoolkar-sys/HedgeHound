@@ -1,16 +1,20 @@
 // The Edition (`/`): overture + α–κ on the fixed stage above the one sky (PLAN §3).
 // T13 builds the skeleton: every chapter's copy, the HUD, the index, and a first scene mapping for the
 // overture and α (ported from D1). T14/T15 refine those chapters and add the radar, reading and carousel.
+import { useRef } from "react"
 import { CHAPTERS, enterId } from "@/content/edition"
 import { band, smooth } from "@/lib/motion/math"
 import { useRequestSky } from "@/lib/stage/request-sky"
 import { Chapter } from "./chapter"
 import { ChapterIndex } from "./chapter-index"
 import { Hud } from "./hud"
+import { applyLook } from "./look"
+import { SymbolCarousel } from "./symbol-carousel"
 import { useScrollFrame } from "./use-scroll-frame"
 
 export function Edition() {
   useRequestSky("edition")
+  const cue = useRef<HTMLDivElement>(null)
 
   // Scene channels from section progress. The crawl is whichever chapter's crawl-in is underway.
   useScrollFrame((s) => {
@@ -21,6 +25,9 @@ export function Edition() {
     const crawl = CHAPTERS.filter((ch) => ch.enter === "crawl")
       .map((ch) => s.sections[enterId(ch.id)] ?? 0)
       .find((t) => t > 0 && t < 1)
+    // The scroll cue leaves with the first bit of scroll.
+    const cueOut = band(h, 0.02, 0.12)
+    applyLook(cue.current, { opacity: 1 - cueOut, y: cueOut * 12, blur: 0 })
     s.set({
       transition: crawl ?? 0,
       scene: {
@@ -39,6 +46,12 @@ export function Edition() {
     <main className="relative">
       <Hud />
       <ChapterIndex />
+      <div ref={cue} className="label pointer-events-none fixed inset-x-0 bottom-16 z-10 text-center text-starlight-dim md:bottom-7">
+        <span className="intro-resolve inline-block" style={{ ["--intro-delay" as string]: 1900 }}>
+          Scroll <span className="bayer ml-1">↓ α</span>
+        </span>
+      </div>
+      <SymbolCarousel section={enterId("sniff")} />
       {CHAPTERS.map((def, i) => {
         const next = CHAPTERS[i + 1]
         return (

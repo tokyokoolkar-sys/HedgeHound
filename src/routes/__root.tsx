@@ -3,6 +3,7 @@ import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-r
 import { useState } from "react";
 import { AuthProvider } from "@/lib/auth/provider";
 import { SiteNav } from "@/components/nav/site-nav";
+import { palette } from "@/lib/palette";
 import { ScrollEngine } from "@/lib/motion/scroll-engine";
 import { SkyHost } from "@/components/stage/sky-host";
 import appCss from "../styles.css?url";
@@ -18,7 +19,7 @@ export const Route = createRootRoute({
         content:
           "HedgeHound sniffs funding-rate gaps between Lighter and Binance. Long the cheap hour, short the rich one, paper first.",
       },
-      { name: "theme-color", content: "#090705" },
+      { name: "theme-color", content: palette.void },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
@@ -34,11 +35,11 @@ function RootDocument() {
   // One client per document: created in state so SSR requests never share cache.
   const [queryClient] = useState(() => new QueryClient());
   return (
-    <html lang="en" className="bg-bg text-fg" suppressHydrationWarning>
+    <html lang="en" className="bg-void text-starlight" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body className="bg-bg font-sans text-fg antialiased">
+      <body className="bg-void font-sans text-starlight antialiased">
         <QueryClientProvider client={queryClient}>
           {/* T11: smooth scroll + section progress for every page (effects only; nothing renders). */}
           <ScrollEngine />

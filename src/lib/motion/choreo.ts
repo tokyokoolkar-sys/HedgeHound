@@ -28,18 +28,23 @@ export type CopyFrame = {
  * - rise: the block travels up from below the screen (vh = viewport height in px), no other effect.
  * - every chapter blurs out upward over the last 14%, except the last one (`last`).
  */
-export function copyFrame(p: number, mode: "fade" | "crawl" | "rise", opts: { vh: number; reduced: boolean; last?: boolean }): CopyFrame {
+export function copyFrame(
+  p: number,
+  mode: "fade" | "crawl" | "rise",
+  opts: { vh: number; reduced: boolean; last?: boolean; riseBand?: [number, number] },
+): CopyFrame {
   const { vh, reduced, last } = opts
+  const [r0, r1] = opts.riseBand ?? [0, 0.16]
   if (reduced) {
     const on = p > 0 && (last || p < 1) ? SHOWN : HIDDEN
     return { block: on, title: SHOWN, subtitle: SHOWN, item: () => SHOWN }
   }
   const out = last ? 0 : smooth(band(p, 0.86, 1))
   // Copy appears only once its section has started (the overture's first paint is handled by its chapter).
-  const visible = p > 0
+  const visible = mode === "rise" ? p > r0 : p > 0
   const block: Look = {
     opacity: visible ? 1 - out : 0,
-    y: (mode === "rise" ? (1 - smooth(band(p, 0, 0.16))) * vh * 0.95 : 0) - out * 40,
+    y: (mode === "rise" ? (1 - smooth(band(p, r0, r1))) * vh * 0.95 : 0) - out * 40,
     blur: out * 10,
   }
   if (mode === "rise") return { block, title: SHOWN, subtitle: SHOWN, item: () => SHOWN }
@@ -55,4 +60,14 @@ export function copyFrame(p: number, mode: "fade" | "crawl" | "rise", opts: { vh
 export function crawlFront(t: number): { front: number | null; mode: "out" | "in" } {
   if (t <= 0 || t >= 1) return { front: null, mode: "out" }
   return t < 0.5 ? { front: -0.3 + 1.6 * (t * 2), mode: "out" } : { front: -0.3 + 1.6 * ((t - 0.5) * 2), mode: "in" }
+}
+
+/**
+ * Word-by-word resolve (D1): word i of n at progress q. Each word blurs in, staggered across the line.
+ */
+export function wordLook(q: number, i: number, n: number): Look {
+  const step = Math.min(0.08, 0.6 / Math.max(1, n))
+  const t = band(q * (1 + n * step) - i * step, 0, 1)
+  const k = smooth(t)
+  return { opacity: k, y: (1 - k) * 4, blur: (1 - k) * 14 }
 }

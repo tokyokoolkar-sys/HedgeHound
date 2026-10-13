@@ -83,6 +83,32 @@
   --radius-card: 1.25rem;
 }
 
+/* Overture intro (owner decision, T14): the one entrance not tied to the scroll. Plays once on first
+   paint, in CSS so there is no flash and no JS dependency; the scroll engine never touches these nodes. */
+@keyframes intro-resolve {
+  from {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(0.3em);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+.intro-resolve {
+  animation: intro-resolve 1.6s cubic-bezier(0.22, 0.6, 0.2, 1) both;
+  animation-delay: calc(var(--intro-delay, 0) * 1ms + 500ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-resolve {
+    animation: none;
+  }
+}
+
 /* Edition utilities */
 @utility font-light-display {
   font-family: var(--font-display);
@@ -126,14 +152,14 @@
   }
 
   html {
-    background: var(--color-bg);
-    color: var(--color-fg);
+    background: var(--color-void);
+    color: var(--color-starlight);
   }
 
   body {
     font-family: var(--font-display);
-    background: var(--color-bg);
-    color: var(--color-fg);
+    background: var(--color-void);
+    color: var(--color-starlight);
     text-rendering: optimizeLegibility;
   }
 

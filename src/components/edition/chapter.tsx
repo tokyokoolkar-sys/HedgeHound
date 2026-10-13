@@ -6,7 +6,7 @@
 import { useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
 import { band, smooth } from "@/lib/motion/math"
-import { copyFrame, crawlFront, resolveIn } from "@/lib/motion/choreo"
+import { copyFrame, crawlFront, resolveIn, wordLook } from "@/lib/motion/choreo"
 import { useSection } from "@/lib/motion/scroll-progress"
 import { enterId, type ChapterDef } from "@/content/edition"
 import { applyLook } from "./look"
@@ -40,7 +40,7 @@ export function Chapter({ def, exitInto, last, children }: Props) {
     const vh = window.innerHeight
     const p = s.sections[def.id] ?? 0
     const enter = def.enter === "crawl" ? (s.sections[enterId(def.id)] ?? 0) : 0
-    const f = copyFrame(p, def.enter, { vh, reduced: s.reduced, last })
+    const f = copyFrame(p, def.enter, { vh, reduced: s.reduced, last, riseBand: def.rise })
     let look = f.block
 
     if (def.enter === "crawl" && !s.reduced) {
@@ -60,6 +60,16 @@ export function Chapter({ def, exitInto, last, children }: Props) {
     if (isOverture) look = s.reduced ? { opacity: p < 0.5 ? 1 : 0, y: 0, blur: 0 } : { opacity: 1 - band(p, 0.3, 0.5), y: -band(p, 0, 0.5) * 60, blur: 0 }
     applyLook(el, look)
 
+    if (def.enter === "rise" && def.titleReveal) {
+      applyLook(title.current, s.reduced ? resolveIn(1) : resolveIn(band(p, def.titleReveal[0], def.titleReveal[1])), false)
+    }
+    if (def.bodyWords) {
+      const q = s.reduced ? 1 : band(p, def.bodyWords[0], def.bodyWords[1])
+      items.current?.querySelectorAll<HTMLElement>("[data-words]").forEach((para) => {
+        const words = para.querySelectorAll<HTMLElement>("[data-w]")
+        words.forEach((w, i) => applyLook(w, wordLook(q, i, words.length), false))
+      })
+    }
     if (def.enter !== "rise" && !isOverture) {
       const titleT = def.enter === "crawl" ? 0.5 * band(enter, 0.8, 1) + 0.5 * band(p, 0, 0.14) : band(p, 0, 0.14)
       applyLook(title.current, s.reduced ? resolveIn(1) : resolveIn(p > 0 || enter > 0 ? titleT : 0), false)
@@ -91,22 +101,40 @@ export function Chapter({ def, exitInto, last, children }: Props) {
             <span className="bayer mr-1">{def.letter}</span> · {def.kicker}
           </p>
         )}
-        <div ref={title} className={def.letter ? "mt-3" : undefined}>
+        <div ref={title} className={cn(def.letter ? "mt-3" : undefined, isOverture && "intro-resolve")}>
           <ShimmerTitle as={isOverture ? "h1" : "h2"} size={isOverture ? "hero" : def.id === "sniff" ? "chapter" : "title"}>
             {def.title}
           </ShimmerTitle>
         </div>
         {def.subtitle && (
-          <p ref={subtitle} className={cn("text-subtitle mt-3 mb-0", isOverture ? "label text-starlight-dim" : "italic text-starlight")}>
-            {def.subtitle}
+          <p ref={subtitle} className={cn("mt-3 mb-0", isOverture ? "label text-starlight-dim" : "text-subtitle italic text-starlight")}>
+            {isOverture
+              ? def.subtitle.split(" ").map((w, i, all) => (
+                  <span key={i} className="intro-resolve inline-block whitespace-pre" style={{ ["--intro-delay" as string]: 700 + i * 120 }}>
+                    {w}
+                    {i < all.length - 1 ? " " : ""}
+                  </span>
+                ))
+              : def.subtitle}
           </p>
         )}
         <div ref={items}>
-          {def.body?.map((b) => (
-            <p key={b} data-item className="text-body mt-4 mb-0 text-starlight-dim">
-              {b}
-            </p>
-          ))}
+          {def.body?.map((b) =>
+            def.bodyWords ? (
+              <p key={b} data-words aria-label={b} className="text-body mt-4 mb-0 text-starlight-dim">
+                {b.split(" ").map((w, i, all) => (
+                  <span key={i} data-w aria-hidden="true" className="inline-block whitespace-pre">
+                    {w}
+                    {i < all.length - 1 ? " " : ""}
+                  </span>
+                ))}
+              </p>
+            ) : (
+              <p key={b} data-item className="text-body mt-4 mb-0 text-starlight-dim">
+                {b}
+              </p>
+            ),
+          )}
           {children}
           {def.note && (
             <p data-item className="label mt-5 mb-0 text-starlight-dim">
