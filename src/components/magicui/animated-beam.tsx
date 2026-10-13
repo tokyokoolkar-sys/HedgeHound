@@ -34,11 +34,12 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
   reverse = false, // Include the reverse prop
   duration = 5,
   delay = 0,
-  pathColor = "gray",
+  pathColor = "var(--color-chart-line)",
   pathWidth = 2,
   pathOpacity = 0.2,
-  gradientStartColor = "#ffaa40",
-  gradientStopColor = "#9c40ff",
+  // DESIGN.md: the beam is a scanning motif.
+  gradientStartColor = "var(--color-scan)",
+  gradientStopColor = "var(--color-starlight)",
   repeat = Infinity,
   repeatDelay = 0,
   startXOffset = 0,
@@ -135,7 +136,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
     >
       <path
         d={pathD}
-        stroke={pathColor}
+        style={{ stroke: pathColor }}
         strokeWidth={pathWidth}
         strokeOpacity={pathOpacity}
         strokeLinecap="round"
@@ -172,12 +173,12 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
             repeatDelay,
           }}
         >
-          <stop stopColor={gradientStartColor} stopOpacity="0"></stop>
-          <stop stopColor={gradientStartColor}></stop>
-          <stop offset="32.5%" stopColor={gradientStopColor}></stop>
+          <stop style={{ stopColor: gradientStartColor }} stopOpacity="0"></stop>
+          <stop style={{ stopColor: gradientStartColor }}></stop>
+          <stop offset="32.5%" style={{ stopColor: gradientStopColor }}></stop>
           <stop
             offset="100%"
-            stopColor={gradientStopColor}
+            style={{ stopColor: gradientStopColor }}
             stopOpacity="0"
           ></stop>
         </motion.linearGradient>

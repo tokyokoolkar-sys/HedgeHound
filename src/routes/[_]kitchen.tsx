@@ -28,6 +28,10 @@ import { BlurReveal } from "@/components/text-fx/blur-reveal";
 import { GradientWaveText } from "@/components/text-fx/gradient-wave-text";
 import { PerspectiveText } from "@/components/text-fx/perspective-text-scroll";
 import { AnimatedShinyText } from "@/components/text-fx/animated-shiny-text";
+import { SourceTag } from "@/components/edition/source-tag";
+import { LogosCarousel } from "@/components/logos-carousel";
+import { ShimmerText } from "@/components/shimmer-text";
+import { palette } from "@/lib/palette";
 
 // Throwaway specimen route (T04 / T03 / T03b). Deleted in T52.
 // Placeholder content only: no APR, yield or performance figures.
@@ -35,80 +39,16 @@ export const Route = createFileRoute("/_kitchen")({
   component: KitchenPage,
 });
 
-const faces: Array<{ name: string; family: string; role: string; sample: string; weights: number[]; italic?: boolean }> = [
-  {
-    name: "Bricolage Grotesque Variable",
-    family: "'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif",
-    role: "Mega chapter titles (PLAN 2.3)",
-    sample: "Sniff the spread",
-    weights: [200, 400, 700, 800],
-  },
-  {
-    name: "JetBrains Mono Variable",
-    family: "'JetBrains Mono Variable', ui-monospace, monospace",
-    role: "Data, HUD and labels (PLAN 2.3)",
-    sample: "0123456789 · 00.00% · persist 0.00",
-    weights: [100, 400, 700, 800],
-  },
-  {
-    name: "Pinyon Script",
-    family: "'Pinyon Script', cursive",
-    role: "Swash initial on subtitles (PLAN 2.3)",
-    sample: "The Hound",
-    weights: [400],
-  },
-  {
-    name: "Syne Variable",
-    family: "'Syne Variable', ui-sans-serif, system-ui, sans-serif",
-    role: "Wordmark only (PLAN 2.3)",
-    sample: "Hedge Hound",
-    weights: [400, 700, 800],
-  },
-  {
-    name: "Fraunces Variable",
-    family: "'Fraunces Variable', Palatino, 'Palatino Linotype', serif",
-    role: "Editorial subtitles and body (PLAN 2.3)",
-    sample: "Why the hedge holds",
-    weights: [300, 400],
-    italic: true,
-  },
-];
 
 function KitchenPage() {
   return (
-    <main className="min-h-dvh px-4 py-10 md:px-10">
+    <main className="min-h-dvh bg-void px-4 pt-24 pb-10 text-starlight md:px-10">
       <h1 className="mb-2 text-2xl font-bold">/_kitchen</h1>
-      <p className="mb-10 max-w-prose text-muted">
-        Specimens for T03 (shadcn and magicui) and T04 (fonts). Throwaway route, deleted in T52.
+      <p className="mb-10 max-w-prose text-v1-muted">
+        Specimens for T10 (DESIGN.md tokens and type), T03 (shadcn and magicui) and T03b (text effects). Throwaway route, deleted in T52.
       </p>
 
-      <Section title="Fonts (T04)">
-        <div className="flex flex-col gap-12">
-          {faces.map((face) => (
-            <div key={face.name}>
-              <h3 className="mb-1 font-mono text-xs tracking-[0.14em] text-faint uppercase">
-                {face.name} · {face.role}
-              </h3>
-              <div className="flex flex-col gap-3">
-                {face.weights.map((w) => (
-                  <p
-                    key={w}
-                    className="text-5xl leading-tight"
-                    style={{
-                      fontFamily: face.family,
-                      fontWeight: w,
-                      fontStyle: face.italic ? "italic" : "normal",
-                    }}
-                  >
-                    {face.sample}
-                    <span className="ml-4 align-middle font-mono text-xs text-faint">{w}</span>
-                  </p>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Section>
+      <TokensSection />
 
       <Section title="shadcn/ui (T03)">
         <div className="flex flex-col gap-10">
@@ -348,6 +288,147 @@ function KitchenPage() {
         </div>
       </Section>
     </main>
+  );
+}
+
+// ---------- T10: DESIGN.md tokens and type ----------
+
+type Swatch = { token: string; color: string; role: string; on: string; minimum: number };
+
+const DIM = `rgb(244 241 234 / ${palette.starlightDimAlpha})`;
+const FAINT = `rgb(244 241 234 / ${palette.starlightFaintAlpha})`;
+
+// Each swatch is checked against the surface it is meant for (critique fix: no context-free ratios).
+const SWATCHES: Swatch[] = [
+  { token: "--color-void", color: palette.void, role: "the sky; the only background", on: "—", minimum: 0 },
+  { token: "--color-starlight", color: palette.starlight, role: "titles, primary text", on: "void", minimum: 4.5 },
+  { token: "--color-starlight-dim", color: DIM, role: "body, secondary text", on: "void", minimum: 4.5 },
+  { token: "--color-starlight-faint", color: FAINT, role: "captions, tertiary labels", on: "void", minimum: 3 },
+  { token: "--color-chart-line", color: palette.chartLine, role: "constellation lines, radar rings", on: "void", minimum: 3 },
+  { token: "--color-scan", color: palette.scan, role: "scanning · long leg · Bayer letters · focus", on: "void", minimum: 4.5 },
+  { token: "--color-scent", color: palette.scent, role: "alerts · short leg · CTA", on: "void", minimum: 4.5 },
+  { token: "--color-star-cool", color: palette.starCool, role: "star tint only, never UI", on: "—", minimum: 0 },
+  { token: "--color-star-warm", color: palette.starWarm, role: "star tint only, never UI", on: "—", minimum: 0 },
+];
+
+function rgbOf(color: string): [number, number, number, number] {
+  if (color.startsWith("#")) {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(color.slice(i, i + 2), 16));
+    return [r, g, b, 1];
+  }
+  const m = color.match(/rgb\((\d+) (\d+) (\d+) \/ ([\d.]+)\)/);
+  return m ? [Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4])] : [0, 0, 0, 1];
+}
+
+function luminance([r, g, b]: number[]) {
+  const lin = [r, g, b].map((v) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+}
+
+/** Contrast of `fg` (alpha-blended) over the void. */
+function contrastOnVoid(fg: string) {
+  const [r, g, b, a] = rgbOf(fg);
+  const [vr, vg, vb] = rgbOf(palette.void);
+  const blended = [r * a + vr * (1 - a), g * a + vg * (1 - a), b * a + vb * (1 - a)];
+  const [hi, lo] = [luminance(blended), luminance([vr, vg, vb])].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+// Placeholder symbols only: no figures here, so nothing to tag.
+const CAROUSEL = ["ARB", "SUI", "WIF", "SEI", "TIA", "OP", "INJ", "NEAR", "APT", "ETH"];
+
+function TokensSection() {
+  return (
+    <Section title="Tokens and type (T10 · DESIGN.md)">
+      <div className="grid grid-cols-1 gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+        {SWATCHES.map((s) => {
+          const ratio = s.minimum ? contrastOnVoid(s.color) : null;
+          const pass = ratio === null || ratio >= s.minimum;
+          return (
+            <div key={s.token} className="flex items-start gap-4">
+              <span className="mt-1 size-9 shrink-0 rounded-full border border-starlight/15" style={{ background: s.color }} />
+              <div>
+                <p className="label text-starlight">{s.token}</p>
+                <p className="mt-1 text-sm text-starlight-dim">{s.role}</p>
+                {ratio !== null && (
+                  <p className={`label mt-1 ${pass ? "text-starlight-faint" : "text-scent"}`}>
+                    {ratio.toFixed(1)}:1 on {s.on} · {pass ? "pass" : "fail"} {s.minimum}:1
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mt-16 flex flex-col gap-10">
+        <div>
+          <p className="label mb-3 text-starlight-faint">text-hero · ShimmerText</p>
+          <ShimmerText className="[--shimmer-contrast:rgb(255_255_255)]" duration={2.4} delay={0.8}>
+            <span className="text-hero font-light-display text-starlight/85">HedgeHound</span>
+          </ShimmerText>
+        </div>
+        <div>
+          <p className="label mb-3 text-starlight-faint">text-chapter</p>
+          <p className="text-chapter font-light-display">Sniff</p>
+        </div>
+        <div>
+          <p className="label mb-3 text-starlight-faint">text-title</p>
+          <p className="text-title font-light-display">The hound in the sky</p>
+        </div>
+        <div>
+          <p className="label mb-3 text-starlight-faint">text-subtitle · italic</p>
+          <p className="text-subtitle italic">Every five minutes, the hound lifts its nose.</p>
+        </div>
+        <div className="max-w-[62ch]">
+          <p className="label mb-3 text-starlight-faint">text-body · starlight-dim</p>
+          <p className="text-body text-starlight-dim">
+            Every coin is a star. Brightness is the spread it carries; a steady light is a spread that stays. Body
+            copy sits straight on the sky, with no card behind it.
+          </p>
+        </div>
+        <div>
+          <p className="label mb-3 text-starlight-faint">label · figure · Bayer letters</p>
+          <p className="label text-starlight-dim">
+            <span className="text-scan normal-case tracking-normal">α</span> · Canis Major · RA 06h 45m 09s · DEC −16° 43′
+          </p>
+          <p className="figure mt-3">
+            ARB <span className="text-scent">35.3% net</span> <SourceTag kind="sample" className="ml-2 align-middle" />
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-16 flex flex-wrap items-center gap-3">
+        <p className="label w-full text-starlight-faint">SourceTag states</p>
+        <SourceTag kind="sample" />
+        <SourceTag kind="paper" />
+        <SourceTag kind="live" ts={Date.UTC(2026, 9, 14, 5, 4)} />
+        <SourceTag kind="live" ts={Date.UTC(2026, 9, 14, 5, 4)} stale />
+      </div>
+
+      <div className="mt-16 overflow-hidden">
+        <p className="label mb-6 text-starlight-faint">@spell/logos-carousel · symbols</p>
+        <LogosCarousel count={5} stagger={0.12} interval={2200} duration={700} className="gap-5 sm:gap-10">
+          {CAROUSEL.map((sym) => (
+            <span key={sym} className="label text-base tracking-[0.3em] text-starlight">
+              {sym}
+            </span>
+          ))}
+        </LogosCarousel>
+      </div>
+
+      <div className="mt-16 flex flex-wrap items-center gap-3">
+        <p className="label w-full text-starlight-faint">shadcn mapping: primary = starlight, cta = scent, ring = scan</p>
+        <Button variant="cta">Open scanner</Button>
+        <Button>Primary</Button>
+        <Button variant="outline">Outline</Button>
+        <Button variant="ghost">Ghost</Button>
+        <Badge variant="outline">Badge</Badge>
+      </div>
+    </Section>
   );
 }
 

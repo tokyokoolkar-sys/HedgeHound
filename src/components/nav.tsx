@@ -27,7 +27,7 @@ export function SiteNav() {
                 aria-current={on ? "page" : undefined}
                 className={cn(
                   "inline-flex min-h-11 items-center rounded-full px-3 font-sans text-sm font-bold",
-                  on ? "text-brand" : "text-muted",
+                  on ? "text-brand" : "text-v1-muted",
                 )}
               >
                 {l.label}

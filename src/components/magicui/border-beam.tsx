@@ -56,8 +56,9 @@ export const BorderBeam = ({
   size = 50,
   delay = 0,
   duration = 6,
-  colorFrom = "#ffaa40",
-  colorTo = "#9c40ff",
+  // DESIGN.md: the beam is a scanning motif.
+  colorFrom = "var(--color-scan)",
+  colorTo = "var(--color-starlight)",
   transition,
   style,
   reverse = false,

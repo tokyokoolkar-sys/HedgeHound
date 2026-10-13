@@ -63,7 +63,7 @@ const tip = {
     color: palette.fg,
     fontSize: 12,
   },
-  labelStyle: { color: palette.muted },
+  labelStyle: { color: palette.v1Muted },
 };
 
 function Slider({
@@ -84,7 +84,7 @@ function Slider({
   onChange: (n: number) => void;
 }) {
   return (
-    <label className="block text-sm text-muted">
+    <label className="block text-sm text-v1-muted">
       <span className="flex items-baseline justify-between gap-3">
         <span>{label}</span>
         <span className="font-sans font-extrabold text-fg">{display}</span>
@@ -227,34 +227,34 @@ export function DenDesk() {
         </h1>
         <p className="max-w-sm font-serif text-xl italic text-ember">
           A paper desk for a {money(CAPITAL, 0)} research budget. The numbers follow the scanner. They are not a live poll.{" "}
-          <SourceTag kind="sample" className="align-middle text-muted" />
+          <SourceTag kind="sample" className="align-middle text-v1-muted" />
         </p>
       </div>
 
       <div className="mt-8 grid gap-3 md:grid-cols-3">
         <article className="rounded-card border border-line bg-surface/80 p-4 backdrop-blur-md">
-          <p className="text-sm text-muted">Next Lighter hour</p>
+          <p className="text-sm text-v1-muted">Next Lighter hour</p>
           <p className="mt-1 font-sans text-4xl font-extrabold tabular-nums">{clock}</p>
-          <p className="mt-2 text-sm text-muted">Funding settles on the hour, not on every 5-minute poll.</p>
+          <p className="mt-2 text-sm text-v1-muted">Funding settles on the hour, not on every 5-minute poll.</p>
         </article>
         <article className="rounded-card border border-line bg-surface/80 p-4 backdrop-blur-md">
-          <p className="flex flex-wrap items-center gap-2 text-sm text-muted">
+          <p className="flex flex-wrap items-center gap-2 text-sm text-v1-muted">
             Room before the kill switch <SourceTag kind="sample" />
           </p>
           <p className="mt-1 font-sans text-4xl font-extrabold">{money(KILL_LOSS - used)}</p>
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-bg">
             <div className="h-full bg-brand" style={{ width: `${killPct}%` }} />
           </div>
-          <p className="mt-2 text-sm text-muted">
+          <p className="mt-2 text-sm text-v1-muted">
             Stop at a {money(KILL_LOSS, 0)} loss. Transfers have already used {money(used)} of that room.
           </p>
         </article>
         <article className="rounded-card border border-line bg-surface/80 p-4 backdrop-blur-md">
-          <p className="flex flex-wrap items-center gap-2 text-sm text-muted">
+          <p className="flex flex-wrap items-center gap-2 text-sm text-v1-muted">
             Scents at this bar <SourceTag kind="sample" />
           </p>
           <p className="mt-1 font-sans text-4xl font-extrabold text-brand">{alerts.length}</p>
-          <p className="mt-2 text-sm text-muted">
+          <p className="mt-2 text-sm text-v1-muted">
             Net at least {book.minNet}%, persistence at least half, status ok. Drag right now is {drag.toFixed(1)} APR points.
           </p>
         </article>
@@ -265,7 +265,7 @@ export function DenDesk() {
           <li key={p.n} className={cn("rounded-card border p-4", p.on ? "border-brand bg-brand/10" : "border-line bg-bg/40")}>
             <p className={cn("font-sans text-sm font-extrabold", p.on ? "text-brand" : "text-faint")}>Phase {p.n}</p>
             <p className="mt-1 font-sans text-lg font-extrabold">{p.name}</p>
-            <p className="mt-1 text-sm text-muted">{p.line}</p>
+            <p className="mt-1 text-sm text-v1-muted">{p.line}</p>
           </li>
         ))}
       </ol>
@@ -284,7 +284,7 @@ export function DenDesk() {
             </div>
             <p className="font-sans text-5xl font-extrabold text-brand md:text-6xl">{featured.netApr.toFixed(1)}%</p>
           </div>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">{featured.note}</p>
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-v1-muted">{featured.note}</p>
           <div className="mt-4 flex flex-wrap gap-3">
             <Link to="/universe" search={{ star: featured.symbol }} className={btn}>
               Zoom {featured.symbol} in the sky
@@ -295,7 +295,7 @@ export function DenDesk() {
           </div>
         </article>
       ) : (
-        <p className="mt-6 rounded-card border border-line bg-surface/80 p-5 text-muted">
+        <p className="mt-6 rounded-card border border-line bg-surface/80 p-5 text-v1-muted">
           Nothing clears this bar. Lower the net, or accept a quiet hour.
         </p>
       )}
@@ -313,7 +313,7 @@ export function DenDesk() {
           <h2 className="flex flex-wrap items-center gap-3 font-sans text-2xl font-extrabold">
             The board <SourceTag kind="sample" />
           </h2>
-          <p className="mt-1 text-sm text-muted">
+          <p className="mt-1 text-sm text-v1-muted">
             Same cuts as the local scanner. Ok rows under the net bar step out. Names still building a day of tape stay, snapshot only.
           </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -328,14 +328,14 @@ export function DenDesk() {
         </div>
         <div className="rounded-card border border-line bg-bg/40 p-4 lg:col-span-2">
           <h2 className="font-sans text-2xl font-extrabold">Pocket sky</h2>
-          <p className="mt-1 text-sm text-muted">Orange is a scent. Tap a star.</p>
+          <p className="mt-1 text-sm text-v1-muted">Orange is a scent. Tap a star.</p>
           <MiniSky rows={sky} />
         </div>
       </section>
 
       <div className="mt-4 hidden overflow-x-auto rounded-card border border-line md:block">
         <table className="w-full min-w-[760px] text-left text-sm">
-          <thead className="text-muted">
+          <thead className="text-v1-muted">
             <tr className="border-b border-line">
               {["Coin", "Net", "Gross", "Persistence", "Since flip", "Status", "What to do", "Liq. est."].map((h) => (
                 <th key={h} className="px-3 py-3 font-bold">{h}</th>
@@ -362,7 +362,7 @@ export function DenDesk() {
             ))}
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-3 py-8 text-muted">Nothing above that bar.</td>
+                <td colSpan={8} className="px-3 py-8 text-v1-muted">Nothing above that bar.</td>
               </tr>
             ) : null}
           </tbody>
@@ -378,7 +378,7 @@ export function DenDesk() {
               </Link>
               <span className={cn("font-sans text-2xl font-extrabold", r.alert ? "text-brand" : "text-fg")}>{r.netApr.toFixed(1)}%</span>
             </div>
-            <p className="mt-1 text-sm text-muted">
+            <p className="mt-1 text-sm text-v1-muted">
               {r.status === "building history" ? `Building ${r.n24}/144` : `Long ${r.long}, short ${r.short}`}
               {" · "}
               persistence {Math.round(r.persistence * 100)}%
@@ -388,7 +388,7 @@ export function DenDesk() {
       </ul>
 
       {watchedRows.length > 0 ? (
-        <p className="mt-4 text-sm text-muted">
+        <p className="mt-4 text-sm text-v1-muted">
           Watching {watchedRows.map((r) => r.symbol).join(", ")}. Marked from the sky, kept on this machine.
         </p>
       ) : null}
@@ -397,8 +397,8 @@ export function DenDesk() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="font-sans text-huge font-extrabold">Sample paper book</h2>
-            <SourceTag kind="sample" className="mt-2 text-muted" />
-            <p className="mt-2 max-w-xl text-sm text-muted">
+            <SourceTag kind="sample" className="mt-2 text-v1-muted" />
+            <p className="mt-2 max-w-xl text-sm text-v1-muted">
               Two open hedges and six closed ones. Notional {money(20, 0)} a leg. Entry already paid about 0.15%. The other 0.15% waits for the exit. Fixed transfer costs live in their own pile.
             </p>
           </div>
@@ -418,30 +418,30 @@ export function DenDesk() {
               </p>
               <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
                 <div>
-                  <dt className="text-muted">Settled hours</dt>
+                  <dt className="text-v1-muted">Settled hours</dt>
                   <dd className="font-bold">{t.settledHours}</dd>
                 </div>
                 <div>
-                  <dt className="text-muted">Funding so far</dt>
+                  <dt className="text-v1-muted">Funding so far</dt>
                   <dd className="font-bold">{money(t.funding, 3)}</dd>
                 </div>
                 <div>
-                  <dt className="text-muted">Price PnL</dt>
+                  <dt className="text-v1-muted">Price PnL</dt>
                   <dd className={cn("font-bold", t.pricePnl < 0 ? "text-clay" : "text-ember")}>{money(t.pricePnl, 3)}</dd>
                 </div>
                 <div>
-                  <dt className="text-muted">Net so far</dt>
+                  <dt className="text-v1-muted">Net so far</dt>
                   <dd className={cn("font-bold", t.net < 0 ? "text-clay" : "text-brand")}>{money(t.net, 3)}</dd>
                 </div>
               </dl>
-              <p className="mt-3 text-sm text-muted">{t.watch}</p>
+              <p className="mt-3 text-sm text-v1-muted">{t.watch}</p>
             </article>
           ))}
         </div>
 
         <div className="mt-4 overflow-x-auto rounded-card border border-line">
           <table className="w-full min-w-[680px] text-left text-sm">
-            <thead className="text-muted">
+            <thead className="text-v1-muted">
               <tr className="border-b border-line">
                 {["Coin", "Held", "Funding", "Expected", "Price", "Net", "Exit"].map((h) => (
                   <th key={h} className="px-3 py-3 font-bold">{h}</th>
@@ -457,7 +457,7 @@ export function DenDesk() {
                   <td className="px-3 py-3">{money(t.expected, 3)}</td>
                   <td className={cn("px-3 py-3", t.pricePnl < 0 ? "text-clay" : "text-fg")}>{money(t.pricePnl, 3)}</td>
                   <td className={cn("px-3 py-3 font-bold", (stats.nets[i] ?? 0) < 0 ? "text-clay" : "text-brand")}>{money(stats.nets[i] ?? 0, 3)}</td>
-                  <td className="px-3 py-3 text-muted">{t.exit}</td>
+                  <td className="px-3 py-3 text-v1-muted">{t.exit}</td>
                 </tr>
               ))}
             </tbody>
@@ -472,7 +472,7 @@ export function DenDesk() {
             ["Realized / expected", stats.medianRatio.toFixed(2)],
           ].map(([k, v]) => (
             <article key={k} className="rounded-card border border-line bg-bg/40 p-4">
-              <p className="text-sm text-muted">{k}</p>
+              <p className="text-sm text-v1-muted">{k}</p>
               <p className="mt-1 font-sans text-3xl font-extrabold">{v}</p>
             </article>
           ))}
@@ -482,15 +482,15 @@ export function DenDesk() {
           {money(stats.afterFixed)}. Median realized over expected is {stats.medianRatio.toFixed(2)}, range{" "}
           {stats.ratioLo.toFixed(2)}–{stats.ratioHi.toFixed(2)}. Worst mark move {stats.worst.toFixed(0)}%. That is the whole trick at this size, and it is still only paper.
         </p>
-        <p className="mt-3 text-sm text-muted">
+        <p className="mt-3 text-sm text-v1-muted">
           Rebalances: {REBALANCE.length}. {REBALANCE[0]?.reason}, {money(REBALANCE[0]?.amount ?? 0, 0)} moved, cost {money(REBALANCE[0]?.cost ?? 0, 0)}. Shown apart from the trades, because one transfer can serve several hedges.
         </p>
       </section>
 
       <section className="mt-12 rounded-card border border-line bg-surface/60 p-4 md:p-6">
         <h2 className="font-sans text-huge font-extrabold">A year of what-ifs</h2>
-        <SourceTag kind="sample" className="mt-2 text-muted" />
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+        <SourceTag kind="sample" className="mt-2 text-v1-muted" />
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-v1-muted">
           Four thousand made-up years, the same machine as the funding playbook. Change a slider and the odds move. It is not a forecast. Phase 0 exists to replace these guesses with the tape.
         </p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -525,19 +525,19 @@ export function DenDesk() {
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <article className="rounded-card border border-line bg-bg/50 p-4">
                 <p className={cn("font-sans text-3xl font-extrabold", monte.pLoss > 0.4 ? "text-clay" : "text-ember")}>{(monte.pLoss * 100).toFixed(1)}%</p>
-                <p className="mt-1 text-sm text-muted">end the year under {money(monteIn.cap, 0)}</p>
+                <p className="mt-1 text-sm text-v1-muted">end the year under {money(monteIn.cap, 0)}</p>
               </article>
               <article className="rounded-card border border-line bg-bg/50 p-4">
                 <p className="font-sans text-3xl font-extrabold text-brand">{(monte.p5 * 100).toFixed(1)}%</p>
-                <p className="mt-1 text-sm text-muted">chance of beating +5%</p>
+                <p className="mt-1 text-sm text-v1-muted">chance of beating +5%</p>
               </article>
               <article className="rounded-card border border-line bg-bg/50 p-4">
                 <p className="font-sans text-3xl font-extrabold">{money(monte.p50)}</p>
-                <p className="mt-1 text-sm text-muted">typical ending balance</p>
+                <p className="mt-1 text-sm text-v1-muted">typical ending balance</p>
               </article>
               <article className="rounded-card border border-line bg-bg/50 p-4">
                 <p className="font-sans text-3xl font-extrabold text-clay">{(monte.p5x * 100).toFixed(1)}%</p>
-                <p className="mt-1 text-sm text-muted">chance of 5×, such as twenty to a hundred</p>
+                <p className="mt-1 text-sm text-v1-muted">chance of 5×, such as twenty to a hundred</p>
               </article>
             </div>
             <div className="mt-4 grid gap-4 lg:grid-cols-2">
@@ -565,7 +565,7 @@ export function DenDesk() {
                 </ResponsiveContainer>
               </div>
             </div>
-            <p className="mt-3 text-sm text-muted">
+            <p className="mt-3 text-sm text-v1-muted">
               Bad year {money(monte.p10)} · median {money(monte.p50)} · good year {money(monte.p90)}. Time inside a trade{" "}
               {(monte.inPos * 100).toFixed(0)}%. Left chart: where the 4,000 years ended (clay is a loss). Right: the middle 80% through the year, brand line is the median.
             </p>

@@ -1,21 +1,65 @@
-@import "@fontsource-variable/syne/wght.css";
-@import "@fontsource-variable/fraunces/wght.css";
-@import "@fontsource-variable/fraunces/wght-italic.css";
-@import "@fontsource-variable/bricolage-grotesque/wght.css";
+@import "@fontsource-variable/noto-serif-display/wght.css";
+@import "@fontsource-variable/noto-serif-display/wght-italic.css";
 @import "@fontsource-variable/jetbrains-mono/wght.css";
-@import "@fontsource/pinyon-script/400.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/inter";
 
-@custom-variant dark (&:is(.dark *));
+/* The site is dark-only: shadcn's `dark:` variants always apply. */
+@custom-variant dark (&);
 
+/*
+ * Tokens (DESIGN.md is normative). Hex values live here and in src/lib/palette.ts only,
+ * kept in lockstep by src/lib/palette.test.ts.
+ * scan = scanning / long leg / focus. scent = alerts / short leg. Never decorative.
+ */
 @theme {
+  --color-void: #010104;
+  --color-starlight: #f4f1ea;
+  --color-starlight-dim: rgb(244 241 234 / 0.62);
+  --color-starlight-faint: rgb(244 241 234 / 0.38);
+  --color-chart-line: #9aa0ad;
+  --color-scan: #7fdcff;
+  --color-scent: #ff8a3d;
+  --color-star-cool: #c9d6ff;
+  --color-star-warm: #ffe2c4;
+
+  /* Two fonts only (DESIGN.md "The Two Fonts Rule"). */
+  --font-display: "Noto Serif Display Variable", Georgia, serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --font-sans: var(--font-display);
+  --font-serif: var(--font-display);
+
+  /* Edition type scale (DESIGN.md typography). */
+  --text-hero: clamp(3.2rem, 9vw, 8.5rem);
+  --text-hero--line-height: 0.95;
+  --text-hero--letter-spacing: -0.015em;
+  --text-hero--font-weight: 180;
+  --text-chapter: clamp(2.6rem, 5vw, 4.6rem);
+  --text-chapter--line-height: 0.95;
+  --text-chapter--letter-spacing: -0.015em;
+  --text-chapter--font-weight: 180;
+  --text-title: clamp(2.2rem, 3.6vw, 3.4rem);
+  --text-title--line-height: 0.95;
+  --text-title--letter-spacing: -0.015em;
+  --text-title--font-weight: 180;
+  --text-subtitle: clamp(1.2rem, 1.4vw, 1.45rem);
+  --text-subtitle--line-height: 1.3;
+  --text-body: clamp(1.05rem, 0.35vw + 0.95rem, 1.2rem);
+  --text-body--line-height: 1.55;
+  --text-label: 0.6875rem; /* 11px: the minimum for HUD and labels (T10 critique) */
+  --text-label--line-height: 1.3;
+  --text-label--letter-spacing: 0.22em;
+  --text-figure: 0.875rem;
+  --text-figure--line-height: 1.2;
+  --text-figure--letter-spacing: 0.06em;
+
+  /* v1 palette, kept as-is until the legacy pages are rebuilt (T10 decision 1b). Remove in T51.
+     v1 `muted` is renamed `v1-muted`: `muted` belongs to shadcn's surface token. */
   --color-bg: #090705;
   --color-surface: #16110c;
   --color-fg: #f6f0e6;
-  --color-muted: #b3a498;
+  --color-v1-muted: #b3a498;
   --color-faint: #7a6d60;
   --color-line: #3a2e24;
   --color-brand: #ff6a1a;
@@ -26,8 +70,6 @@
   --color-cream-2: #e6d9c4;
   --color-ink: #1c140e;
   --color-ink-soft: #5c4a3a;
-  --font-sans: "Syne Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Fraunces Variable", Palatino, "Palatino Linotype", serif;
   --text-mega: clamp(2.7rem, 11vw, 8.5rem);
   --text-mega--line-height: 0.84;
   --text-mega--letter-spacing: -0.045em;
@@ -35,6 +77,30 @@
   --text-huge--line-height: 0.9;
   --text-huge--letter-spacing: -0.04em;
   --radius-card: 1.25rem;
+}
+
+/* Edition utilities */
+@utility font-light-display {
+  font-family: var(--font-display);
+  font-weight: 180;
+}
+
+@utility label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 300;
+  line-height: var(--text-label--line-height);
+  letter-spacing: var(--text-label--letter-spacing);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility figure {
+  font-family: var(--font-mono);
+  font-size: var(--text-figure);
+  font-weight: 300;
+  letter-spacing: var(--text-figure--letter-spacing);
+  font-variant-numeric: tabular-nums;
 }
 
 @layer base {
@@ -49,7 +115,7 @@
   }
 
   body {
-    font-family: var(--font-sans);
+    font-family: var(--font-display);
     background: var(--color-bg);
     color: var(--color-fg);
     text-rendering: optimizeLegibility;
@@ -64,7 +130,7 @@
   button:focus-visible,
   input:focus-visible,
   summary:focus-visible {
-    outline: 2px solid var(--color-brand);
+    outline: 2px solid var(--color-scan);
     outline-offset: 3px;
   }
 }
@@ -161,7 +227,8 @@
 }
 
 @theme inline {
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-display);
+  --color-muted: var(--muted);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -244,70 +311,37 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* shadcn / magicui → DESIGN.md tokens. One dark mapping; no filled cards (popovers are void + hairline). */
+  --background: var(--color-void);
+  --foreground: var(--color-starlight);
+  --card: var(--color-void);
+  --card-foreground: var(--color-starlight);
+  --popover: var(--color-void);
+  --popover-foreground: var(--color-starlight);
+  --primary: var(--color-starlight);
+  --primary-foreground: var(--color-void);
+  --secondary: rgb(244 241 234 / 0.06);
+  --secondary-foreground: var(--color-starlight);
+  --muted: rgb(244 241 234 / 0.06);
+  --muted-foreground: var(--color-starlight-dim);
+  --accent: rgb(244 241 234 / 0.08);
+  --accent-foreground: var(--color-starlight);
+  --destructive: var(--color-scent);
+  --border: rgb(244 241 234 / 0.14);
+  --input: rgb(244 241 234 / 0.4);
+  --ring: var(--color-scan);
+  --chart-1: var(--color-scan);
+  --chart-2: var(--color-scent);
+  --chart-3: var(--color-starlight);
+  --chart-4: var(--color-starlight-dim);
+  --chart-5: var(--color-chart-line);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar: var(--color-void);
+  --sidebar-foreground: var(--color-starlight);
+  --sidebar-primary: var(--color-starlight);
+  --sidebar-primary-foreground: var(--color-void);
+  --sidebar-accent: rgb(244 241 234 / 0.08);
+  --sidebar-accent-foreground: var(--color-starlight);
+  --sidebar-border: rgb(244 241 234 / 0.14);
+  --sidebar-ring: var(--color-scan);
 }
