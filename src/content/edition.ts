@@ -35,6 +35,12 @@ export type ChapterDef = {
   layout: "center" | "left"
   /** For left-column chapters: copy sits high (default) or low on the screen. */
   anchor?: "top" | "bottom"
+  /** rise chapters: progress band over which the copy rises into place (default [0, 0.16]). */
+  rise?: [number, number]
+  /** rise chapters: progress band over which the title resolves from blur. */
+  titleReveal?: [number, number]
+  /** Progress band over which the body resolves word by word. */
+  bodyWords?: [number, number]
 }
 
 export const CHAPTERS: ChapterDef[] = [
@@ -58,6 +64,10 @@ export const CHAPTERS: ChapterDef[] = [
     enter: "rise",
     layout: "left",
     anchor: "bottom",
+    // D1 timing: the copy rises only after the constellation has formed (stars 0–0.42, lines 0.22–0.5).
+    rise: [0.34, 0.5],
+    titleReveal: [0.42, 0.52],
+    bodyWords: [0.44, 0.56],
   },
   {
     id: "sniff",

@@ -2,7 +2,7 @@
 // fresnel rim, stars bent through the glass with only a hint of dispersion, one highlight that follows
 // the cursor. It never animates by itself. `scene.houndAway` (0..1) sends it into depth exponentially.
 // The silhouette is still the draft mark from S4 and needs proper art.
-import { useFrame } from "@react-three/fiber"
+import { useFrame, useThree } from "@react-three/fiber"
 import { useMemo, useRef } from "react"
 import * as THREE from "three"
 import { SVGLoader } from "three-stdlib"
@@ -83,6 +83,7 @@ void main() {
 export function GlassHound({ quality }: { quality: Quality }) {
   const geo = useHoundGeometry(quality)
   const ref = useRef<THREE.Group>(null)
+  const { size } = useThree()
   const glass = useMemo(
     () =>
       new THREE.ShaderMaterial({
@@ -111,10 +112,12 @@ export function GlassHound({ quality }: { quality: Quality }) {
     if (!g.visible) return
     const px = s.reduced ? 0 : s.pointer[0]
     const py = s.reduced ? 0 : s.pointer[1]
-    g.position.set(0, 0.85 + depth * 0.6, -depth * 60)
+    const narrow = size.width < 768
+    g.position.set(0, (narrow ? 1.2 : 0.85) + depth * 0.6, -depth * 60)
     g.rotation.y = THREE.MathUtils.damp(g.rotation.y, -0.32 + px * 0.22, 2.2, dt)
     g.rotation.x = THREE.MathUtils.damp(g.rotation.x, 0.08 - py * 0.14, 2.2, dt)
-    g.scale.setScalar(0.8)
+    // Phones: smaller so the hound sits above the title instead of filling the width.
+    g.scale.setScalar(narrow ? 0.5 : 0.8)
     const u = glass.uniforms.uLight.value as THREE.Vector2
     u.set(THREE.MathUtils.damp(u.x, 0.3 + px * 0.8, 3, dt), THREE.MathUtils.damp(u.y, 0.5 + py * 0.6, 3, dt))
     glass.uniforms.uO.value = o

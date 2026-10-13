@@ -2,7 +2,7 @@ import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 import { CHAPTERS, chapterOf, enterId } from "../../content/edition.ts"
 import { formatCoordinate } from "../stage/coordinates.ts"
-import { copyFrame, crawlFront, resolveIn } from "./choreo.ts"
+import { copyFrame, crawlFront, resolveIn, wordLook } from "./choreo.ts"
 
 const vh = 900
 
@@ -39,6 +39,19 @@ describe("copy choreography", () => {
     const f = copyFrame(0.5, "rise", { vh, reduced: true })
     assert.deepEqual(f.block, { opacity: 1, y: 0, blur: 0 })
     assert.equal(copyFrame(0, "rise", { vh, reduced: true }).block.opacity, 0)
+  })
+
+  it("rise band: α copy waits for the constellation, then rises in its band", () => {
+    const band = [0.34, 0.5] as [number, number]
+    assert.equal(copyFrame(0.2, "rise", { vh, reduced: false, riseBand: band }).block.opacity, 0)
+    assert.ok(copyFrame(0.36, "rise", { vh, reduced: false, riseBand: band }).block.y > 0)
+    assert.equal(copyFrame(0.5, "rise", { vh, reduced: false, riseBand: band }).block.y, 0)
+  })
+
+  it("wordLook: words resolve in order and all land by q = 1", () => {
+    assert.ok(wordLook(0.3, 0, 10).opacity > wordLook(0.3, 5, 10).opacity)
+    for (let i = 0; i < 10; i++) assert.equal(wordLook(1, i, 10).opacity, 1)
+    assert.equal(wordLook(0, 0, 10).opacity, 0)
   })
 
   it("crawlFront: idle outside the crawl, eats first, rebuilds second", () => {
