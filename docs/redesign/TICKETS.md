@@ -138,9 +138,10 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 - (a) Field chart: net APR after costs × persistence from live rows (no sample "sector"). (b) Shortlist of 8, clean first (5 on phones). (c) No "Open scanner" link until T31 builds `/scanner`.
 - No cards, BorderBeam or NumberTicker (DESIGN.md).
 
-### T23 VI Kennel
-- Files: `chapters/06-kennel.tsx`. Twinkle jitter driven by `1 - persistence` (passes through store/adapter, no new shader).
-- Sheet: table (shadcn Table) of kennel coins: symbol, net APR, persistence bar, flip hours, status. Copy: why persistence has to earn the alert.
+### T23 VI Kennel (rescoped, owner-approved a/b/c)
+- Files: `chapters/06-kennel.tsx`, `chapters/kennel-scene.ts`, `objects/kennel.tsx`, `lib/stage/kennel.ts` (+ test); `KENNEL` list in `content/edition.ts`.
+- (a) Twinkle by 1 − persistence as ambient life. (b) Subtitle kept; a live verdict checks it. (c) Twenty-coin editorial list, labelled as ours.
+- No shadcn Table (ruled rows on the sky, DESIGN.md).
 
 ### T24 VII Embers
 - Files: `chapters/07-embers.tsx`, `objects/ember-field.tsx`.
@@ -240,7 +241,8 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T20 | O | done | γ Spread: astrolabe (thin lines, scroll-locked turn, price swing), definition of the spread + 3 steps, live legs beat; layout shared in lib/stage/layout.ts; 352 tests; branch T20-spread (notes/T20.md) |
 | T21 | O | done | δ Trail: comet over a 24 h arc from live fields only (window, last flip, persistence), the six steadiest as strips; 362 tests; branch T21-trail (notes/T21.md) |
 | T22 | O | done | ε Hedge: field chart (net × held), shortlist beat; phone instruments now end before the second beat in every chapter; 371 tests; branch T22-hedge (notes/T22.md) |
-| T23–T27 | S | todo | |
+| T23 | O | done | ζ Kennel: meme cluster with measured twinkle, live medians + verdict, 1000-prefix explained; beats now fit above the HUD; 381 tests; branch T23-kennel (notes/T23.md) |
+| T24–T27 | S | todo | |
 | T30–T35 | S/H | todo | |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |

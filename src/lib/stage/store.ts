@@ -53,6 +53,13 @@ export type Scene = {
   fieldForm: number
   fieldLabels: number
   fieldAway: number
+  /** ζ kennel: shown, arrival, stacked focus, stars gathering into the pen, labels, recede. */
+  kennelOn: number
+  kennelAppear: number
+  kennelFocus: number
+  kennelForm: number
+  kennelLabels: number
+  kennelAway: number
   /** Distance flown through the dust layers (grows with scroll; drives parallax). */
   flight: number
 }
@@ -90,6 +97,12 @@ export const EMPTY_SCENE: Scene = {
   fieldForm: 0,
   fieldLabels: 0,
   fieldAway: 0,
+  kennelOn: 0,
+  kennelAppear: 0,
+  kennelFocus: 0,
+  kennelForm: 0,
+  kennelLabels: 0,
+  kennelAway: 0,
   flight: 0,
 }
 

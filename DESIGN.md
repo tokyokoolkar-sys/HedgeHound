@@ -207,6 +207,9 @@ The loudest scent's last day, drawn only from live fields (owner decision): a fa
 ### Field chart (ε)
 Every live coin as a star on two honest axes: net APR after costs across (linear, clamped at −40% and 60%, a starlight hairline at break-even) and persistence up ("↑ held 6 h"). Clean scents are orange, coins still building history dim starlight, losing spreads dimmer still. The stars gather from scattered sky into place with the scroll. The loudest few that clear their costs are labelled (pointing right, away from the break-even line). No "good zone" is drawn: the scanner has no persistence threshold, so drawing one would invent a rule. The second beat is the shortlist: up to eight coins that clear their costs (five on phones), clean first, as ruled text rows.
 
+### Kennel (ζ)
+Our own editorial list of meme coins (labelled "our list", matched with or without the `1000` size prefix) as a loose cluster inside a faint dashed pen. Brightness is net APR; orange only for clean coins that pay after costs. The twinkle is the chapter's ambient life and it is measured: depth and speed grow with 1 − persistence, so a steady coin barely flickers and a flipping one trembles (held still under reduced motion). The second beat checks the subtitle's claim live: kennel and "the rest" medians (held, net), a verdict sentence computed from them (it says "not worse today" when that is what the data says), then the loudest kennel coins, and what the `1000` prefix means.
+
 ### Coin labels (radar)
 The symbol in starlight-dim mono and the net APR in starlight, or in orange when alerting. Only the loudest positive spreads (five, three on phones), never two labels that touch, never the featured coin. Labels point inward so they never leave the screen. Projected from the 3D radar each frame as plain DOM, never drei `<Html>` (see Don'ts).
 
@@ -214,6 +217,8 @@ The symbol in starlight-dim mono and the net APR in starlight, or in orange when
 The loudest coin, called out from the radar. A thin leader line draws from the coin to outside the ring. Then a caption ("LOUDEST CLEAN SCENT"), the symbol in display type, the net APR as a figure and a SourceTag gather out of 2px star specks, dim and slightly soft at first, then crisp. Scroll-locked and reversible.
 
 ### Second beat
+Beats fit the viewport: trailing rows drop out (never the footer, SourceTag or note) until the block clears the HUD line. Every list in a beat is a "top N", so a shorter list stays truthful.
+
 A chapter may hand its left column to a second beat (β: "What the scanner checks"): a kicker, a shimmer title and a quiet ruled list (mono keys, body values, starlight-faint hairlines). Beats are strictly sequential, never double-exposed: the first is gone before the second begins.
 
 ### Copy motion
