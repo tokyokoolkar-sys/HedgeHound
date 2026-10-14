@@ -1,9 +1,10 @@
 // ε The Hedge (PLAN §3 ε, TICKETS T22), on the β–δ pattern. Owner decisions: (a) the field chart as the
-// instrument, (b) a shortlist of eight, clean first, (c) no "Open scanner" link until /scanner exists (T31).
+// instrument, (b) a shortlist of eight, clean first, (c) "Open scanner" under the shortlist (added in T31).
 // - copy: <Chapter> (what makes a spread worth taking), then a live second beat: the shortlist as ruled
 //   text rows on the sky, one SourceTag;
 // - instrument: objects/field-chart.tsx, channels in hedge-scene.ts; labels pinned to it.
 import { band } from "@/lib/motion/math"
+import { Link } from "@tanstack/react-router"
 import { useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
 import { formatNet } from "@/lib/scan/loudest"
@@ -62,6 +63,11 @@ export function Hedge({ def, exitInto, last }: Props) {
           stacked={def.stacked && { in: def.stacked.beatIn, out: def.stacked.beatOut }}
           rows={list.map((r) => [r.symbol, rowValue(r)])}
           footer={footer}
+          action={
+            <Link to="/scanner" className="label inline-flex min-h-11 items-center text-starlight underline decoration-starlight-faint decoration-1 underline-offset-[6px] hover:decoration-starlight focus-visible:text-scan">
+              Open scanner →
+            </Link>
+          }
         />
       )}
       {/* The shortlist as text for screen readers (the beat above is visual only). */}

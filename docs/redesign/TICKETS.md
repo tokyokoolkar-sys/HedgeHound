@@ -169,8 +169,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 - Phones: wordmark + "menu" → full-screen text on the void with the pages, status, search and the Edition's chapters α–κ (closes journal #6/#26). "Open scanner" arrives with T31.
 
 ### T31 [S] /scanner (port)
-- Files: `routes/scanner.tsx`, `components/scanner/*`. Port `WhaleHunterAlt/web/src/pages/Scanner.tsx` onto shadcn Table + `@tanstack/react-table`: sortable columns (symbol, net, gross, persistence, n24, flip h, status, long/short, liq dist), filter chips (status ok / building / stale), min-net slider (shadcn Slider → query param), row click → `/sky?star=`. Glass sheet on top of SkyStage `mode: "quiet"` (dim sky).
-- Supports `?sym=` highlight.
+- Rescoped in P4 (owner-approved a–e): no glass sheet, no chips. Files: `routes/scanner.tsx`, `components/scanner/scanner-page.tsx`, `lib/scan/table.ts` (URL state, filter, sort; pure + tested). Sortable columns (coin, net, gross, held 6 h, samples, last flip, legs, liq dist, status), status words, a hairline net-floor slider, `?status&min&sort&dir&sym` in the URL, row → the coin on the sky. Quiet sky mode. Nav link; ε "Open scanner".
 
 ### T32 [H] /playbook (port)
 - Files: `routes/playbook.tsx`. Port `pages/Playbook.tsx` content into parchment Sheets with SwashHeading + FeatureTable. Pure content; no new animation beyond the primitives.
@@ -251,7 +250,8 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | P3 close | O | done | full dual-agent critique (18/28, .impeccable/critique/2026-10-14T10-59-22Z…); fixed: scent red → orange (colour linearised once), shimmer white + uncut descenders + plain under reduced motion, radar crosshair removed, side-aware ε labels, ε honesty (reworded + "shaky"), phone timing (instrument after the copy, beats hold longer, captions wait, wrap), η heads, κ ends on Canis Major, vignette removed; notes/P3-close.md |
 | T27 | O | done | κ Ledger: sky dims, Sirius alone with its J2000 position, the ledger footer (source, phase, links, back to the overture); 400 tests; branch T27-ledger (notes/T27.md) |
 | T30 | O | done | nav on every page: links, poll status + SourceTag, ⌘K coin search (cmdk, → sky `?star=`), phone menu with the chapters α–κ (journal #6/#26 closed); rail and menu land on settled copy; 411 tests; branch T30-nav (notes/T30.md) |
-| T31–T34 | S/H | todo | T35 skipped (owner) |
+| T31 | O | done | /scanner: operator table on a quiet sky, filters + sort + `?sym=` in the URL, two-line rows under 1024, row → sky; quiet sky mode; Scanner in the nav; ε "Open scanner" (journal #15); `/#chapter-<id>` lands on settled copy; 417 tests; branch T31-scanner (notes/T31.md) |
+| T32–T34 | S/H | todo | T35 skipped (owner) |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |
 | T41 | S | blocked: owner OK | |

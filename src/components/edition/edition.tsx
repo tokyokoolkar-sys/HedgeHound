@@ -2,9 +2,10 @@
 // Every chapter's copy, the HUD, the index, and the scene mapping: the one place where scroll progress
 // becomes scene channels for the sky (overture → hound, α → Canis Major, β → radar). Chapters with their
 // own instruments render through CHAPTER_VIEWS (β is the reference, chapters/02-sniff.tsx).
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { enterId, type ChapterId } from "@/content/edition"
 import { band, smooth } from "@/lib/motion/math"
+import { getLenis } from "@/lib/motion/scroll-bus"
 import { useRequestSky } from "@/lib/stage/request-sky"
 import { EDITION } from "@/lib/stage/rhythm"
 import { Sniff } from "../chapters/02-sniff"
@@ -28,6 +29,7 @@ import { sniffScene } from "../chapters/sniff-scene"
 import { Chapter } from "./chapter"
 import { ChapterIndex } from "./chapter-index"
 import { Hud } from "./hud"
+import { jumpToChapter } from "./jump"
 import { applyLook } from "./look"
 import { SymbolCarousel } from "./symbol-carousel"
 import { useScrollFrame } from "./use-scroll-frame"
@@ -40,6 +42,21 @@ export function Edition() {
   const cue = useRef<HTMLDivElement>(null)
   // The chapter list for the owner's rhythm (D2): crawls between acts, δ and η shorter.
   const defs = EDITION
+
+  // A link to /#chapter-<id> (e.g. /scanner's "η Cold Embers") lands where that chapter's copy has
+  // settled, not on its empty first frame. Waits for Lenis (it starts asynchronously on a fresh load and
+  // would otherwise reset the jump); under reduced motion there is none, so it gives up waiting after ~1 s.
+  useEffect(() => {
+    const id = /^#chapter-([a-z]+)$/.exec(window.location.hash)?.[1]
+    if (!id || !EDITION.some((c) => c.id === id)) return
+    let raf = 0
+    const go = (n: number) => {
+      if (getLenis() || n > 60) jumpToChapter(id as ChapterId, true)
+      else raf = requestAnimationFrame(() => go(n + 1))
+    }
+    raf = requestAnimationFrame(() => go(0))
+    return () => cancelAnimationFrame(raf)
+  }, [])
 
   // Scene channels from section progress. The crawl is whichever chapter's crawl-in is underway.
   useScrollFrame((s) => {

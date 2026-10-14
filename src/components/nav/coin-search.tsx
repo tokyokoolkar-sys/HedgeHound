@@ -1,7 +1,7 @@
 // ⌘K coin search (T30): type a symbol, jump to it on the sky. Built on cmdk + the radix dialog directly
 // (not the shadcn skin): a hairline frame on the void, mono rows, no glass, no blur. Every figure in the list
 // is tagged (one SourceTag for the group). Opens with ⌘K / Ctrl+K, or "/" when not typing elsewhere.
-import { useNavigate } from "@tanstack/react-router"
+import { useNavigate, useRouterState } from "@tanstack/react-router"
 import { Command } from "cmdk"
 import { Dialog } from "radix-ui"
 import { useEffect } from "react"
@@ -18,6 +18,8 @@ type Props = { open: boolean; onOpenChange: (open: boolean) => void }
 export function CoinSearch({ open, onOpenChange }: Props) {
   const scan = useScan()
   const navigate = useNavigate()
+  // On /scanner a coin is pointed out in the table instead of leaving the page.
+  const onScanner = useRouterState({ select: (s) => s.location.pathname }) === "/scanner"
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -75,7 +77,8 @@ export function CoinSearch({ open, onOpenChange }: Props) {
                       value={r.symbol}
                       onSelect={() => {
                         onOpenChange(false)
-                        void navigate({ to: SKY_ROUTE, search: { star: r.symbol } })
+                        if (onScanner) void navigate({ to: "/scanner", search: (prev: Record<string, unknown>) => ({ ...prev, sym: r.symbol }), replace: true })
+                        else void navigate({ to: SKY_ROUTE, search: { star: r.symbol } })
                       }}
                       className="grid min-h-10 cursor-pointer grid-cols-[1fr_auto_auto] items-baseline gap-4 px-2 py-1.5 text-starlight-dim data-[selected=true]:bg-starlight/[0.06] data-[selected=true]:text-starlight"
                     >
@@ -87,7 +90,7 @@ export function CoinSearch({ open, onOpenChange }: Props) {
                 })}
               </Command.Group>
             </Command.List>
-            <p className="label m-0 border-t border-starlight-faint px-4 py-2.5 text-starlight-dim">↵ open on the sky · esc close</p>
+            <p className="label m-0 border-t border-starlight-faint px-4 py-2.5 text-starlight-dim">↵ {onScanner ? "find in the table" : "open on the sky"} · esc close</p>
           </Command>
         </Dialog.Content>
       </Dialog.Portal>

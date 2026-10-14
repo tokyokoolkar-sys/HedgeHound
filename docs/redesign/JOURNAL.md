@@ -21,7 +21,6 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 12 | Under reduced motion there is no price swing, only its caption, so "price cancels" is told rather than shown. | T20 | — | owner |
 | 13 | δ's trail shows only what live fields allow (window, last flip, 6 h persistence); the real shape of the day needs `/api/history`. | T21 | T41 (needs owner OK) | owner |
 | 14 | When the sign flipped very recently (sample: 1.4 h), the solid part of the trail is a tiny stub at the `now` end, so the comet reads mostly dashed. Honest, but quiet. | T21 | — | open |
-| 15 | Add the "Open scanner" hairline CTA to ε's shortlist once `/scanner` exists. | T22 | T31 | later |
 | 16 | In the sample most coins sit at 100% held, so ε's stars bunch along the top edge; live data may spread them. Revisit with LIVE data. | T22 | — | open |
 | 17 | The kennel list is editorial and fixed; new meme listings need adding by hand. | T23 | — | later |
 | 18 | SAMPLE has only three skipped coins, so η looks sparse offline; checked with a long-list mock (`T24-shots/mock-long-lists.png`). Re-check with LIVE. | T24 | — | open |
@@ -30,6 +29,7 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 21 | Add the "Open the den" hairline CTA to ι once `/den` is restyled. | T26 | T34 | later |
 | 22 | Paper results: Phase 0 records no paper trades, so ι shows settings and a live count only. Revisit if a paper book of trades is ever built. | T26 | — | owner |
 | 24 | δ's strips colour by short venue (orange = short on Lighter) while orange means "clean" elsewhere; reads as "ARB alerts". | P3 critique | — | open |
+| 27 | `/den` (and any page still on the legacy look) never asks for the sky, so its opaque background hides whatever the Edition left there; restyled pages call `useRequestSky("quiet")` like /scanner. | T31 | T34 | later |
 
 ## Decided, kept for reference
 - ε lists by net and clean status and marks "shaky" (held under half of six hours); no persistence threshold is invented (owner, P3 close).
@@ -42,6 +42,7 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 
 | Item | Closed by |
 |---|---|
+| #15 "Open scanner" under ε's shortlist | T31 |
 | #6, #26 Phones had no chapter index or position cue | T30 (the phone menu lists α–κ, lights the current chapter, and jumps to it) |
 | Legacy `/` swash initial ("I t does not chase price") | T14 (`/` is the Edition; legacy moved to `/v1`) |
 | α copy rise timing after the constellation | T14 |

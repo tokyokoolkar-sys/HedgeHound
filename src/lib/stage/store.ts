@@ -149,6 +149,12 @@ export const EMPTY_SCENE: Scene = {
   flight: 0,
 }
 
+/**
+ * The sky behind a working page (/scanner, T31): no instrument, no hound, no constellation, and the stars
+ * dimmed so a table reads cleanly. Ambient twinkle carries on; nothing here follows the scroll.
+ */
+export const QUIET_SCENE: Scene = { ...EMPTY_SCENE, houndAway: 1, skyDim: 0.4 }
+
 export type StageState = {
   mode: Mode
   /** Index of the active registered section (see lib/motion/scroll-progress.ts). */

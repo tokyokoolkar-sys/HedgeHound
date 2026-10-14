@@ -14,8 +14,8 @@ export const landingProgress = (id: ChapterId) => {
   return Math.max(0.38, (def?.bodyWords?.[1] ?? def?.rise?.[1] ?? 0) + 0.04)
 }
 
-export function jumpToChapter(id: ChapterId) {
+export function jumpToChapter(id: ChapterId, immediate = false) {
   const el = document.getElementById(`chapter-${id}`)
   if (!el) return
-  scrollToTarget(el, { offset: el.offsetHeight * landingProgress(id) })
+  scrollToTarget(el, { offset: el.offsetHeight * landingProgress(id), immediate })
 }
