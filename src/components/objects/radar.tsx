@@ -8,7 +8,8 @@ import { useFrame, useThree } from "@react-three/fiber"
 import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 import { band, smooth } from "@/lib/motion/math"
-import { R_OUT, dockFor, layoutToWorld, mixLayout, radarFrame, radarLayout, tucked } from "@/lib/stage/radar"
+import { instrumentLayout, layoutToWorld, mixLayout, tucked } from "@/lib/stage/layout"
+import { R_OUT, dockFor, radarFrame } from "@/lib/stage/radar"
 import { useStage } from "@/lib/stage/store"
 import { SKY_COLORS } from "../stage/star-points"
 import { useRadar } from "./use-radar"
@@ -153,7 +154,7 @@ export function Radar() {
     g.visible = sc.radarOn > 0.5
     radarFrame.visible = g.visible
     if (!g.visible) return
-    const layout = radarLayout(size.width, size.height)
+    const layout = instrumentLayout(size.width, size.height)
     // Stacked layouts: tucked under the copy, then featured on its own (scene.radarFocus).
     const placedLayout = layout.mode === "narrow" ? mixLayout(tucked(layout, size.height), layout, smooth(sc.radarFocus)) : layout
     const at = layoutToWorld(placedLayout, size.width, size.height)

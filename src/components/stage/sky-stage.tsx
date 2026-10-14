@@ -15,6 +15,7 @@ import { palette } from "@/lib/palette"
 import { useStage, type Quality } from "@/lib/stage/store"
 import { CanisMajor } from "../objects/canis-major"
 import { GlassHound } from "../objects/glass-hound"
+import { HedgeAstrolabe } from "../objects/hedge-astrolabe"
 import { Radar } from "../objects/radar"
 import { CameraRig } from "./camera-rig"
 import { Effects } from "./effects"
@@ -56,6 +57,7 @@ export default function SkyStage() {
           <GlassHound quality={quality} />
           {labelHost && <CanisMajor labelHost={labelHost} />}
           <Radar />
+          <HedgeAstrolabe />
           <CameraRig />
           <Projector />
           <Effects />

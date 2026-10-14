@@ -1,11 +1,11 @@
 // A second copy beat in a chapter (PLAN §4.3): it takes the place of the chapter's first copy once that
 // has blurred out (ChapterDef.out), in the same left column. The heading resolves from blur, the ruled
 // rows rise in sequence, and the beat blurs out upward at the end. Scroll-locked and reversible.
-import { useRef } from "react"
+import { useRef, type ReactNode } from "react"
 import { band, smooth } from "@/lib/motion/math"
 import { BODY_BLUR, resolveIn } from "@/lib/motion/choreo"
 import type { Beat as BeatDef } from "@/content/edition"
-import { isStacked } from "@/lib/stage/radar"
+import { isStacked } from "@/lib/stage/layout"
 import { applyLook } from "./look"
 import { ShimmerTitle } from "./shimmer-title"
 import { useScrollFrame } from "./use-scroll-frame"
@@ -16,9 +16,13 @@ type Props = {
   letter: string
   /** Timing override on stacked (phone) layouts. */
   stacked?: { in: [number, number]; out: [number, number] }
+  /** Live rows (replace the content rows), and something under them (e.g. a SourceTag). The block is
+   *  visual only: a chapter with live rows also renders them as screen-reader text. */
+  rows?: Array<[string, ReactNode]>
+  footer?: ReactNode
 }
 
-export function Beat({ section, beat, letter, stacked }: Props) {
+export function Beat({ section, beat, letter, stacked, rows, footer }: Props) {
   const block = useRef<HTMLDivElement>(null)
   const head = useRef<HTMLDivElement>(null)
 
@@ -61,13 +65,18 @@ export function Beat({ section, beat, letter, stacked }: Props) {
         </div>
       </div>
       <dl className="m-0 mt-6 grid">
-        {beat.rows.map(([k, v]) => (
-          <div key={k} data-row className="grid grid-cols-[5.5rem_1fr] items-baseline gap-3 border-t border-starlight-faint py-3">
+        {(rows ?? beat.rows).map(([k, v]) => (
+          <div key={k} data-row className="grid grid-cols-[6.5rem_1fr] items-baseline gap-3 border-t border-starlight-faint py-3">
             <dt className="label text-starlight-dim">{k}</dt>
             <dd className="text-body m-0 text-starlight">{v}</dd>
           </div>
         ))}
       </dl>
+      {footer && (
+        <div data-row className="mt-4">
+          {footer}
+        </div>
+      )}
       {beat.note && (
         <p data-row className="label mt-4 mb-0 text-starlight-dim">
           {beat.note}

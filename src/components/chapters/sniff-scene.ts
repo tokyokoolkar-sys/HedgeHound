@@ -1,6 +1,6 @@
 // β's scene channels (kept apart from the chapter's components so fast refresh keeps working).
 import { band, smooth } from "@/lib/motion/math"
-import { isStacked } from "@/lib/stage/radar"
+import { isStacked } from "@/lib/stage/layout"
 import type { Scene, StageState } from "@/lib/stage/store"
 import { enterId } from "@/content/edition"
 

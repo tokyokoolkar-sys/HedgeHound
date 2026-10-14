@@ -8,7 +8,7 @@ import { cn } from "@/lib/cn"
 import { band, smooth } from "@/lib/motion/math"
 import { copyFrame, crawlFront, resolveIn, wordLook } from "@/lib/motion/choreo"
 import { useSection } from "@/lib/motion/scroll-progress"
-import { isStacked } from "@/lib/stage/radar"
+import { isStacked } from "@/lib/stage/layout"
 import { enterId, type ChapterDef } from "@/content/edition"
 import { applyLook } from "./look"
 import { applyCrawl } from "./masks"
@@ -52,7 +52,7 @@ function ReaderCopy({ def }: { def: ChapterDef }) {
         </ol>
       )}
       {def.note && <p>{def.note}</p>}
-      {def.beat && (
+      {def.beat && def.beat.rows.length > 0 && (
         <>
           <h3>{def.beat.title}</h3>
           <dl>
@@ -83,9 +83,10 @@ export function Chapter({ def, exitInto, last, children }: Props) {
     const vh = window.innerHeight
     const p = s.sections[def.id] ?? 0
     const enter = def.enter === "crawl" ? (s.sections[enterId(def.id)] ?? 0) : 0
-    const itemEls = items.current?.querySelectorAll<HTMLElement>("[data-item]")
+    // Body paragraphs, steps and the note, in reading order.
+    const itemEls = items.current?.querySelectorAll<HTMLElement>("[data-item],[data-step]")
     const stacked = isStacked(document.documentElement.clientWidth, vh)
-    const f = copyFrame(p, def.enter, {
+    const base = {
       vh,
       reduced: s.reduced,
       last,
@@ -93,10 +94,15 @@ export function Chapter({ def, exitInto, last, children }: Props) {
       outBand: stacked && def.stacked ? def.stacked.out : def.out,
       // A following crawl carries the copy out (below), so it must not fade first and pop back (critique).
       holdOut: !!exitInto,
-      // Stacked layouts: steps take turns in one place instead of stacking (the radar needs the lower half).
-      items: def.steps && stacked ? "swap" : "stack",
-      count: itemEls?.length ?? 0,
-    })
+    }
+    const f = copyFrame(p, def.enter, base)
+    // Stacked layouts: the steps take turns in one place (the instrument needs the lower half); the body
+    // and the note stay put.
+    const swap = def.steps && stacked ? copyFrame(p, def.enter, { ...base, items: "swap", count: def.steps.length }) : null
+    const lookItems = () => {
+      let step = 0
+      itemEls?.forEach((it, k) => applyLook(it, swap && it.hasAttribute("data-step") ? swap.item(step++) : f.item(k), false))
+    }
     let look = f.block
 
     if (def.enter === "crawl" && !s.reduced) {
@@ -126,11 +132,12 @@ export function Chapter({ def, exitInto, last, children }: Props) {
         words.forEach((w, i) => applyLook(w, wordLook(q, i, words.length), false))
       })
     }
+    if (def.enter === "rise" && def.steps) lookItems()
     if (def.enter !== "rise" && !isOverture) {
       const titleT = def.enter === "crawl" ? 0.5 * band(enter, 0.8, 1) + 0.5 * band(p, 0, 0.14) : band(p, 0, 0.14)
       applyLook(title.current, s.reduced ? resolveIn(1) : resolveIn(p > 0 || enter > 0 ? titleT : 0), false)
       applyLook(subtitle.current, f.subtitle, false)
-      itemEls?.forEach((it, i) => applyLook(it, f.item(i), false))
+      lookItems()
     }
   })
 
@@ -197,7 +204,7 @@ export function Chapter({ def, exitInto, last, children }: Props) {
           {def.steps && (
             <ol className="m-0 mt-6 grid list-none gap-5 p-0 max-md:gap-0 max-md:*:[grid-area:1/1]">
               {def.steps.map((st, i) => (
-                <li key={st.title} data-item className="grid grid-cols-[2rem_1fr] items-baseline">
+                <li key={st.title} data-step className="grid grid-cols-[2rem_1fr] items-baseline">
                   <span className="label text-starlight-dim">{String(i + 1).padStart(2, "0")}</span>
                   <div>
                     <h3 className="m-0 font-light-display text-subtitle text-starlight">{st.title}</h3>

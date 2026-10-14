@@ -81,7 +81,11 @@ export function copyFrame(p: number, mode: "fade" | "crawl" | "rise", opts: Copy
     y: (mode === "rise" ? (1 - smooth(band(p, r0, r1))) * vh * 0.95 : 0) - out * 40,
     blur: out * BODY_BLUR,
   }
-  if (mode === "rise") return { block, title: SHOWN, subtitle: SHOWN, item: () => SHOWN }
+  // Rise: the block travels as one; only swapped steps (stacked layouts) take turns inside it.
+  if (mode === "rise") {
+    const item = (i: number) => (opts.items === "swap" ? swapItem(p, i, opts.count ?? 1) : SHOWN)
+    return { block, title: SHOWN, subtitle: SHOWN, item }
+  }
   return {
     block,
     title: resolveIn(band(p, 0, 0.14)),

@@ -142,7 +142,26 @@ export const CHAPTERS: ChapterDef[] = [
     kicker: "The spread",
     title: "One coin. Two legs.",
     subtitle: "Long the cheap hour. Short the rich one. Price cancels.",
-    length: "260svh",
+    body: [
+      "Perpetual futures settle funding between longs and shorts on a schedule. When two venues price the same coin’s funding differently, the gap between their hourly rates is the spread.",
+    ],
+    steps: [
+      { title: "Short the rich hour", body: "Where funding is higher, you want to be short. You collect." },
+      { title: "Long the cheap hour", body: "Where funding is lower, you want to be long. You pay less, or you get paid." },
+      { title: "If one leg fails", body: "Flatten the other. A naked leg is just a bet the hound refused to make." },
+    ],
+    out: [0.52, 0.6],
+    // The rows are live (the loudest scent's two legs), filled in by chapters/03-spread.tsx.
+    beat: {
+      kicker: "Up close",
+      title: "The scent, both legs",
+      rows: [],
+      note: "Same coin as β’s reading · every field from the scanner",
+      in: [0.62, 0.76],
+      out: [0.86, 1],
+    },
+    stacked: { out: [0.47, 0.53], beatIn: [0.82, 0.92], beatOut: [0.96, 1] },
+    length: "440svh",
     enter: "rise",
     layout: "left",
   },

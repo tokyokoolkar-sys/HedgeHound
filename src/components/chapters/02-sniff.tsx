@@ -10,7 +10,7 @@ import { band } from "@/lib/motion/math"
 import { formatNet } from "@/lib/scan/loudest"
 import { R_OUT, dockFor, radarToWorld, topCoins } from "@/lib/stage/radar"
 import type { ChapterDef } from "@/content/edition"
-import { useRadar, useRadarLayout } from "../objects/use-radar"
+import { useInstrumentLayout, useRadar } from "../objects/use-radar"
 import { Beat } from "../edition/beat"
 import { Chapter } from "../edition/chapter"
 import { applyLook } from "../edition/look"
@@ -41,7 +41,7 @@ export function Sniff({ def, exitInto, last }: Props) {
 /** Coin labels, the radar's caption and key, the half captions and the reading, pinned to the radar. */
 function RadarLabels() {
   const { scan, placed, anchor, loudest } = useRadar()
-  const layout = useRadarLayout()
+  const layout = useInstrumentLayout()
   const labels = useRef<HTMLDivElement>(null)
   const top = topCoins(placed, loudest?.symbol ?? null, layout.labels)
   const dock = anchor ? dockFor(anchor, layout.dock) : null
