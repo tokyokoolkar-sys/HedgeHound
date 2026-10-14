@@ -2,7 +2,7 @@
 // θ; the recap rings and letters stay; the loudest are labelled; hover names a star, a click (or ?star=)
 // takes it into focus and its reading grows out of a leader line, as in β. A working page: the only motion is
 // the focus itself and the arrival from θ, both short eased tweens (instant under reduced motion).
-// Prototype switch (owner to pick): "reading" eases toward the coin, "fly" travels into the field.
+// Focus "flies" (owner pick, T33): the camera travels into the field, every coin at its own depth.
 import { Link, useNavigate } from "@tanstack/react-router"
 import { Dialog } from "radix-ui"
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react"
@@ -60,7 +60,7 @@ function useDocked() {
   return docked
 }
 
-export function SkyPage({ star, fx }: { star?: string; fx?: "fly" }) {
+export function SkyPage({ star }: { star?: string }) {
   useRequestSky("sky")
   const scan = useScan()
   const ready = useMounted() && !scan.loading
@@ -69,12 +69,11 @@ export function SkyPage({ star, fx }: { star?: string; fx?: "fly" }) {
   const rows = useMemo(() => (ready ? scan.rows : []), [ready, scan.rows])
   const stars = useMemo(() => placeAtlas(rows), [rows])
   const focused = rows.find((r) => r.symbol === star)
-  const fly = fx === "fly" ? 1 : 0
   const [hover, setHover] = useState<string | null>(null)
   const tag = <SourceTag kind={scan.live ? "live" : "sample"} ts={scan.ts ?? undefined} stale={scan.stale} className="text-starlight" />
 
   const focus = (symbol: string | undefined) =>
-    void navigate({ to: "/sky", search: (prev: { star?: string; fx?: "fly" }) => ({ ...prev, star: symbol }), replace: true })
+    void navigate({ to: "/sky", search: { star: symbol }, replace: true })
 
   // ── The tween: arrival (from θ's field, or from nothing) and focus, written to the scene every tick. ──
   const tween = useRef<Tween | null>(null)
@@ -142,11 +141,11 @@ export function SkyPage({ star, fx }: { star?: string; fx?: "fly" }) {
         atlasFy: v.y,
         atlasFz: v.z,
         atlasDepth: 1,
-        atlasFly: fly,
+        atlasFly: 1,
         atlasInset: v.inset,
         skyDim: v.dim,
         // Fly: the background stars stream past too, so the travel reads as depth.
-        flight: flightBase.current + v.f * fly * 8,
+        flight: flightBase.current + v.f * 8,
       },
     })
     // Labels step back while a coin is in focus; the ring closes, the leader draws, then the reading gathers.
@@ -264,7 +263,6 @@ export function SkyPage({ star, fx }: { star?: string; fx?: "fly" }) {
         <PhoneList rows={rows} on={star} onPick={focus} />
       </div>
 
-      <FocusSwitch fly={fly === 1} />
     </main>
   )
 }
@@ -420,30 +418,5 @@ function PhoneList({ rows, on, onPick }: { rows: ScanRow[]; on?: string; onPick:
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
-  )
-}
-
-/** Prototype only (T33): the owner picks how focusing feels, then this goes. */
-function FocusSwitch({ fly }: { fly: boolean }) {
-  const navigate = useNavigate()
-  const set = (v: boolean) => void navigate({ to: "/sky", search: (prev: { star?: string; fx?: "fly" }) => ({ ...prev, fx: v ? ("fly" as const) : undefined }), replace: true })
-  return (
-    <div role="group" aria-label="Prototype: focus" className="label fixed right-[max(16px,7vw)] bottom-4 flex items-center gap-4 text-starlight-dim max-lg:top-[8.5rem] max-lg:right-auto max-lg:bottom-auto max-lg:left-[max(16px,7vw)]">
-      <span>prototype · focus</span>
-      {(["reading", "fly"] as const).map((k) => {
-        const on = (k === "fly") === fly
-        return (
-          <button
-            key={k}
-            type="button"
-            aria-pressed={on}
-            onClick={() => set(k === "fly")}
-            className={cn("inline-flex min-h-11 items-center decoration-1 underline-offset-[6px]", on ? "text-starlight underline" : "hover:text-starlight")}
-          >
-            {k}
-          </button>
-        )
-      })}
-    </div>
   )
 }
