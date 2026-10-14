@@ -114,7 +114,7 @@ Copy follows `PRODUCT.md`: every number on screen is LIVE, PAPER or SAMPLE and c
 | ζ | `kennel` | The Kennel | "Faster funding, worse manners." | **Kennel**: our meme-coin list as a cluster in a faint pen; brightness = net, twinkle = 1 − persistence (measured ambient life) | why persistence has to earn the alert; then the claim checked live: kennel vs the rest medians, a verdict, the loudest kennel coins, the `1000` prefix explained |
 | η | `embers` | Cold Embers | "Walked past on purpose." | **Ember field**: one ember per skipped coin, three streams by reason, falling with the scroll and cooling to grey | skipping as the scanner doing its job; then one row per reason with counts and names (rules stay in β) |
 | θ | `sky` | The Sky | "Every coin, charted." | **Atlas**: every live coin across the sky, the camera pulling back; each chapter's key coin ringed and lettered. "Enter the sky" → `/sky` with no canvas remount lands in T33 | title + subtitle only; a caption with counts and the SourceTag |
-| ι | `den` | The Den | "A paper desk for a $20 research budget." | A small glass orb holding a pocket sky | den stats (PAPER) + "A year of what-ifs" preview → `/den` |
+| ι | `den` | The Den | "A paper desk for a small research budget." | **Desk orb**: glass orb whose pocket sky is the live coins clearing your book's bar | a paper desk, no order code; then the book's settings (PAPER) and what clears the bar now (LIVE); what-ifs pointer; "Open the den" waits for T34 |
 | κ | `ledger` | — | — | Stars fade, Sirius remains | footer: data source status, "Phase 0 · paper only", "Not financial advice. No order code exists.", links |
 
 ---

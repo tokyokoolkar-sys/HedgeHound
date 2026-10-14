@@ -16,6 +16,7 @@ import { useStage, type Quality } from "@/lib/stage/store"
 import { Atlas } from "../objects/atlas"
 import { CanisMajor } from "../objects/canis-major"
 import { CometTrail } from "../objects/comet-trail"
+import { DeskOrb } from "../objects/desk-orb"
 import { FieldChart } from "../objects/field-chart"
 import { EmberField } from "../objects/ember-field"
 import { Kennel } from "../objects/kennel"
@@ -68,6 +69,7 @@ export default function SkyStage() {
           <Kennel />
           <EmberField />
           <Atlas />
+          <DeskOrb />
           <CameraRig />
           <Projector />
           <Effects />
