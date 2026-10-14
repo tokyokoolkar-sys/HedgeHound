@@ -13,7 +13,6 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 3 | First-time viewers: "spread" is defined in γ, but β already uses the word. | T15 critique | — | open |
 | 4 | Very short phones (≤ 667 px tall) aren't tuned: on β the reading can meet the HUD. | T15 | T52 | later |
 | 5 | Real iPhone and real GPU check (PerformanceMonitor tiers, Lenis touch). | T12 | T52 | later |
-| 6 | The chapter index is hidden under 768 px, so phones have no position cue. | T15 critique | — | owner |
 | 7 | The carousel cycles every 2.2 s but is only on screen for ~820 px of scroll, so the owner sees 1–2 of 6 groups. Owner-chosen ambient cycle. | T15 critique | — | owner |
 | 8 | PRODUCT.md "Brand Commitments" still describes the retired parchment / Bricolage direction (Impeccable reports it as drift). | T15 critique | T51 or on request | later |
 | 9 | Legacy cleanup: `text-faint` (4.2:1) in `/_kitchen`, hex literals in `.night` / `.paper`, the `/v1` route and its components (hero-film, tear, old scenes), throwaway check routes `/_kitchen`, `/_motion`, `/_stage`. | T10, T13 | T51, T52 | later |
@@ -31,7 +30,6 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 21 | Add the "Open the den" hairline CTA to ι once `/den` is restyled. | T26 | T34 | later |
 | 22 | Paper results: Phase 0 records no paper trades, so ι shows settings and a live count only. Revisit if a paper book of trades is ever built. | T26 | — | owner |
 | 24 | δ's strips colour by short venue (orange = short on Lighter) while orange means "clean" elsewhere; reads as "ARB alerts". | P3 critique | — | open |
-| 26 | Phones have no chapter index or position cue across ~36,000 px (also #6). | P3 critique | — | owner |
 
 ## Decided, kept for reference
 - ε lists by net and clean status and marks "shaky" (held under half of six hours); no persistence threshold is invented (owner, P3 close).
@@ -44,6 +42,7 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 
 | Item | Closed by |
 |---|---|
+| #6, #26 Phones had no chapter index or position cue | T30 (the phone menu lists α–κ, lights the current chapter, and jumps to it) |
 | Legacy `/` swash initial ("I t does not chase price") | T14 (`/` is the Edition; legacy moved to `/v1`) |
 | α copy rise timing after the constellation | T14 |
 | Carousel, radar and reading via ProjectedLabel + Stardust | T14, T15 |

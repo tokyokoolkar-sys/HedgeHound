@@ -11,6 +11,7 @@ import { band } from "@/lib/motion/math"
 import { scrollToTarget } from "@/lib/motion/scroll-bus"
 import { SCANNER_ADDRESS, sourceLine } from "@/lib/scan/source"
 import { useScan } from "@/lib/scan/use-scan"
+import { useMounted } from "@/lib/use-mounted"
 import type { ChapterDef } from "@/content/edition"
 import { Chapter } from "../edition/chapter"
 import { applyLook } from "../edition/look"
@@ -27,6 +28,7 @@ const LINKS = [
 
 export function Ledger({ def, exitInto, last }: Props) {
   const scan = useScan()
+  const mounted = useMounted()
   const foot = useRef<HTMLElement>(null)
 
   useScrollFrame((s) => {
@@ -45,7 +47,8 @@ export function Ledger({ def, exitInto, last }: Props) {
         style={{ visibility: "hidden" }}
       >
         <p className="m-0 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1.5">
-          <span>{sourceLine(scan)}</span>
+          {/* Client-only state: rendered after mount so the server and client agree. */}
+          <span>{mounted ? sourceLine(scan) : ""}</span>
           <SourceTag kind={scan.live ? "live" : "sample"} ts={scan.ts ?? undefined} stale={scan.stale} className="text-starlight" />
         </p>
         <p className="m-0">scanner at {SCANNER_ADDRESS}</p>

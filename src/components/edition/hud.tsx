@@ -1,22 +1,17 @@
 // HUD (DESIGN.md Layout): Sirius' real coordinate, drifting ±2° with the cursor, bottom-left (the nav owns
-// the top edge). On desktop a second line says where the figures come from, so SAMPLE always has a reason.
+// the top edge, including the scanner's status since T30).
 // Updated per frame from the scroll engine, never through React state. It steps aside while a rising
 // chapter's copy travels past it (T15 critique: text crossing text).
 import { useRef } from "react"
 import { band } from "@/lib/motion/math"
-import { useScan } from "@/lib/scan/use-scan"
 import { formatCoordinate } from "@/lib/stage/coordinates"
 import { EDITION } from "@/lib/stage/rhythm"
 import { applyLook } from "./look"
-import { SourceTag } from "./source-tag"
 import { useScrollFrame } from "./use-scroll-frame"
-
 
 export function Hud() {
   const hud = useRef<HTMLDivElement>(null)
   const coord = useRef<HTMLSpanElement>(null)
-  const status = useRef<HTMLSpanElement>(null)
-  const scan = useScan()
   useScrollFrame((s) => {
     if (coord.current) coord.current.textContent = formatCoordinate(s.reduced ? 0 : s.pointer[0], s.reduced ? 0 : s.pointer[1])
     // Fade out while any rising block is in transit (its rise band), back once it has settled.
@@ -29,19 +24,10 @@ export function Hud() {
       }
     }
     applyLook(hud.current, { opacity: 1 - passing, y: 0, blur: 0 })
-    // κ's ledger states the source itself, right above; the HUD's line steps back there.
-    const ledger = s.sections.ledger ?? 0
-    applyLook(status.current, { opacity: s.reduced ? (ledger > 0 ? 0 : 1) : 1 - band(ledger, 0.15, 0.3), y: 0, blur: 0 })
   })
   return (
-    <div ref={hud} className="label pointer-events-none fixed bottom-5 left-[max(16px,7vw)] z-20 flex items-baseline gap-4 text-starlight-dim">
+    <div ref={hud} className="label pointer-events-none fixed bottom-5 left-[max(16px,7vw)] z-20 text-starlight-dim">
       <span ref={coord}>{formatCoordinate(0, 0)}</span>
-      {!scan.loading && (
-        <span ref={status} className="hidden items-baseline gap-2 md:inline-flex">
-          {scan.live ? "scanner live" : "scanner offline · showing a sample"}
-          <SourceTag kind={scan.live ? "live" : "sample"} ts={scan.ts ?? undefined} stale={scan.stale} className="text-starlight" />
-        </span>
-      )}
     </div>
   )
 }
