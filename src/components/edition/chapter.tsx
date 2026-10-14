@@ -93,7 +93,8 @@ export function Chapter({ def, exitInto, last, children }: Props) {
       riseBand: def.rise,
       outBand: stacked && def.stacked ? def.stacked.out : def.out,
       // A following crawl carries the copy out (below), so it must not fade first and pop back (critique).
-      holdOut: !!exitInto,
+      // Chapters with a second beat have already handed the column over by then: their copy leaves on time.
+      holdOut: !!exitInto && !def.beat,
     }
     const f = copyFrame(p, def.enter, base)
     // Stacked layouts: the steps take turns in one place (the instrument needs the lower half); the body
@@ -112,7 +113,7 @@ export function Chapter({ def, exitInto, last, children }: Props) {
       const { front, mode } = crawlFront(p > 0 ? 1 : enter)
       applyCrawl(el, mode === "in" ? front : null, "in")
     }
-    if (exitInto && !s.reduced) {
+    if (exitInto && !def.beat && !s.reduced) {
       // Carry on up and out while the next chapter's crawl eats the sky behind.
       const t = s.sections[exitInto] ?? 0
       // Fades early so it never crosses the nav on its way out.

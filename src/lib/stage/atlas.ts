@@ -34,7 +34,7 @@ export type Recap = { symbol: string; letters: string[]; role: string }
 
 /**
  * Each earlier chapter's key coin, merged by symbol (one coin can carry several letters):
- * β·γ·δ the loudest, δ the steadiest, ε first on the shortlist, ζ the kennel's loudest.
+ * β·γ·δ the loudest, δ the one that stayed (the steadiest), ε first on the shortlist, ζ the kennel's loudest.
  */
 export function recap<T extends AtlasInput>(
   rows: T[],
@@ -42,7 +42,7 @@ export function recap<T extends AtlasInput>(
 ): Recap[] {
   const order: Array<[string | null, string[], string]> = [
     [picks.loudest, ["β", "γ", "δ"], "the loudest"],
-    [picks.steadiest, ["δ"], "the steadiest"],
+    [picks.steadiest, ["δ"], "the one that stayed"],
     [picks.shortlistFirst, ["ε"], "first on the shortlist"],
     [kennelLoudest(rows, picks.kennel)?.symbol ?? null, ["ζ"], "the kennel's loudest"],
   ]

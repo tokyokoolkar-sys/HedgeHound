@@ -1,6 +1,7 @@
 // ζ's scene channels (kept apart from the chapter's components so fast refresh keeps working).
-import { band, smooth } from "@/lib/motion/math"
+import { band } from "@/lib/motion/math"
 import { isStacked } from "@/lib/stage/layout"
+import { arrival, departure, useRhythm } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 
 type KennelChannels = Pick<Scene, "kennelOn" | "kennelAppear" | "kennelFocus" | "kennelForm" | "kennelLabels" | "kennelAway">
@@ -14,12 +15,15 @@ type KennelChannels = Pick<Scene, "kennelOn" | "kennelAppear" | "kennelFocus" | 
 export function kennelScene(s: StageState): KennelChannels {
   const p = s.sections.kennel ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const kennelOn = p > 0 && p < (stacked ? 0.78 : 1) ? 1 : 0
+  const { rhythm, defs } = useRhythm.getState()
+  const arr = arrival(s.sections, defs, "kennel", rhythm)
+  const dep = departure(s.sections, defs, "kennel", rhythm)
+  const kennelOn = arr.started && (stacked ? p < 0.78 : dep.until) ? 1 : 0
   if (s.reduced) {
     const featured = !stacked || p >= 0.53 ? 1 : 0
     return { kennelOn, kennelAppear: 1, kennelFocus: featured, kennelForm: 1, kennelLabels: kennelOn * featured, kennelAway: 0 }
   }
-  const appear = smooth(band(p, 0.02, 0.2))
+  const appear = arr.appear
   if (stacked) {
     return {
       kennelOn,
@@ -36,6 +40,6 @@ export function kennelScene(s: StageState): KennelChannels {
     kennelFocus: 1,
     kennelForm: band(p, 0.18, 0.48),
     kennelLabels: band(p, 0.44, 0.52) * (1 - band(p, 0.86, 0.94)),
-    kennelAway: band(p, 0.86, 1),
+    kennelAway: dep.away,
   }
 }

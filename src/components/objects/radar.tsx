@@ -10,6 +10,7 @@ import * as THREE from "three"
 import { band, smooth } from "@/lib/motion/math"
 import { instrumentLayout, layoutToWorld, mixLayout, tucked } from "@/lib/stage/layout"
 import { R_OUT, dockFor, radarFrame } from "@/lib/stage/radar"
+import { flies, useRhythm } from "@/lib/stage/rhythm"
 import { useStage } from "@/lib/stage/store"
 import { SKY_COLORS } from "../stage/star-points"
 import { useRadar } from "./use-radar"
@@ -167,7 +168,7 @@ export function Radar() {
     // Placed beside (or under) the copy column for this viewport; it grows into place as it arrives.
     g.scale.setScalar(at.scale * (0.77 + 0.23 * appear))
     g.rotation.set(-0.18 + py * 0.05, px * 0.08, away * 0.1)
-    g.position.set(at.x, at.y, -2 + appear * 2 - away * 8)
+    g.position.set(at.x, at.y, (-2 + appear * 2 - away * 8) * (flies(useRhythm.getState().rhythm) ? 1 : 0))
     g.updateMatrixWorld()
     radarFrame.matrix = g.matrixWorld.elements
 

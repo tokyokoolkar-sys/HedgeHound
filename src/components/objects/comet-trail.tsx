@@ -12,6 +12,7 @@ import { pickLoudest } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"
 import { DAY_H, RECENT_H, arcNormal, arcPoint, directionRole, flipped, headAt, offsetPoint, segments, trailFrame } from "@/lib/stage/comet"
 import { instrumentLayout, layoutToWorld, mixLayout, tucked } from "@/lib/stage/layout"
+import { flies, useRhythm } from "@/lib/stage/rhythm"
 import { useStage } from "@/lib/stage/store"
 import { SKY_COLORS } from "../stage/star-points"
 
@@ -196,7 +197,7 @@ export function CometTrail() {
     const py = s.reduced ? 0 : s.pointer[1]
     g.scale.setScalar(at.scale * (0.8 + 0.2 * appear))
     g.rotation.set(-0.14 + py * 0.05, px * 0.08, 0)
-    g.position.set(at.x, at.y, -2 + appear * 2 - away * 8)
+    g.position.set(at.x, at.y, (-2 + appear * 2 - away * 8) * (flies(useRhythm.getState().rhythm) ? 1 : 0))
     g.updateMatrixWorld()
     trailFrame.matrix = g.matrixWorld.elements
 

@@ -26,7 +26,7 @@ describe("atlas recap", () => {
     const r = recap(rows, { loudest: "1000PEPE", steadiest: "ARB", shortlistFirst: "1000PEPE", kennel: ["PEPE", "WIF"] })
     assert.deepEqual(r, [
       { symbol: "1000PEPE", letters: ["β", "γ", "δ", "ε", "ζ"], role: "the loudest" },
-      { symbol: "ARB", letters: ["δ"], role: "the steadiest" },
+      { symbol: "ARB", letters: ["δ"], role: "the one that stayed" },
     ])
   })
   it("skips picks that aren't on the board", () => {

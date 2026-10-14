@@ -1,6 +1,7 @@
 // η's scene channels (kept apart from the chapter's components so fast refresh keeps working).
-import { band, smooth } from "@/lib/motion/math"
+import { band } from "@/lib/motion/math"
 import { isStacked } from "@/lib/stage/layout"
+import { arrival, departure, useRhythm } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 
 type EmberChannels = Pick<Scene, "emberOn" | "emberAppear" | "emberFocus" | "emberFall" | "emberLabels" | "emberAway">
@@ -13,12 +14,15 @@ type EmberChannels = Pick<Scene, "emberOn" | "emberAppear" | "emberFocus" | "emb
 export function embersScene(s: StageState): EmberChannels {
   const p = s.sections.embers ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const emberOn = p > 0 && p < (stacked ? 0.78 : 1) ? 1 : 0
+  const { rhythm, defs } = useRhythm.getState()
+  const arr = arrival(s.sections, defs, "embers", rhythm)
+  const dep = departure(s.sections, defs, "embers", rhythm)
+  const emberOn = arr.started && (stacked ? p < 0.78 : dep.until) ? 1 : 0
   if (s.reduced) {
     const featured = !stacked || p >= 0.53 ? 1 : 0
     return { emberOn, emberAppear: 1, emberFocus: featured, emberFall: 0, emberLabels: emberOn * featured, emberAway: 0 }
   }
-  const appear = smooth(band(p, 0.02, 0.2))
+  const appear = arr.appear
   if (stacked) {
     return {
       emberOn,
@@ -35,6 +39,6 @@ export function embersScene(s: StageState): EmberChannels {
     emberFocus: 1,
     emberFall: band(p, 0.1, 0.86),
     emberLabels: band(p, 0.2, 0.3) * (1 - band(p, 0.86, 0.94)),
-    emberAway: band(p, 0.86, 1),
+    emberAway: dep.away,
   }
 }

@@ -23,6 +23,7 @@ import { Kennel } from "../objects/kennel"
 import { GlassHound } from "../objects/glass-hound"
 import { HedgeAstrolabe } from "../objects/hedge-astrolabe"
 import { Radar } from "../objects/radar"
+import { Travelers } from "../objects/travelers"
 import { CameraRig } from "./camera-rig"
 import { Effects } from "./effects"
 import { Projector } from "./projector"
@@ -70,6 +71,7 @@ export default function SkyStage() {
           <EmberField />
           <Atlas />
           <DeskOrb />
+          <Travelers />
           <CameraRig />
           <Projector />
           <Effects />

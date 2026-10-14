@@ -2,10 +2,11 @@
 // Every chapter's copy, the HUD, the index, and the scene mapping: the one place where scroll progress
 // becomes scene channels for the sky (overture → hound, α → Canis Major, β → radar). Chapters with their
 // own instruments render through CHAPTER_VIEWS (β is the reference, chapters/02-sniff.tsx).
-import { useRef } from "react"
-import { CHAPTERS, enterId, type ChapterId } from "@/content/edition"
+import { useEffect, useRef } from "react"
+import { enterId, type ChapterId } from "@/content/edition"
 import { band, smooth } from "@/lib/motion/math"
 import { useRequestSky } from "@/lib/stage/request-sky"
+import { parseRhythm, useRhythm } from "@/lib/stage/rhythm"
 import { Sniff } from "../chapters/02-sniff"
 import { Spread } from "../chapters/03-spread"
 import { spreadScene } from "../chapters/spread-scene"
@@ -26,6 +27,7 @@ import { ledgerScene } from "../chapters/ledger-scene"
 import { sniffScene } from "../chapters/sniff-scene"
 import { Chapter } from "./chapter"
 import { ChapterIndex } from "./chapter-index"
+import { RhythmPanel } from "./rhythm-panel"
 import { Hud } from "./hud"
 import { applyLook } from "./look"
 import { SymbolCarousel } from "./symbol-carousel"
@@ -37,6 +39,9 @@ const CHAPTER_VIEWS: Partial<Record<ChapterId, typeof Chapter>> = { sniff: Sniff
 export function Edition() {
   useRequestSky("edition")
   const cue = useRef<HTMLDivElement>(null)
+  // D2 prototype: the chapter list follows the rhythm switches (?seams=&handover=&pace=).
+  const defs = useRhythm((r) => r.defs)
+  useEffect(() => useRhythm.getState().set(parseRhythm(window.location.search)), [])
 
   // Scene channels from section progress. The crawl is whichever chapter's crawl-in is underway.
   useScrollFrame((s) => {
@@ -45,7 +50,9 @@ export function Edition() {
     const c = s.sections[enterId("sniff")] ?? 0
     const b = s.sections.sniff ?? 0
     const reduced = s.reduced
-    const crawl = CHAPTERS.filter((ch) => ch.enter === "crawl")
+    const crawl = useRhythm
+      .getState()
+      .defs.filter((ch) => ch.enter === "crawl")
       .map((ch) => s.sections[enterId(ch.id)] ?? 0)
       .find((t) => t > 0 && t < 1)
     // The scroll cue leaves with the first bit of scroll.
@@ -86,14 +93,15 @@ export function Edition() {
         </span>
       </div>
       <SymbolCarousel section={enterId("sniff")} />
-      {CHAPTERS.map((def, i) => {
-        const next = CHAPTERS[i + 1]
+      <RhythmPanel />
+      {defs.map((def, i) => {
+        const next = defs[i + 1]
         const View = CHAPTER_VIEWS[def.id] ?? Chapter
         return (
           <View
             key={def.id}
             def={def}
-            last={i === CHAPTERS.length - 1}
+            last={i === defs.length - 1}
             exitInto={next?.enter === "crawl" ? enterId(next.id) : undefined}
           />
         )

@@ -1,6 +1,7 @@
 // δ's scene channels (kept apart from the chapter's components so fast refresh keeps working).
-import { band, smooth } from "@/lib/motion/math"
+import { band } from "@/lib/motion/math"
 import { isStacked } from "@/lib/stage/layout"
+import { arrival, departure, useRhythm } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 
 type TrailChannels = Pick<Scene, "trailOn" | "trailAppear" | "trailFocus" | "trailDraw" | "trailMarks" | "trailAway">
@@ -14,12 +15,15 @@ type TrailChannels = Pick<Scene, "trailOn" | "trailAppear" | "trailFocus" | "tra
 export function trailScene(s: StageState): TrailChannels {
   const p = s.sections.trail ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const trailOn = p > 0 && p < (stacked ? 0.78 : 1) ? 1 : 0
+  const { rhythm, defs } = useRhythm.getState()
+  const arr = arrival(s.sections, defs, "trail", rhythm)
+  const dep = departure(s.sections, defs, "trail", rhythm)
+  const trailOn = arr.started && (stacked ? p < 0.78 : dep.until) ? 1 : 0
   if (s.reduced) {
     const featured = !stacked || p >= 0.53 ? 1 : 0
     return { trailOn, trailAppear: 1, trailFocus: featured, trailDraw: 1, trailMarks: trailOn * featured, trailAway: 0 }
   }
-  const appear = smooth(band(p, 0.02, 0.2))
+  const appear = arr.appear
   if (stacked) {
     return {
       trailOn,
@@ -36,6 +40,6 @@ export function trailScene(s: StageState): TrailChannels {
     trailFocus: 1,
     trailDraw: band(p, 0.18, 0.5),
     trailMarks: band(p, 0.53, 0.6) * (1 - band(p, 0.86, 0.94)),
-    trailAway: band(p, 0.86, 1),
+    trailAway: dep.away,
   }
 }
