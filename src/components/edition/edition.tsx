@@ -17,6 +17,8 @@ import { KennelChapter } from "../chapters/06-kennel"
 import { kennelScene } from "../chapters/kennel-scene"
 import { Embers } from "../chapters/07-embers"
 import { embersScene } from "../chapters/embers-scene"
+import { Sky } from "../chapters/08-sky"
+import { skyScene } from "../chapters/sky-scene"
 import { sniffScene } from "../chapters/sniff-scene"
 import { Chapter } from "./chapter"
 import { ChapterIndex } from "./chapter-index"
@@ -26,7 +28,7 @@ import { SymbolCarousel } from "./symbol-carousel"
 import { useScrollFrame } from "./use-scroll-frame"
 
 /** Chapters with their own instrument and labels; the rest render as a plain <Chapter>. */
-const CHAPTER_VIEWS: Partial<Record<ChapterId, typeof Chapter>> = { sniff: Sniff, spread: Spread, trail: Trail, hedge: Hedge, kennel: KennelChapter, embers: Embers }
+const CHAPTER_VIEWS: Partial<Record<ChapterId, typeof Chapter>> = { sniff: Sniff, spread: Spread, trail: Trail, hedge: Hedge, kennel: KennelChapter, embers: Embers, sky: Sky }
 
 export function Edition() {
   useRequestSky("edition")
@@ -62,6 +64,7 @@ export function Edition() {
         ...hedgeScene(s),
         ...kennelScene(s),
         ...embersScene(s),
+        ...skyScene(s),
       },
     })
   })

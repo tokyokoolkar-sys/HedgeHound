@@ -29,6 +29,11 @@ export function median(xs: number[]): number | null {
   return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2
 }
 
+/** The loudest coin on the kennel list (ζ's lead coin), or null. */
+export function kennelLoudest<T extends KennelInput>(rows: T[], list: readonly string[]): T | null {
+  return rows.filter((r) => inKennel(r.symbol, list)).sort((a, b) => b.net_apr - a.net_apr)[0] ?? null
+}
+
 export type GroupStats = { n: number; held: number | null; net: number | null }
 
 /** Medians of persistence and net APR for the kennel and for everyone else. */

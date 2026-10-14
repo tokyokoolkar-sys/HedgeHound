@@ -148,9 +148,9 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 - (a) Embers fall with the scroll. (b) Warm starlight cooling to grey, no orange. (c) One line per reason, rules stay in β.
 - Only real skipped coins (no decorative sparks); no FeatureTable.
 
-### T25 VIII Sky portal
-- Files: `chapters/08-sky.tsx`. Plate: the camera pulls back to the full atlas (waypoint `sky-overview`). CTA "Enter the sky" → animate the store to the `sky` waypoint over 1.1s (GSAP), then `navigate({ to: "/sky" })`. **No canvas remount** (S1).
-- Reduced motion: plain link.
+### T25 VIII Sky (rescoped, owner-approved a/b/c)
+- Files: `chapters/08-sky.tsx`, `chapters/sky-scene.ts`, `objects/atlas.tsx`, `lib/stage/atlas.ts` (+ test); `steadiestRows` moved to `lib/stage/comet.ts`, `kennelLoudest` to `lib/stage/kennel.ts`.
+- (a) The atlas now; the "Enter the sky" portal (dive + `navigate("/sky")`, no canvas remount, plain link under reduced motion) moves to T33. (b) Recap labels with each chapter's letters. (c) Title and subtitle only.
 
 ### T26 IX Den teaser
 - Files: `chapters/09-den.tsx`, `objects/desk-orb.tsx` (small glass orb holding a pocket sky).
@@ -175,6 +175,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 - Files: `routes/playbook.tsx`. Port `pages/Playbook.tsx` content into parchment Sheets with SwashHeading + FeatureTable. Pure content; no new animation beyond the primitives.
 
 ### T33 [S] /sky on SkyStage
+- Also: θ's "Enter the sky" hairline CTA (from T25): animate the atlas into the `/sky` view, then `navigate({ to: "/sky" })`, no canvas remount; reduced motion: plain link.
 - Files: `routes/sky.tsx`, `routes/universe.tsx` (→ redirect `/sky` keeping `?star`), `components/universe-view.tsx`. Remove its own `<Canvas>`; drive SkyStage `mode: "sky"` + `focus`. Keep the sidebar (restyle: glass, mono, sector headings in Fraunces italic) and the detail card. Delete `three/universe-scene.tsx` once parity is confirmed.
 
 ### T34 [S] /den restyle
@@ -243,7 +244,8 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T22 | O | done | ε Hedge: field chart (net × held), shortlist beat; phone instruments now end before the second beat in every chapter; 371 tests; branch T22-hedge (notes/T22.md) |
 | T23 | O | done | ζ Kennel: meme cluster with measured twinkle, live medians + verdict, 1000-prefix explained; beats now fit above the HUD; 381 tests; branch T23-kennel (notes/T23.md) |
 | T24 | O | done | η Embers: one ember per skipped coin in three streams, scroll-locked fall and cooling, rows per reason; hash avalanche + side-aware radar labels; 390 tests; branch T24-embers (notes/T24.md) |
-| T25–T27 | S | todo | |
+| T25 | O | done | θ Sky: the atlas (every coin, camera pull-back, measured twinkle), recap rings + letters, caption with counts; portal moved to T33; 394 tests; branch T25-sky (notes/T25.md) |
+| T26–T27 | S | todo | |
 | T30–T35 | S/H | todo | |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |

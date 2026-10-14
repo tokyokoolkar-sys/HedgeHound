@@ -8,7 +8,7 @@ import { useRef, type ReactNode } from "react"
 import { pickLoudest } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"
 import type { ScanRow } from "@/lib/scan/types"
-import { ARC_RISE, ARC_W, ARC_Y0, DAY_H, directionRole, flipped, segments, stripLabel, trailToWorld } from "@/lib/stage/comet"
+import { ARC_RISE, ARC_W, ARC_Y0, DAY_H, directionRole, flipped, segments, steadiestRows, stripLabel, trailToWorld } from "@/lib/stage/comet"
 import { INSTRUMENT_EXTENT } from "@/lib/stage/layout"
 import type { ChapterDef } from "@/content/edition"
 import { Beat } from "../edition/beat"
@@ -40,9 +40,6 @@ function Strip({ row }: { row: ScanRow }) {
     </svg>
   )
 }
-
-/** The six steadiest coins: highest persistence, then louder net. */
-const steadiestRows = (rows: ScanRow[]) => [...rows].sort((a, b) => b.persistence - a.persistence || b.net_apr - a.net_apr).slice(0, 6)
 
 /** The steadiest six as beat rows: symbol / strip + shorthand. */
 function steadiest(rows: ScanRow[]): Array<[string, ReactNode]> {

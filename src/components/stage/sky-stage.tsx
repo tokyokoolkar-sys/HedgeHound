@@ -13,6 +13,7 @@ import { useEffect, useState } from "react"
 import { afterScroll } from "@/lib/motion/scroll-bus"
 import { palette } from "@/lib/palette"
 import { useStage, type Quality } from "@/lib/stage/store"
+import { Atlas } from "../objects/atlas"
 import { CanisMajor } from "../objects/canis-major"
 import { CometTrail } from "../objects/comet-trail"
 import { FieldChart } from "../objects/field-chart"
@@ -66,6 +67,7 @@ export default function SkyStage() {
           <FieldChart />
           <Kennel />
           <EmberField />
+          <Atlas />
           <CameraRig />
           <Projector />
           <Effects />

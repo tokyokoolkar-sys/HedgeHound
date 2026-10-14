@@ -26,6 +26,8 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 16 | In the sample most coins sit at 100% held, so ε's stars bunch along the top edge; live data may spread them. Revisit with LIVE data. | T22 | — | open |
 | 17 | The kennel list is editorial and fixed; new meme listings need adding by hand. | T23 | — | later |
 | 18 | SAMPLE has only three skipped coins, so η looks sparse offline; checked with a long-list mock (`T24-shots/mock-long-lists.png`). Re-check with LIVE. | T24 | — | open |
+| 19 | θ's "Enter the sky" portal (dive into `/sky`, no canvas remount). | T25 | T33 | later |
+| 20 | With SAMPLE's twenty coins the atlas is a quiet field; it fills out with LIVE. | T25 | — | open |
 
 ## Decided, kept for reference
 - β reading stays mid-chapter, not as the chapter's ending (owner, T15).
