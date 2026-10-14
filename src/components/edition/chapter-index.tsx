@@ -36,7 +36,7 @@ export function ChapterIndex() {
             e.preventDefault()
             scrollToTarget(el)
           }}
-          className="bayer opacity-30 transition-[opacity,translate] duration-500 hover:opacity-70 focus-visible:opacity-100 data-[on]:translate-x-1 data-[on]:opacity-100"
+          className="bayer text-starlight-dim transition-[color,translate] duration-500 hover:text-starlight focus-visible:text-scan data-[on]:translate-x-1 data-[on]:text-scan"
         >
           {c.letter}
         </a>

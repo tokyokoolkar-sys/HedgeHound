@@ -2,7 +2,7 @@ import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 import { CHAPTERS, chapterOf, enterId } from "../../content/edition.ts"
 import { formatCoordinate } from "../stage/coordinates.ts"
-import { copyFrame, crawlFront, resolveIn, wordLook } from "./choreo.ts"
+import { BODY_BLUR, copyFrame, crawlFront, resolveIn, swapItem, wordLook } from "./choreo.ts"
 
 const vh = 900
 
@@ -98,5 +98,56 @@ describe("HUD coordinate", () => {
   })
   it("drifts with the pointer", () => {
     assert.notEqual(formatCoordinate(1, 1), formatCoordinate(0, 0))
+  })
+})
+
+describe("second beats and swapped steps (T15)", () => {
+  it("outBand moves the blur-out earlier", () => {
+    const opts = { vh, reduced: false, outBand: [0.56, 0.66] as [number, number] }
+    assert.equal(copyFrame(0.5, "crawl", opts).block.opacity, 1)
+    assert.equal(copyFrame(0.66, "crawl", opts).block.opacity, 0)
+    assert.equal(copyFrame(0.7, "crawl", { ...opts, reduced: true }).block.opacity, 0)
+  })
+
+  it("swap: one step at a time, the last one holds", () => {
+    const at = (p: number) => [0, 1, 2].map((i) => swapItem(p, i, 3).opacity)
+    assert.deepEqual(at(0.18), [1, 0, 0])
+    assert.deepEqual(at(0.32), [0, 1, 0])
+    assert.deepEqual(at(0.55), [0, 0, 1])
+    // strictly one at a time: the next step only arrives once the previous one has gone
+    for (let p = 0; p <= 1; p += 0.005) assert.ok(at(p).filter((o) => o > 0.001).length <= 1, `p=${p}`)
+  })
+
+  it("swap leaves upward and soft", () => {
+    const mid = swapItem(0.22, 0, 3)
+    assert.ok(mid.opacity > 0 && mid.opacity < 1)
+    assert.ok(mid.y < 0 && mid.blur > 0)
+  })
+})
+
+describe("reduced motion, swapped steps", () => {
+  it("shows one step at a time without transitions", () => {
+    const at = (p: number) => [0, 1, 2].map((i) => copyFrame(p, "crawl", { vh, reduced: true, items: "swap", count: 3 }).item(i).opacity)
+    assert.deepEqual(at(0.2), [1, 0, 0])
+    assert.deepEqual(at(0.3), [0, 1, 0])
+    assert.deepEqual(at(0.45), [0, 0, 1])
+  })
+})
+
+describe("hand-offs (T15 critique)", () => {
+  it("a chapter carried out by the next crawl never fades first (no pop back)", () => {
+    let prev = 1
+    for (let p = 0.5; p <= 1; p += 0.01) {
+      const o = copyFrame(p, "rise", { vh, reduced: false, riseBand: [0.34, 0.5], holdOut: true }).block.opacity
+      assert.ok(o >= prev - 1e-9, `p=${p}`)
+      prev = o
+    }
+  })
+  it("body copy never blurs past BODY_BLUR", () => {
+    for (let p = 0; p <= 1; p += 0.01) {
+      const f = copyFrame(p, "crawl", { vh, reduced: false })
+      assert.ok(f.block.blur <= BODY_BLUR + 1e-9 && f.item(0).blur <= BODY_BLUR + 1e-9)
+      assert.ok(swapItem(p, 0, 3).blur <= BODY_BLUR + 1e-9)
+    }
   })
 })

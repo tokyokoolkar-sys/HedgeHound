@@ -19,8 +19,9 @@ export function Effects() {
   return (
     <EffectComposer multisampling={0}>
       <primitive object={crawl} dispose={null} />
-      <Noise opacity={0.03} premultiply />
+      {/* Vignette before the grain: the grain dithers its gradient, so no 8-bit ellipse shows on the void. */}
       <Vignette offset={0.22} darkness={0.85} />
+      <Noise opacity={0.03} premultiply />
     </EffectComposer>
   )
 }

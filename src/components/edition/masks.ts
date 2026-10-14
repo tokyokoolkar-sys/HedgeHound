@@ -109,7 +109,8 @@ export function applyStardust(el: HTMLElement, p: number) {
     el.style.visibility = "hidden"
     return
   }
-  el.style.visibility = "visible"
+  // Inherit rather than force "visible": a hidden parent (e.g. a ProjectedLabel off screen) must still win.
+  el.style.visibility = "inherit"
   el.style.opacity = String(0.35 + 0.65 * Math.min(1, p * 1.2))
   el.style.filter = p >= 0.98 ? "" : `blur(${((1 - p) * 1.6).toFixed(2)}px)`
   if (p >= 0.98) {

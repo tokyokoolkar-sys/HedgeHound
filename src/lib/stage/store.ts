@@ -20,6 +20,14 @@ export type Scene = {
   canisLines: number
   canisLabels: number
   canisAway: number
+  /** β radar: shown at all (0/1), arrival (scale + fade), coin labels, the reading (leader then specks), recede. */
+  radarOn: number
+  radarAppear: number
+  /** Stacked layouts: 0 = tucked under the copy (rings only), 1 = featured on its own with the reading. */
+  radarFocus: number
+  radarLabels: number
+  reading: number
+  radarAway: number
   /** Distance flown through the dust layers (grows with scroll; drives parallax). */
   flight: number
 }
@@ -31,6 +39,12 @@ export const EMPTY_SCENE: Scene = {
   canisLines: 0,
   canisLabels: 0,
   canisAway: 0,
+  radarOn: 0,
+  radarAppear: 0,
+  radarFocus: 0,
+  radarLabels: 0,
+  reading: 0,
+  radarAway: 0,
   flight: 0,
 }
 

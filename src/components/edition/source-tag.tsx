@@ -55,11 +55,11 @@ export function SourceTag({ kind, ts, stale = false, className }: Props) {
     <span
       title={title}
       className={cn(
-        // T10 critique: 11px minimum, LIVE at full strength, SAMPLE/PAPER a step quieter. Colour is
-        // inherited so the tag works on the sky and on the legacy pages' cream sections alike.
+        // T10 critique: 11px minimum. T15 critique: no extra opacity (it broke AA on dim text); SAMPLE and
+        // PAPER read quieter through their hollow marks. Colour is inherited so the tag works on the sky
+        // and on the legacy pages' cream sections alike.
         "inline-flex items-center gap-1 rounded-full border border-current/30 px-2 py-0.5",
         "label font-normal leading-none tracking-tag whitespace-nowrap",
-        kind === "live" ? "opacity-100" : "opacity-75",
         isStale && "border-dashed",
         className,
       )}

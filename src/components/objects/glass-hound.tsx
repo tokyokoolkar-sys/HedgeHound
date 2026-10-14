@@ -33,7 +33,9 @@ function useHoundGeometry(quality: Quality) {
       curveSegments: SEGMENTS[quality].curve,
     })
     g.center()
-    g.scale(0.062, -0.062, 0.062)
+    // Flip y for SVG coordinates, and z too: one negative axis would reverse the winding (we would see the
+    // inside faces with inverted normals, which drew a hard white line along the base; T15 critique).
+    g.scale(0.062, -0.062, -0.062)
     g.computeVertexNormals()
     return g
   }, [quality])

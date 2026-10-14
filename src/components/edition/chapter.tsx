@@ -8,6 +8,7 @@ import { cn } from "@/lib/cn"
 import { band, smooth } from "@/lib/motion/math"
 import { copyFrame, crawlFront, resolveIn, wordLook } from "@/lib/motion/choreo"
 import { useSection } from "@/lib/motion/scroll-progress"
+import { isStacked } from "@/lib/stage/radar"
 import { enterId, type ChapterDef } from "@/content/edition"
 import { applyLook } from "./look"
 import { applyCrawl } from "./masks"
@@ -22,9 +23,51 @@ type Props = {
   children?: ReactNode
 }
 
-function Spacer({ id, length, domId }: { id: string; length: string; domId: string }) {
+function Spacer({ id, length, domId, children }: { id: string; length: string; domId: string; children?: ReactNode }) {
   const ref = useSection(id)
-  return <section ref={ref} id={domId} aria-hidden="true" style={{ height: length }} />
+  return (
+    <section ref={ref} id={domId} aria-hidden={children ? undefined : true} style={{ height: length }}>
+      {children}
+    </section>
+  )
+}
+
+/** The chapter's copy as plain text for screen readers and reader modes (the fixed block is visual only). */
+function ReaderCopy({ def }: { def: ChapterDef }) {
+  return (
+    <div className="sr-only">
+      <h2>
+        {def.letter} {def.kicker ? `${def.kicker}: ` : ""}
+        {def.title}
+      </h2>
+      {def.subtitle && <p>{def.subtitle}</p>}
+      {def.body?.map((b) => <p key={b}>{b}</p>)}
+      {def.steps && (
+        <ol>
+          {def.steps.map((st) => (
+            <li key={st.title}>
+              {st.title}. {st.body}
+            </li>
+          ))}
+        </ol>
+      )}
+      {def.note && <p>{def.note}</p>}
+      {def.beat && (
+        <>
+          <h3>{def.beat.title}</h3>
+          <dl>
+            {def.beat.rows.map(([k, v]) => (
+              <div key={k}>
+                <dt>{k}</dt>
+                <dd>{v}</dd>
+              </div>
+            ))}
+          </dl>
+          {def.beat.note && <p>{def.beat.note}</p>}
+        </>
+      )}
+    </div>
+  )
 }
 
 export function Chapter({ def, exitInto, last, children }: Props) {
@@ -40,7 +83,20 @@ export function Chapter({ def, exitInto, last, children }: Props) {
     const vh = window.innerHeight
     const p = s.sections[def.id] ?? 0
     const enter = def.enter === "crawl" ? (s.sections[enterId(def.id)] ?? 0) : 0
-    const f = copyFrame(p, def.enter, { vh, reduced: s.reduced, last, riseBand: def.rise })
+    const itemEls = items.current?.querySelectorAll<HTMLElement>("[data-item]")
+    const stacked = isStacked(document.documentElement.clientWidth, vh)
+    const f = copyFrame(p, def.enter, {
+      vh,
+      reduced: s.reduced,
+      last,
+      riseBand: def.rise,
+      outBand: stacked && def.stacked ? def.stacked.out : def.out,
+      // A following crawl carries the copy out (below), so it must not fade first and pop back (critique).
+      holdOut: !!exitInto,
+      // Stacked layouts: steps take turns in one place instead of stacking (the radar needs the lower half).
+      items: def.steps && stacked ? "swap" : "stack",
+      count: itemEls?.length ?? 0,
+    })
     let look = f.block
 
     if (def.enter === "crawl" && !s.reduced) {
@@ -74,7 +130,7 @@ export function Chapter({ def, exitInto, last, children }: Props) {
       const titleT = def.enter === "crawl" ? 0.5 * band(enter, 0.8, 1) + 0.5 * band(p, 0, 0.14) : band(p, 0, 0.14)
       applyLook(title.current, s.reduced ? resolveIn(1) : resolveIn(p > 0 || enter > 0 ? titleT : 0), false)
       applyLook(subtitle.current, f.subtitle, false)
-      items.current?.querySelectorAll<HTMLElement>("[data-item]").forEach((it, i) => applyLook(it, f.item(i), false))
+      itemEls?.forEach((it, i) => applyLook(it, f.item(i), false))
     }
   })
 
@@ -88,11 +144,14 @@ export function Chapter({ def, exitInto, last, children }: Props) {
   return (
     <>
       {def.enter === "crawl" && def.enterLength && <Spacer id={enterId(def.id)} domId={`chapter-${def.id}-enter`} length={def.enterLength} />}
-      <Spacer id={def.id} domId={`chapter-${def.id}`} length={def.length} />
+      <Spacer id={def.id} domId={`chapter-${def.id}`} length={def.length}>
+        {!isOverture && <ReaderCopy def={def} />}
+      </Spacer>
 
       <div
         ref={block}
         className={cn("pointer-events-none fixed z-10", position)}
+        aria-hidden={isOverture ? undefined : true}
         // The overture is visible on first paint (SSR, LCP = hero title); everything else waits for the scroll.
         style={{ visibility: isOverture ? "visible" : "hidden" }}
       >
@@ -102,12 +161,12 @@ export function Chapter({ def, exitInto, last, children }: Props) {
           </p>
         )}
         <div ref={title} className={cn(def.letter ? "mt-3" : undefined, isOverture && "intro-resolve")}>
-          <ShimmerTitle as={isOverture ? "h1" : "h2"} size={isOverture ? "hero" : def.id === "sniff" ? "chapter" : "title"}>
+          <ShimmerTitle as={isOverture ? "h1" : "h2"} size={isOverture ? "hero" : (def.size ?? "title")}>
             {def.title}
           </ShimmerTitle>
         </div>
         {def.subtitle && (
-          <p ref={subtitle} className={cn("mt-3 mb-0", isOverture ? "label text-starlight-dim" : "text-subtitle italic text-starlight")}>
+          <p ref={subtitle} className={cn("mt-3 mb-0 text-balance", isOverture ? "label text-starlight-dim" : "text-subtitle italic text-starlight")}>
             {isOverture
               ? def.subtitle.split(" ").map((w, i, all) => (
                   <span key={i} className="intro-resolve inline-block whitespace-pre" style={{ ["--intro-delay" as string]: 700 + i * 120 }}>
@@ -134,6 +193,19 @@ export function Chapter({ def, exitInto, last, children }: Props) {
                 {b}
               </p>
             ),
+          )}
+          {def.steps && (
+            <ol className="m-0 mt-6 grid list-none gap-5 p-0 max-md:gap-0 max-md:*:[grid-area:1/1]">
+              {def.steps.map((st, i) => (
+                <li key={st.title} data-item className="grid grid-cols-[2rem_1fr] items-baseline">
+                  <span className="label text-starlight-dim">{String(i + 1).padStart(2, "0")}</span>
+                  <div>
+                    <h3 className="m-0 font-light-display text-subtitle text-starlight">{st.title}</h3>
+                    <p className="text-body mt-1 mb-0 text-starlight-dim">{st.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           )}
           {children}
           {def.note && (
