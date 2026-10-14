@@ -16,6 +16,7 @@ import { useStage, type Quality } from "@/lib/stage/store"
 import { CanisMajor } from "../objects/canis-major"
 import { CometTrail } from "../objects/comet-trail"
 import { FieldChart } from "../objects/field-chart"
+import { EmberField } from "../objects/ember-field"
 import { Kennel } from "../objects/kennel"
 import { GlassHound } from "../objects/glass-hound"
 import { HedgeAstrolabe } from "../objects/hedge-astrolabe"
@@ -64,6 +65,7 @@ export default function SkyStage() {
           <CometTrail />
           <FieldChart />
           <Kennel />
+          <EmberField />
           <CameraRig />
           <Projector />
           <Effects />

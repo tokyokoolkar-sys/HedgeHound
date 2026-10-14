@@ -60,6 +60,13 @@ export type Scene = {
   kennelForm: number
   kennelLabels: number
   kennelAway: number
+  /** η embers: shown, arrival, stacked focus, the fall (0..1, scroll-locked), labels, recede. */
+  emberOn: number
+  emberAppear: number
+  emberFocus: number
+  emberFall: number
+  emberLabels: number
+  emberAway: number
   /** Distance flown through the dust layers (grows with scroll; drives parallax). */
   flight: number
 }
@@ -103,6 +110,12 @@ export const EMPTY_SCENE: Scene = {
   kennelForm: 0,
   kennelLabels: 0,
   kennelAway: 0,
+  emberOn: 0,
+  emberAppear: 0,
+  emberFocus: 0,
+  emberFall: 0,
+  emberLabels: 0,
+  emberAway: 0,
   flight: 0,
 }
 

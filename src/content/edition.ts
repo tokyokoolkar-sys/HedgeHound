@@ -237,7 +237,30 @@ export const CHAPTERS: ChapterDef[] = [
     enter: "rise",
     layout: "left",
   },
-  { id: "embers", letter: "η", kicker: "Cold embers", title: "Cold Embers", subtitle: "Walked past on purpose.", length: "240svh", enter: "rise", layout: "left" },
+  {
+    id: "embers",
+    letter: "η",
+    kicker: "Cold embers",
+    title: "Cold Embers",
+    subtitle: "Walked past on purpose.",
+    body: [
+      "Skipping is the scanner doing its job. A fat rate on a coin that can't be trusted is a trap, not a scent: an exact-zero print that fakes a huge yield, a listing too young to have a history, a book too thin to fill both legs. Every spark here is a coin it walked past this poll.",
+    ],
+    out: [0.52, 0.6],
+    // The rows are live (the scanner's skipped lists), filled in by chapters/07-embers.tsx.
+    beat: {
+      kicker: "Walked past",
+      title: "Turned away, and why",
+      rows: [],
+      note: "Lists from the scanner, this poll · the full rules are in β",
+      in: [0.62, 0.76],
+      out: [0.86, 1],
+    },
+    stacked: { out: [0.47, 0.53], beatIn: [0.82, 0.92], beatOut: [0.96, 1] },
+    length: "440svh",
+    enter: "rise",
+    layout: "left",
+  },
   { id: "sky", letter: "θ", kicker: "The sky", title: "The Sky", subtitle: "Every coin, charted.", length: "220svh", enter: "rise", layout: "left" },
   { id: "den", letter: "ι", kicker: "The den", title: "The Den", subtitle: "A paper desk for a small research budget.", length: "220svh", enter: "rise", layout: "left" },
   {

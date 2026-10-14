@@ -15,10 +15,16 @@ export const RADAR_MAX = 40
 export type RadarInput = { symbol: string; net_apr: number; status: string; short: string }
 export type RadarCoin = { symbol: string; net: number; ok: boolean; a: number; x: number; y: number }
 
-/** 0..1 hash of a symbol (FNV-1a). */
+/** 0..1 hash of a symbol: FNV-1a, then a final avalanche (fmix32) so near-identical names (NEWA, NEWB)
+ *  still land far apart. */
 export function symbolHash(sym: string) {
   let h = 2166136261
   for (let i = 0; i < sym.length; i++) h = Math.imul(h ^ sym.charCodeAt(i), 16777619)
+  h ^= h >>> 16
+  h = Math.imul(h, 0x85ebca6b)
+  h ^= h >>> 13
+  h = Math.imul(h, 0xc2b2ae35)
+  h ^= h >>> 16
   return (h >>> 0) / 4294967296
 }
 
@@ -47,23 +53,38 @@ export function placeCoins(rows: RadarInput[], keep: string | null = null, max =
   })
 }
 
+/** The half captions sit just below the horizontal axis when the featured star is above it (and vice
+ *  versa), so the reading's leader line never runs through them. */
+export const captionsBelow = (anchor: { y: number } | null) => (anchor ? anchor.y >= 0 : false)
+
 /** Label boxes are kept this far apart (radar units), so two labels never touch. */
 const GAP_X = 1.5
 const GAP_Y = 0.42
+/** A coin label's width (symbol + net in mono), in radar units. */
+const LABEL_W = 2.0
+
+/** Labels point inward: left of the star on the right half, right of it on the left half. */
+export const labelSpan = (k: { x: number }): [number, number] => (k.x > 0 ? [k.x - LABEL_W, k.x] : [k.x, k.x + LABEL_W])
 
 /**
  * Up to `n` labelled coins: the loudest positive spreads, never the featured coin (it gets the reading),
- * and never one whose label would crowd the reading's star, another label, or the half captions.
+ * and never one whose label would crowd the reading's star or leader line, another label, or the half captions.
  */
 export function topCoins(placed: RadarCoin[], exclude: string | null, n = 5) {
   const anchor = placed.find((k) => k.symbol === exclude)
-  const taken: Array<{ x: number; y: number }> = anchor ? [anchor] : []
   const out: RadarCoin[] = []
   for (const k of [...placed].filter((c) => c.net > 0 && c.symbol !== exclude).sort((a, b) => b.net - a.net)) {
     if (out.length >= n) break
-    if (Math.abs(k.y) < GAP_Y && Math.abs(k.x) > R_OUT - 1.7) continue // half captions on the axis ends
-    if (taken.some((t) => Math.abs(t.x - k.x) < GAP_X && Math.abs(t.y - k.y) < GAP_Y)) continue
-    taken.push(k)
+    // Clear of the half captions (beside the axis ends, on the side away from the featured star) …
+    const [c0, c1] = captionsBelow(anchor ?? null) ? [-0.75, 0.25] : [-0.25, 0.75]
+    if (k.y > c0 && k.y < c1 && Math.abs(k.x) > R_OUT - 2.9) continue
+    // … and of the reading's leader line, whichever way it leaves the featured star.
+    if (anchor && Math.abs(k.y - anchor.y) < GAP_Y) continue
+    if (anchor && Math.abs(k.x - anchor.x) < 0.5 && k.y < anchor.y) continue
+    // Side-aware: labels point inward, so their boxes are [x − W, x] on the right half, [x, x + W] on the left.
+    const [a0, a1] = labelSpan(k)
+    if (out.some((t) => Math.abs(t.y - k.y) < GAP_Y && a0 < labelSpan(t)[1] && labelSpan(t)[0] < a1)) continue
+    if (anchor && Math.abs(anchor.x - k.x) < GAP_X && Math.abs(anchor.y - k.y) < GAP_Y) continue
     out.push(k)
   }
   return out
