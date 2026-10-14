@@ -15,6 +15,3 @@ export function formatCoordinate(px: number, py: number) {
   return `RA ${pad(h)}h ${pad(m)}m ${pad(s)}s · DEC −${Math.abs(dd)}° ${pad(dm)}′`
 }
 
-
-/** Where Sirius stands alone in κ's ledger (world units, default camera), above the closing lines. */
-export const SIRIUS_AT: [number, number, number] = [0, 1.9, 0]

@@ -14,9 +14,9 @@ type FieldChannels = Pick<Scene, "fieldOn" | "fieldAppear" | "fieldFocus" | "fie
 export function hedgeScene(s: StageState): FieldChannels {
   const p = s.sections.hedge ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const fieldOn = p > 0 && p < (stacked ? 0.82 : 1) ? 1 : 0
+  const fieldOn = p > 0 && p < (stacked ? 0.78 : 1) ? 1 : 0
   if (s.reduced) {
-    const featured = !stacked || p >= 0.5 ? 1 : 0
+    const featured = !stacked || p >= 0.53 ? 1 : 0
     return { fieldOn, fieldAppear: 1, fieldFocus: featured, fieldForm: 1, fieldLabels: fieldOn * featured, fieldAway: 0 }
   }
   const appear = smooth(band(p, 0.02, 0.2))
@@ -24,10 +24,10 @@ export function hedgeScene(s: StageState): FieldChannels {
     return {
       fieldOn,
       fieldAppear: appear,
-      fieldFocus: band(p, 0.48, 0.56),
-      fieldForm: band(p, 0.54, 0.68),
-      fieldLabels: band(p, 0.66, 0.71) * (1 - band(p, 0.75, 0.78)),
-      fieldAway: band(p, 0.77, 0.82),
+      fieldFocus: band(p, 0.53, 0.6),
+      fieldForm: band(p, 0.58, 0.67),
+      fieldLabels: band(p, 0.65, 0.68) * (1 - band(p, 0.7, 0.73)),
+      fieldAway: band(p, 0.73, 0.78),
     }
   }
   return {

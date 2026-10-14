@@ -90,7 +90,7 @@ function RadarLabels() {
             {tag}
           </span>
           <span className="label text-starlight-dim">
-            centre = louder · ring = break-even ·{" "}
+            centre = louder · ring = <span className="whitespace-nowrap">break-even</span> ·{" "}
             <span className="whitespace-nowrap">
               <span className="text-scent">●</span> clean scent
             </span>

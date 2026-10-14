@@ -35,7 +35,7 @@ void main() {
   a += smoothstep(0.02, 0.0, abs(sqrt(d2) - 0.38)) * vPing * 0.8;
   a = min(a, 1.0) * uOpacity;                          // no overdrive: scent stays #ff8a3d, never red
   if (a < 0.004) discard;
-  gl_FragColor = vec4(pow(max(vColor * a, vec3(0.0)), vec3(2.2)), 1.0);
+  gl_FragColor = vec4(max(vColor, vec3(0.0)) * pow(max(a, 0.0), 2.2), 1.0);
 }`
 
 const SWEEP_ARC = 1.1
@@ -49,7 +49,7 @@ void main() {
   float a = pow(lead, 3.0) * 0.14 * smoothstep(1.0, 0.85, r);
   a += smoothstep(0.012, 0.0, abs(ang)) * 0.32 * smoothstep(1.0, 0.96, r);
   a *= uO;
-  gl_FragColor = vec4(pow(max(uC * a, vec3(0.0)), vec3(2.2)), 1.0);
+  gl_FragColor = vec4(max(uC, vec3(0.0)) * pow(max(a, 0.0), 2.2), 1.0);
 }`
 
 function ringGeometry() {
@@ -67,7 +67,9 @@ function ringGeometry() {
     const l = i % 6 === 0 ? 0.22 : 0.09
     pts.push(Math.cos(a) * R_OUT, Math.sin(a) * R_OUT, 0, Math.cos(a) * (R_OUT + l), Math.sin(a) * (R_OUT + l), 0)
   }
-  pts.push(-R_OUT, 0, 0, R_OUT, 0, 0, 0, -R_OUT, 0, 0, R_OUT, 0)
+  // No crosshair (its lines ran through the coin labels, P3 critique). The one meaningful division, left
+  // half = short Binance / right half = short Lighter, is marked by short inward ticks at top and bottom.
+  pts.push(0, R_OUT, 0, 0, R_OUT - 0.35, 0, 0, -R_OUT, 0, 0, -R_OUT + 0.35, 0)
   const g = new THREE.BufferGeometry()
   g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3))
   return g

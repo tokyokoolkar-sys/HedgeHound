@@ -14,9 +14,9 @@ type KennelChannels = Pick<Scene, "kennelOn" | "kennelAppear" | "kennelFocus" | 
 export function kennelScene(s: StageState): KennelChannels {
   const p = s.sections.kennel ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const kennelOn = p > 0 && p < (stacked ? 0.82 : 1) ? 1 : 0
+  const kennelOn = p > 0 && p < (stacked ? 0.78 : 1) ? 1 : 0
   if (s.reduced) {
-    const featured = !stacked || p >= 0.5 ? 1 : 0
+    const featured = !stacked || p >= 0.53 ? 1 : 0
     return { kennelOn, kennelAppear: 1, kennelFocus: featured, kennelForm: 1, kennelLabels: kennelOn * featured, kennelAway: 0 }
   }
   const appear = smooth(band(p, 0.02, 0.2))
@@ -24,10 +24,10 @@ export function kennelScene(s: StageState): KennelChannels {
     return {
       kennelOn,
       kennelAppear: appear,
-      kennelFocus: band(p, 0.48, 0.56),
-      kennelForm: band(p, 0.54, 0.68),
-      kennelLabels: band(p, 0.66, 0.71) * (1 - band(p, 0.75, 0.78)),
-      kennelAway: band(p, 0.77, 0.82),
+      kennelFocus: band(p, 0.53, 0.6),
+      kennelForm: band(p, 0.58, 0.67),
+      kennelLabels: band(p, 0.65, 0.68) * (1 - band(p, 0.7, 0.73)),
+      kennelAway: band(p, 0.73, 0.78),
     }
   }
   return {

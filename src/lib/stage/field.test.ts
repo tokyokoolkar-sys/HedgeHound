@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
-import { FIELD_H, FIELD_W, heldY, labelled, netX, placeField, shortlist, tickText } from "./field.ts"
+import { FIELD_H, FIELD_W, fieldLabelSide, heldY, labelled, netX, placeField, shortlist, tickText } from "./field.ts"
 import { INSTRUMENT_EXTENT } from "./layout.ts"
 
 const row = (symbol: string, net_apr: number, persistence = 0.5, status = "ok") => ({ symbol, net_apr, persistence, status })
@@ -40,7 +40,9 @@ describe("field placement", () => {
     const stars = placeField([row("A", 30, 1), row("B", 29.5, 1), row("C", -10, 1), row("D", 10, 0.2), row("E", 50, 0.6)])
     const l = labelled(stars)
     assert.ok(!l.some((k) => k.net <= 0))
-    for (const a of l) for (const b of l) if (a !== b) assert.ok(Math.abs(a.x - b.x) >= 1.4 || Math.abs(a.y - b.y) >= 0.36)
+    const span = (k: { x: number }) => (fieldLabelSide(k) === "right" ? [k.x, k.x + 1.9] : [k.x - 1.9, k.x])
+    for (const a of l)
+      for (const b of l) if (a !== b) assert.ok(Math.abs(a.y - b.y) >= 0.36 || span(a)[1] <= span(b)[0] || span(b)[1] <= span(a)[0])
     assert.ok(!(l.some((k) => k.symbol === "A") && l.some((k) => k.symbol === "B")))
   })
 })

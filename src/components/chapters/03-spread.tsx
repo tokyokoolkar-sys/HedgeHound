@@ -133,7 +133,7 @@ function AstrolabeLabels({ row, tag }: { row: ScanRow; tag: ReactNode }) {
         <ProjectedLabel
           point={() => astrolabeToWorld(-INSTRUMENT_EXTENT, R_SHORT + SWING + 0.75)}
           offset="translate(0, -100%)"
-          className="flex items-baseline gap-3 whitespace-nowrap"
+          className="flex max-w-[min(80vw,340px)] flex-wrap items-baseline gap-x-3 gap-y-1 [&>*]:whitespace-nowrap"
         >
           <span className="label text-starlight-dim">
             <span className="bayer mr-1">γ</span> {row.symbol} · both legs

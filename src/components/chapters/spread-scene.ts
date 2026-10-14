@@ -17,9 +17,9 @@ type AstroChannels = Pick<
 export function spreadScene(s: StageState): AstroChannels {
   const p = s.sections.spread ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const astroOn = p > 0 && p < (stacked ? 0.82 : 1) ? 1 : 0
+  const astroOn = p > 0 && p < (stacked ? 0.78 : 1) ? 1 : 0
   if (s.reduced) {
-    const featured = !stacked || p >= 0.5 ? 1 : 0
+    const featured = !stacked || p >= 0.53 ? 1 : 0
     return {
       astroOn,
       astroAppear: 1,
@@ -36,12 +36,12 @@ export function spreadScene(s: StageState): AstroChannels {
     return {
       astroOn,
       astroAppear: appear,
-      astroFocus: band(p, 0.48, 0.56),
+      astroFocus: band(p, 0.53, 0.6),
       astroTurn: p,
-      spreadSplit: band(p, 0.54, 0.64),
-      legLabels: band(p, 0.62, 0.66) * (1 - band(p, 0.75, 0.78)),
-      spreadSwing: band(p, 0.64, 0.76),
-      astroAway: band(p, 0.77, 0.82),
+      spreadSplit: band(p, 0.58, 0.64),
+      legLabels: band(p, 0.62, 0.65) * (1 - band(p, 0.7, 0.73)),
+      spreadSwing: band(p, 0.63, 0.7),
+      astroAway: band(p, 0.73, 0.78),
     }
   }
   return {

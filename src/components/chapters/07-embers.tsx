@@ -4,6 +4,7 @@
 // - copy: <Chapter> (skipping is the scanner doing its job), then a live second beat: one ruled row per
 //   reason with the count, the reason and the first names, one SourceTag;
 // - instrument: objects/ember-field.tsx, channels in embers-scene.ts; labels pinned to it.
+import { band } from "@/lib/motion/math"
 import { useRef, type ReactNode } from "react"
 import { useScan } from "@/lib/scan/use-scan"
 import { EMBER_REASONS } from "@/lib/scent"
@@ -41,7 +42,7 @@ export function Embers({ def, exitInto, last }: Props) {
       <span className="text-body">
         <span className="figure">{lists[r].length}</span> {lists[r].length === 1 ? "coin" : "coins"}
       </span>
-      <span className="label text-starlight-dim normal-case tracking-normal">{EMBER_REASONS[r]}</span>
+      <span className="text-body text-starlight-dim">{EMBER_REASONS[r]}</span>
       {lists[r].length > 0 && <span className="label text-starlight-dim">{names(lists[r])}</span>}
     </span>,
   ])
@@ -91,7 +92,7 @@ function EmberLabels({ tag }: { tag: ReactNode }) {
 
   useScrollFrame((s) => {
     const sc = s.scene
-    applyLook(heads.current, { opacity: sc.emberAppear * sc.emberFocus * (1 - sc.emberAway) * sc.emberOn, y: 0, blur: 0 })
+    applyLook(heads.current, { opacity: sc.emberAppear * band(sc.emberFocus, 0.8, 1) * (1 - band(sc.emberAway, 0, 0.3)) * sc.emberOn, y: 0, blur: 0 })
     applyLook(sparks.current, { opacity: sc.emberLabels, y: 0, blur: 0 })
   })
 
@@ -106,7 +107,7 @@ function EmberLabels({ tag }: { tag: ReactNode }) {
             {moreThan(lists[r].length, cap) > 0 && <span>+{moreThan(lists[r].length, cap)} more</span>}
           </ProjectedLabel>
         ))}
-        <ProjectedLabel point={() => emberToWorld(-INSTRUMENT_EXTENT, TOP_Y + 1.25)} offset="translate(0, -100%)" className="flex items-baseline gap-3 whitespace-nowrap">
+        <ProjectedLabel point={() => emberToWorld(-INSTRUMENT_EXTENT, TOP_Y + 1.25)} offset="translate(0, -100%)" className="flex max-w-[min(80vw,340px)] flex-wrap items-baseline gap-x-3 gap-y-1 [&>*]:whitespace-nowrap">
           <span className="label text-starlight-dim">
             <span className="bayer mr-1">η</span> skipped on purpose
           </span>

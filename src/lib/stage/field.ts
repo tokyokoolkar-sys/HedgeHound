@@ -47,20 +47,28 @@ export function placeField(rows: FieldInput[], max = FIELD_MAX): FieldStar[] {
   })
 }
 
-/** Label boxes are kept this far apart (chart units), so two labels never touch. */
-const GAP_X = 1.4
+/** Label width and minimum vertical gap, in chart units (symbol + net in mono). */
+const LABEL_W = 1.9
 const GAP_Y = 0.36
 
-/** Up to `n` labelled coins: the loudest that clear their costs, no two labels touching. */
+/** Labels run right of their star; near the right edge they turn back (left). */
+export const fieldLabelSide = (k: { x: number }) => (k.x > FIELD_W - 1.5 ? "left" : "right")
+const span = (k: FieldStar): [number, number] => (fieldLabelSide(k) === "right" ? [k.x, k.x + LABEL_W] : [k.x - LABEL_W, k.x])
+
+/** Up to `n` labelled coins: the loudest that clear their costs; no two label boxes overlap (side-aware). */
 export function labelled(stars: FieldStar[], n = 5) {
   const out: FieldStar[] = []
   for (const k of stars.filter((s) => s.net > 0).sort((a, b) => b.net - a.net)) {
     if (out.length >= n) break
-    if (out.some((t) => Math.abs(t.x - k.x) < GAP_X && Math.abs(t.y - k.y) < GAP_Y)) continue
+    const [a0, a1] = span(k)
+    if (out.some((t) => Math.abs(t.y - k.y) < GAP_Y && a0 < span(t)[1] && span(t)[0] < a1)) continue
     out.push(k)
   }
   return out
 }
+
+/** Held under half of the last six hours: shown as "shaky" in the shortlist (a note, not a filter). */
+export const SHAKY_BELOW = 0.5
 
 /** The shortlist: coins that clear their costs, clean ones first, each group loudest first. */
 export function shortlist<T extends { net_apr: number; status: string }>(rows: T[], n = 8): T[] {

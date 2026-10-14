@@ -36,7 +36,7 @@ void main() {
   if (!held && mod(floor(vIdx + 0.5), 5.0) > 2.5) discard;     // dashes: 3 on, 2 off
   vec3 c = held ? uHeld : uBefore;
   float a = (held ? 1.0 : 0.6) * uOpacity;
-  gl_FragColor = vec4(pow(c * a, vec3(2.2)), 1.0);
+  gl_FragColor = vec4(c * pow(a, 2.2), 1.0);
 }`
 
 const starVert = /* glsl */ `
@@ -47,7 +47,7 @@ void main() {
   vec2 c = gl_PointCoord - 0.5; float d2 = dot(c, c);
   float a = min(1.0, exp(-d2 * 120.0) + exp(-d2 * 14.0) * 0.3) * smoothstep(0.5, 0.42, sqrt(d2)) * uOpacity;
   if (a < 0.004) discard;
-  gl_FragColor = vec4(pow(uColor * a, vec3(2.2)), 1.0);
+  gl_FragColor = vec4(uColor * pow(a, 2.2), 1.0);
 }`
 
 const lines = (pts: number[]) => {

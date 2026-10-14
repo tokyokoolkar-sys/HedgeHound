@@ -16,11 +16,15 @@ type Props = {
 const SIZE = { hero: "text-hero", chapter: "text-chapter", title: "text-title" } as const
 
 export function ShimmerTitle({ as: Tag = "h2", size = "chapter", className, children }: Props) {
-  // Reduced motion: the sweep holds still (it is ambient, not scroll-locked).
+  // Reduced motion: no sweep at all, plain starlight (a frozen gradient would leave the title unevenly lit).
   const still = useReducedMotion()
+  const title = <Tag className={cn(SIZE[size], "font-light-display m-0", className)}>{children}</Tag>
+  if (still) return <div className="text-starlight/82">{title}</div>
+  // The size class also sits on the shimmer wrapper, so its em padding (the room for descenders under
+  // background-clip:text) scales with the title instead of the 16px body (P3 critique).
   return (
-    <ShimmerText className="text-starlight/82 [--shimmer-contrast:rgb(255_255_255)]" duration={2.4} delay={0.8} still={still}>
-      <Tag className={cn(SIZE[size], "font-light-display m-0", className)}>{children}</Tag>
+    <ShimmerText className={cn(SIZE[size], "text-starlight/82 [--shimmer-contrast:rgb(255_255_255)]")} duration={2.4} delay={0.8}>
+      {title}
     </ShimmerText>
   )
 }

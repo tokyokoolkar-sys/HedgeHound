@@ -60,6 +60,7 @@ export function Edition() {
         canisLines: reduced ? 1 : band(a, 0.22, 0.5),
         canisLabels: reduced ? 1 : band(a, 0.38, 0.5) * (1 - band(a, 0.8, 0.95)),
         canisAway: reduced ? 0 : smooth(band(a, 0.78, 1)) * 0.6 + smooth(band(c, 0, 0.5)) * 0.4,
+        canisPlace: 0,
         flight: h * 6 + a * 10 + c * 18 + b * 10,
         // Chapters with an instrument map their own channels (β is the reference).
         ...sniffScene(s),
