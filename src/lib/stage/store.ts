@@ -80,6 +80,9 @@ export type Scene = {
   denTurn: number
   denLabels: number
   denAway: number
+  /** κ: how much of the background sky is lit (1 = all of it; the ledger dims it), and Sirius alone. */
+  skyDim: number
+  siriusOn: number
   /** Distance flown through the dust layers (grows with scroll; drives parallax). */
   flight: number
 }
@@ -140,6 +143,8 @@ export const EMPTY_SCENE: Scene = {
   denTurn: 0,
   denLabels: 0,
   denAway: 0,
+  skyDim: 1,
+  siriusOn: 0,
   flight: 0,
 }
 

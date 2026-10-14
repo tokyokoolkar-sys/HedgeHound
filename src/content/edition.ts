@@ -34,7 +34,7 @@ export type ChapterDef = {
   /** Scroll length of the crawl leading into it (only when enter = "crawl"). */
   enterLength?: string
   layout: "center" | "left"
-  /** For left-column chapters: copy sits high (default) or low on the screen. */
+  /** Left-column chapters: copy sits high (default) or low. Centre chapters: low (default) or mid-high ("top"). */
   anchor?: "top" | "bottom"
   /** rise chapters: progress band over which the copy rises into place (default [0, 0.16]). */
   rise?: [number, number]
@@ -294,9 +294,13 @@ export const CHAPTERS: ChapterDef[] = [
     kicker: "Ledger",
     title: "Paper only.",
     subtitle: "Not financial advice. No order code exists in Phase 0.",
-    length: "160svh",
+    // The last section can only scroll until its bottom meets the viewport's, so its progress tops out at
+    // (260 − 100) / 260 ≈ 0.62; κ's choreography finishes by 0.5.
+    length: "260svh",
     enter: "fade",
     layout: "center",
+    // Mid-screen, so Sirius sits above and the ledger's footer below.
+    anchor: "top",
   },
 ]
 

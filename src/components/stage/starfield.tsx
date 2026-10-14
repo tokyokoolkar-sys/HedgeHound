@@ -53,7 +53,11 @@ export function Starfield({ quality }: { quality: Quality }) {
       m.uniforms.uPR.value = gl.getPixelRatio()
       m.uniforms.uFlight.value = fly
     }
-    dustMat.uniforms.uOpacity.value = 0.55
+    // κ dims the sky to almost nothing so Sirius can stand alone (scene.skyDim; 1 = full sky).
+    const dim = s.scene.skyDim
+    shellMat.uniforms.uOpacity.value = dim
+    flightMat.uniforms.uOpacity.value = dim
+    dustMat.uniforms.uOpacity.value = 0.55 * dim
     if (shellRef.current) {
       shellRef.current.rotation.y = fly * 0.004 + s.pointer[0] * 0.02
       shellRef.current.rotation.x = s.pointer[1] * 0.012

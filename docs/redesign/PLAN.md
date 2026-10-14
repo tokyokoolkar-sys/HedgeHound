@@ -115,7 +115,7 @@ Copy follows `PRODUCT.md`: every number on screen is LIVE, PAPER or SAMPLE and c
 | η | `embers` | Cold Embers | "Walked past on purpose." | **Ember field**: one ember per skipped coin, three streams by reason, falling with the scroll and cooling to grey | skipping as the scanner doing its job; then one row per reason with counts and names (rules stay in β) |
 | θ | `sky` | The Sky | "Every coin, charted." | **Atlas**: every live coin across the sky, the camera pulling back; each chapter's key coin ringed and lettered. "Enter the sky" → `/sky` with no canvas remount lands in T33 | title + subtitle only; a caption with counts and the SourceTag |
 | ι | `den` | The Den | "A paper desk for a small research budget." | **Desk orb**: glass orb whose pocket sky is the live coins clearing your book's bar | a paper desk, no order code; then the book's settings (PAPER) and what clears the bar now (LIVE); what-ifs pointer; "Open the den" waits for T34 |
-| κ | `ledger` | — | — | Stars fade, Sirius remains | footer: data source status, "Phase 0 · paper only", "Not financial advice. No order code exists.", links |
+| κ | `ledger` | Paper only. | "Not financial advice. No order code exists in Phase 0." | The sky dims; Sirius stands alone with its J2000 position | the ledger footer: source (with tag), scanner address, phase, links, back to the overture, © |
 
 ---
 
