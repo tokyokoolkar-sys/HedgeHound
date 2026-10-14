@@ -201,6 +201,9 @@ Every axis means something (owner decision, T15 critique): **the half** is the v
 ### Astrolabe (γ)
 One coin, two legs, in thin lines like the radar: a cyan ring (the long leg) inside an orange ring (the short leg), 48 ticks each, around the coin's star. As you scroll the rings counter-rotate, then slide apart into the two venues; a starlight hairline joins the two stars (the spread). Then a price swing carries both legs up and down together while the hairline keeps its length ("price moves both legs · the gap stays"). Everything is scroll-locked. The coin is the same loudest scent β featured; leg labels (`long · Binance`, `short · Lighter`) come from live data, and a caption tags them.
 
+### Comet trail (δ)
+The loudest scent's last day, drawn only from live fields (owner decision): a faint 24-hour arc with six-hour ticks, `−24 h` at the left end and `now` at the right. The coin's star replays the day along it and lays its trail behind: solid in the current direction's colour since the last flip (short on Lighter = scent, short on Binance = scan), dashed faint starlight before it (the scanner doesn't report what happened there), nothing where there are no samples. A tick marks the flip and a bracket covers the last six hours; one right-aligned block under `now` says "last flip · 1.4 h ago / held 42% of the last 6 h". The second beat shows the six steadiest coins as small strips drawn the same way, with mono shorthand (`persist 0.97 · flip 28.4h · window 23.8h`). When `/api/history` exists (T41), the same trail gains its real ups and downs.
+
 ### Coin labels (radar)
 The symbol in starlight-dim mono and the net APR in starlight, or in orange when alerting. Only the loudest positive spreads (five, three on phones), never two labels that touch, never the featured coin. Labels point inward so they never leave the screen. Projected from the 3D radar each frame as plain DOM, never drei `<Html>` (see Don'ts).
 

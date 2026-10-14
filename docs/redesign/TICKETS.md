@@ -127,10 +127,11 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 - No cards, no AnimatedBeam, no NumberTicker, no drei `Html` (DESIGN.md).
 - **Accept:** legs separate and swing smoothly; labels match live data; SAMPLE tag when offline; stacked layout takes turns on phones.
 
-### T21 IV Trail
-- Files: `chapters/04-trail.tsx`, `objects/comet-trail.tsx`.
-- Comet: the focus coin moves along a short arc; trail = drei `Line` whose points come from history (T41), colour flips at sign changes. Without T41: draw from `trailFor()` **with a SAMPLE tag on the plate**.
-- Sheet: 6 small-multiple sparklines (recharts or a 40-line SVG), top 6 by persistence; mono labels `persist 0.97 · flip 28.4h · window 23.8h`.
+### T21 IV Trail (rescoped, owner-approved a/b)
+- Files: `chapters/04-trail.tsx`, `chapters/trail-scene.ts`, `objects/comet-trail.tsx`, `lib/stage/comet.ts` (+ test).
+- (a) Drawn honestly from live fields (`window_h`, `hours_since_flip`, `persistence`), no `trailFor()` synthetic shape. (b) The comet is the loudest scent, the same coin as β and γ.
+- Second beat: the six steadiest coins as inline SVG strips + mono shorthand, one SourceTag.
+- After T41: feed `/api/history` into the same `segments()` / strip to add the real shape.
 
 ### T22 V Hedge
 - Files: `chapters/05-hedge.tsx`. Waypoint `hedge` lights the Hedge sector.
@@ -236,7 +237,8 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T14 | O | done | Overture (CSS load intro, decision b) + α timing + α→β carousel with net APR; void page bg; notes/T14.md |
 | T15 | O | done | β Sniff + radar (meaningful axes: half = short venue, radius = signed net), reading, second beat; full Impeccable critique (17/28) folded into the primitives; 345 tests; branch T15-sniff (notes/T15.md) |
 | T20 | O | done | γ Spread: astrolabe (thin lines, scroll-locked turn, price swing), definition of the spread + 3 steps, live legs beat; layout shared in lib/stage/layout.ts; 352 tests; branch T20-spread (notes/T20.md) |
-| T21–T27 | S | todo | |
+| T21 | O | done | δ Trail: comet over a 24 h arc from live fields only (window, last flip, persistence), the six steadiest as strips; 362 tests; branch T21-trail (notes/T21.md) |
+| T22–T27 | S | todo | |
 | T30–T35 | S/H | todo | |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |
