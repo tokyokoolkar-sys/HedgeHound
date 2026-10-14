@@ -28,7 +28,7 @@ void main() {
   float a = (exp(-d2 * 120.0) + exp(-d2 * 14.0) * 0.3) * smoothstep(0.5, 0.42, sqrt(d2));
   a = min(a, 1.0) * uOpacity * vA;
   if (a < 0.004) discard;
-  gl_FragColor = vec4(pow(uColor * a, vec3(2.2)), 1.0);
+  gl_FragColor = vec4(uColor * pow(a, 2.2), 1.0);
 }`
 
 /** A ring with ticks pointing inward (long ticks every 8th), centred on the origin. */

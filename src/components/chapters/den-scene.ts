@@ -13,9 +13,9 @@ type DenChannels = Pick<Scene, "denOn" | "denAppear" | "denFocus" | "denTurn" | 
 export function denScene(s: StageState): DenChannels {
   const p = s.sections.den ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const denOn = p > 0 && p < (stacked ? 0.82 : 1) ? 1 : 0
+  const denOn = p > 0 && p < (stacked ? 0.78 : 1) ? 1 : 0
   if (s.reduced) {
-    const featured = !stacked || p >= 0.5 ? 1 : 0
+    const featured = !stacked || p >= 0.53 ? 1 : 0
     return { denOn, denAppear: 1, denFocus: featured, denTurn: 0, denLabels: denOn * featured, denAway: 0 }
   }
   const appear = smooth(band(p, 0.02, 0.2))
@@ -23,10 +23,10 @@ export function denScene(s: StageState): DenChannels {
     return {
       denOn,
       denAppear: appear,
-      denFocus: band(p, 0.48, 0.56),
+      denFocus: band(p, 0.53, 0.6),
       denTurn: p,
-      denLabels: band(p, 0.56, 0.62) * (1 - band(p, 0.75, 0.78)),
-      denAway: band(p, 0.77, 0.82),
+      denLabels: band(p, 0.6, 0.63) * (1 - band(p, 0.7, 0.73)),
+      denAway: band(p, 0.73, 0.78),
     }
   }
   return {

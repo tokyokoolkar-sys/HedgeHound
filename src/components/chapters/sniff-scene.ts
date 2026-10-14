@@ -17,18 +17,18 @@ export function sniffScene(s: StageState): RadarChannels {
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
   if (stacked) {
     // Phones: rings tucked under the steps, then the radar alone with its reading, gone before the rules.
-    const radarOn = c >= 0.5 && b < 0.82 ? 1 : 0
+    const radarOn = c >= 0.5 && b < 0.78 ? 1 : 0
     if (s.reduced) {
-      const featured = b >= 0.5 ? 1 : 0
+      const featured = b >= 0.53 ? 1 : 0
       return { radarOn, radarAppear: 1, radarFocus: featured, radarLabels: radarOn * featured, reading: radarOn * featured, radarAway: 0 }
     }
     return {
       radarOn,
       radarAppear: smooth(band(c, 0.5, 1)) * 0.6 + smooth(band(b, 0, 0.2)) * 0.4,
-      radarFocus: band(b, 0.48, 0.56),
-      radarLabels: band(b, 0.54, 0.6) * (1 - band(b, 0.75, 0.78)),
-      reading: band(b, 0.56, 0.66) * (1 - band(b, 0.75, 0.79)),
-      radarAway: band(b, 0.77, 0.82),
+      radarFocus: band(b, 0.53, 0.6),
+      radarLabels: band(b, 0.58, 0.62) * (1 - band(b, 0.7, 0.73)),
+      reading: band(b, 0.6, 0.68) * (1 - band(b, 0.7, 0.74)),
+      radarAway: band(b, 0.73, 0.78),
     }
   }
   const radarOn = c >= 0.5 && b < 1 ? 1 : 0

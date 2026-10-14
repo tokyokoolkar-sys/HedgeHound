@@ -3,12 +3,13 @@
 // - copy: <Chapter> (what makes a spread worth taking), then a live second beat: the shortlist as ruled
 //   text rows on the sky, one SourceTag;
 // - instrument: objects/field-chart.tsx, channels in hedge-scene.ts; labels pinned to it.
+import { band } from "@/lib/motion/math"
 import { useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
 import { formatNet } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"
 import { DEFAULT_SCAN_PARAMS, type ScanRow } from "@/lib/scan/types"
-import { FIELD_H, FIELD_W, NET_TICKS, fieldToWorld, labelled, netX, placeField, shortlist, tickText } from "@/lib/stage/field"
+import { FIELD_H, FIELD_W, NET_TICKS, SHAKY_BELOW, fieldLabelSide, fieldToWorld, labelled, netX, placeField, shortlist, tickText } from "@/lib/stage/field"
 import { INSTRUMENT_EXTENT } from "@/lib/stage/layout"
 import type { ChapterDef } from "@/content/edition"
 import { useInstrumentLayout } from "../objects/use-radar"
@@ -29,6 +30,7 @@ function rowValue(r: ScanRow): ReactNode {
       <span className="flex items-baseline gap-3">
         <span className={cn("figure", ok ? "text-scent" : "text-starlight")}>{formatNet(r.net_apr)}</span>
         <span className="label text-starlight-dim">{ok ? "clean" : "building history"}</span>
+        {r.persistence < SHAKY_BELOW && <span className="label text-starlight">shaky</span>}
       </span>
       <span className="label text-starlight-dim">
         long {r.long} · short {r.short} · held {Math.round(r.persistence * 100)}%
@@ -92,7 +94,7 @@ function FieldLabels({ rows, tag }: { rows: ScanRow[]; tag: ReactNode }) {
   useScrollFrame((s) => {
     const sc = s.scene
     // Axis text only once the chart is featured (stacked layouts keep the tucked axes quiet).
-    applyLook(axis.current, { opacity: sc.fieldAppear * sc.fieldFocus * (1 - sc.fieldAway) * sc.fieldOn, y: 0, blur: 0 })
+    applyLook(axis.current, { opacity: sc.fieldAppear * band(sc.fieldFocus, 0.8, 1) * (1 - band(sc.fieldAway, 0, 0.3)) * sc.fieldOn, y: 0, blur: 0 })
     applyLook(coins.current, { opacity: sc.fieldLabels, y: 0, blur: 0 })
   })
 
@@ -113,13 +115,13 @@ function FieldLabels({ rows, tag }: { rows: ScanRow[]; tag: ReactNode }) {
         </ProjectedLabel>
         {/* Starts at the break-even line and runs right, clear of the "held" title on the left. */}
         <ProjectedLabel point={() => fieldToWorld(netX(0), FIELD_H + 0.12)} offset="translate(6px, -100%)" className="label whitespace-nowrap text-starlight-dim">
-          break-even
+          <span className="whitespace-nowrap">break-even</span>
         </ProjectedLabel>
         {/* Caption: names the chart and tags its figures. */}
         <ProjectedLabel
           point={() => fieldToWorld(-INSTRUMENT_EXTENT, FIELD_H + 0.75)}
           offset="translate(0, -100%)"
-          className="flex items-baseline gap-3 whitespace-nowrap"
+          className="flex max-w-[min(80vw,340px)] flex-wrap items-baseline gap-x-3 gap-y-1 [&>*]:whitespace-nowrap"
         >
           <span className="label text-starlight-dim">
             <span className="bayer mr-1">ε</span> {stars.length} coins · net × held
@@ -133,7 +135,7 @@ function FieldLabels({ rows, tag }: { rows: ScanRow[]; tag: ReactNode }) {
           <ProjectedLabel
             key={k.symbol}
             point={() => fieldToWorld(k.x, k.y)}
-            offset={k.x > FIELD_W - 1.5 ? "translate(calc(-100% - 10px), -50%)" : "translate(10px, -50%)"}
+            offset={fieldLabelSide(k) === "left" ? "translate(calc(-100% - 10px), -50%)" : "translate(10px, -50%)"}
             className="whitespace-nowrap"
           >
             <span className="label text-starlight-dim">{k.symbol}</span>{" "}

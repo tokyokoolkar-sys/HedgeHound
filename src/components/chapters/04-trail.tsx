@@ -4,6 +4,7 @@
 //   strips, each the same 24-hour picture as the trail, with mono shorthand and one SourceTag;
 // - instrument: objects/comet-trail.tsx (the loudest scent, the same coin as β and γ), channels in
 //   trail-scene.ts; labels pinned to it as <ProjectedLabel>s.
+import { band } from "@/lib/motion/math"
 import { useRef, type ReactNode } from "react"
 import { pickLoudest } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"
@@ -98,7 +99,7 @@ function TrailLabels({ row, tag }: { row: ScanRow; tag: ReactNode }) {
   useScrollFrame((s) => {
     const sc = s.scene
     // Labels only once the trail is featured (stacked layouts keep the tucked arc quiet, like γ).
-    applyLook(axis.current, { opacity: sc.trailAppear * sc.trailFocus * (1 - sc.trailAway) * sc.trailOn, y: 0, blur: 0 })
+    applyLook(axis.current, { opacity: sc.trailAppear * band(sc.trailFocus, 0.8, 1) * (1 - band(sc.trailAway, 0, 0.3)) * sc.trailOn, y: 0, blur: 0 })
     applyLook(marks.current, { opacity: sc.trailMarks, y: 0, blur: 0 })
   })
 
@@ -115,7 +116,7 @@ function TrailLabels({ row, tag }: { row: ScanRow; tag: ReactNode }) {
         <ProjectedLabel
           point={() => trailToWorld(-INSTRUMENT_EXTENT, ARC_Y0 + ARC_RISE + 0.9)}
           offset="translate(0, -100%)"
-          className="flex items-baseline gap-3 whitespace-nowrap"
+          className="flex max-w-[min(80vw,340px)] flex-wrap items-baseline gap-x-3 gap-y-1 [&>*]:whitespace-nowrap"
         >
           <span className="label text-starlight-dim">
             <span className="bayer mr-1">δ</span> {row.symbol} · the last 24 h

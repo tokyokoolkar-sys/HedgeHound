@@ -5,6 +5,7 @@
 //   a live second beat: the kennel against everyone else (medians), a verdict on today's data, the
 //   kennel coins as rows, one SourceTag, and what the 1000 prefix means;
 // - instrument: objects/kennel.tsx, channels in kennel-scene.ts; labels pinned to it.
+import { band } from "@/lib/motion/math"
 import { useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
 import { formatNet } from "@/lib/scan/loudest"
@@ -119,7 +120,7 @@ function KennelLabels({ rows, tag }: { rows: ScanRow[]; tag: ReactNode }) {
   useScrollFrame((s) => {
     const sc = s.scene
     // Caption only once the kennel is featured (stacked layouts keep the tucked pen quiet).
-    applyLook(frame.current, { opacity: sc.kennelAppear * sc.kennelFocus * (1 - sc.kennelAway) * sc.kennelOn, y: 0, blur: 0 })
+    applyLook(frame.current, { opacity: sc.kennelAppear * band(sc.kennelFocus, 0.8, 1) * (1 - band(sc.kennelAway, 0, 0.3)) * sc.kennelOn, y: 0, blur: 0 })
     applyLook(coins.current, { opacity: sc.kennelLabels, y: 0, blur: 0 })
   })
 
@@ -128,7 +129,7 @@ function KennelLabels({ rows, tag }: { rows: ScanRow[]; tag: ReactNode }) {
     <>
       <div ref={frame} aria-hidden="true" className="pointer-events-none fixed inset-0 z-[2]" style={{ visibility: "hidden" }}>
         <ProjectedLabel point={() => kennelToWorld(-INSTRUMENT_EXTENT, PEN_R * 0.8 + 0.75)} offset="translate(0, -100%)" className="grid gap-1.5 whitespace-nowrap">
-          <span className="flex items-baseline gap-3">
+          <span className="flex max-w-[min(80vw,340px)] flex-wrap items-baseline gap-x-3 gap-y-1 [&>*]:whitespace-nowrap">
             <span className="label text-starlight-dim">
               <span className="bayer mr-1">ζ</span> {stars.length} coins · our list
             </span>

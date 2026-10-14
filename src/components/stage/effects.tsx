@@ -1,6 +1,7 @@
-// Post stack (DESIGN.md): the scroll-locked bite crawl, light film grain, vignette. No bloom (banned).
+// Post stack (DESIGN.md): the scroll-locked bite crawl and light film grain. No bloom (banned). No vignette:
+// darkening the near-black void left a one-level oval contour that no grain could dither (P3 critique).
 import { useFrame, useThree } from "@react-three/fiber"
-import { EffectComposer, Noise, Vignette } from "@react-three/postprocessing"
+import { EffectComposer, Noise } from "@react-three/postprocessing"
 import { useMemo } from "react"
 import type * as THREE from "three"
 import { useStage } from "@/lib/stage/store"
@@ -19,8 +20,6 @@ export function Effects() {
   return (
     <EffectComposer multisampling={0}>
       <primitive object={crawl} dispose={null} />
-      {/* Vignette before the grain: the grain dithers its gradient, so no 8-bit ellipse shows on the void. */}
-      <Vignette offset={0.22} darkness={0.85} />
       <Noise opacity={0.03} premultiply />
     </EffectComposer>
   )

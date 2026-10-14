@@ -95,7 +95,7 @@ Void `#010104` · Starlight `#f4f1ea` (0.62 dim, 0.38 faint) · Chart line `#9aa
 4. projected DOM labels pinned to 3D points
 5. fixed-stage copy and HUD
 
-Post: crawl effect + film grain (0.03) + vignette. No bloom.
+Post: crawl effect + film grain (0.03). No bloom, no vignette (P3).
 
 ---
 
@@ -151,7 +151,7 @@ src/
     edition/chapter.tsx stage.tsx chapter-index.tsx hud.tsx source-tag.tsx
             shimmer-title.tsx rise.tsx stardust.tsx projected-label.tsx bite-mask.ts
     logos-carousel.tsx shimmer-text.tsx   (@spell registry, owner-chosen)
-    stage/sky-stage.tsx starfield.tsx camera-rig.tsx effects.tsx (crawl + grain + vignette) dust.tsx
+    stage/sky-stage.tsx starfield.tsx camera-rig.tsx effects.tsx (crawl + grain) dust.tsx
     objects/glass-hound.tsx canis-major.tsx radar.tsx hedge-astrolabe.tsx ember-field.tsx comet-trail.tsx desk-orb.tsx
     chapters/01-overture.tsx … 10-ledger.tsx
     den-desk.tsx universe-view.tsx  (existing, restyled in P4)
@@ -226,7 +226,7 @@ Never name a file `*.client.*` (TanStack Start import protection breaks `vite bu
 |---|---|---|
 | **@react-three/fiber** (installed) | SkyStage, all 3D | — |
 | **@react-three/drei** (add) | `View`, `PerformanceMonitor`, `Instances`, `Line`, `Html` for **static** labels only, `AdaptiveDpr` | `Stars`; `Html` for refreshing data; `MeshTransmissionMaterial` (renders flat white in our pipeline; the hound uses a custom glass shader) |
-| **@react-three/postprocessing** + `postprocessing` (add) | the custom **CrawlEffect**, Noise (0.03), Vignette | **Bloom (banned by the owner)**, DOF |
+| **@react-three/postprocessing** + `postprocessing` (add) | the custom **CrawlEffect**, Noise (0.03) | **Bloom (banned by the owner)**, DOF |
 | **gsap** (installed, all plugins free) | `gsap.ticker` (drives Lenis + per-frame choreography), the hero's one-time intro tween | ScrambleText decode, scrubbed timelines on copy (choreography is computed from progress) |
 | **lenis** (add) | smooth scroll | — |
 | **motion** (add, required by magicui) | menus, hover, magicui internals, HoundMenu port | anything scroll-scrubbed |
@@ -284,7 +284,7 @@ Merge order: P0 → (P1 ∥ T40) → P2 → (P3 ∥ P4) → T41 → P6.
 |---|---|---|---|
 | far stars | 6000 | 2500 | 900 |
 | DPR cap | 1.75 | 1.5 | 1.0 |
-| post | crawl + grain + vignette | crawl + vignette | crawl only |
+| post | crawl + grain | crawl | crawl only |
 | glass hound | custom shader, 72 curve segments | 40 segments | 24 segments |
 | bite/stardust mask frames | generated lazily per element size | same | same, 32→24 frames |
 | target | 60 fps | 50+ | 30+ |

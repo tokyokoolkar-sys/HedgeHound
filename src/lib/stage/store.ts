@@ -80,9 +80,10 @@ export type Scene = {
   denTurn: number
   denLabels: number
   denAway: number
-  /** κ: how much of the background sky is lit (1 = all of it; the ledger dims it), and Sirius alone. */
+  /** κ: how much of the background sky is lit (1 = all of it; the ledger dims it). */
   skyDim: number
-  siriusOn: number
+  /** Where Canis Major is drawn: 0 = α (beside the copy), 1 = κ (centred above the closing lines). */
+  canisPlace: number
   /** Distance flown through the dust layers (grows with scroll; drives parallax). */
   flight: number
 }
@@ -144,7 +145,7 @@ export const EMPTY_SCENE: Scene = {
   denLabels: 0,
   denAway: 0,
   skyDim: 1,
-  siriusOn: 0,
+  canisPlace: 0,
   flight: 0,
 }
 

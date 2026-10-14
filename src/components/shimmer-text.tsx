@@ -67,12 +67,14 @@ export function ShimmerText({
 }: ShimmerTextProps & { still?: boolean }) {
   return (
     // HedgeHound: no overflow clip, and the painted box is padded past the ink (descenders, italic
-    // overhang) with matching negative margins, so background-clip:text never cuts a glyph.
+    // overhang) with matching negative margins, so background-clip:text never cuts a glyph. The upstream
+    // `dark:` contrast (black) is removed: this site's `dark` variant always applies, and the sweep must be
+    // a white glint (DESIGN.md "Shimmer title").
     <div className="group">
       <div>
         <motion.div
           className={cn(
-            "-mx-[0.08em] -mb-[0.22em] inline-block px-[0.08em] pb-[0.22em] [--shimmer-contrast:rgba(255,255,255,0.6)] dark:[--shimmer-contrast:rgba(0,0,0,0.5)]",
+            "-mx-[0.08em] -mb-[0.22em] inline-block px-[0.08em] pb-[0.22em] [--shimmer-contrast:rgba(255,255,255,0.6)]",
             variantMap[variant],
             className,
           )}

@@ -13,9 +13,9 @@ type EmberChannels = Pick<Scene, "emberOn" | "emberAppear" | "emberFocus" | "emb
 export function embersScene(s: StageState): EmberChannels {
   const p = s.sections.embers ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const emberOn = p > 0 && p < (stacked ? 0.82 : 1) ? 1 : 0
+  const emberOn = p > 0 && p < (stacked ? 0.78 : 1) ? 1 : 0
   if (s.reduced) {
-    const featured = !stacked || p >= 0.5 ? 1 : 0
+    const featured = !stacked || p >= 0.53 ? 1 : 0
     return { emberOn, emberAppear: 1, emberFocus: featured, emberFall: 0, emberLabels: emberOn * featured, emberAway: 0 }
   }
   const appear = smooth(band(p, 0.02, 0.2))
@@ -23,10 +23,10 @@ export function embersScene(s: StageState): EmberChannels {
     return {
       emberOn,
       emberAppear: appear,
-      emberFocus: band(p, 0.48, 0.56),
-      emberFall: band(p, 0.5, 0.8),
-      emberLabels: band(p, 0.56, 0.6) * (1 - band(p, 0.75, 0.78)),
-      emberAway: band(p, 0.77, 0.82),
+      emberFocus: band(p, 0.53, 0.6),
+      emberFall: band(p, 0.55, 0.75),
+      emberLabels: band(p, 0.6, 0.63) * (1 - band(p, 0.7, 0.73)),
+      emberAway: band(p, 0.73, 0.78),
     }
   }
   return {

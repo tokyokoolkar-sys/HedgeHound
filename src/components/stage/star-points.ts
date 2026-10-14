@@ -1,6 +1,8 @@
 // Shared star rendering for the sky: one point shader, deterministic star fields, palette colours.
-// Colours are authored in sRGB and written as linear (`pow(c, 2.2)`): the post stack is linear, so
-// skipping this lifts faint light into grey haze (D1 bug, PLAN §4.1.7).
+// Colours: SKY_COLORS are THREE.Colors, which three's colour management already stores as linear, so
+// shaders use them as they are; only the falloff `a` gets the 2.2 curve, which keeps faint light from
+// lifting into grey haze (D1 bug, PLAN §4.1.7). Applying 2.2 to the colour as well linearised it twice and
+// turned scent orange red (P3 critique).
 import * as THREE from "three"
 import { palette } from "@/lib/palette"
 
@@ -36,7 +38,7 @@ void main() {
   float halo = exp(-d2 * mix(18.0, 5.0, uSoft)) * mix(0.30, 0.55, uSoft) * uHalo;
   float a = (core + halo) * vA * uOpacity * smoothstep(0.5, 0.36, sqrt(d2));
   if (a < 0.004) discard;
-  gl_FragColor = vec4(pow(max(vColor * a, vec3(0.0)), vec3(2.2)), 1.0);
+  gl_FragColor = vec4(max(vColor, vec3(0.0)) * pow(max(a, 0.0), 2.2), 1.0);
 }`
 
 export type StarMaterialOptions = { persp?: boolean; soft?: number; wrap?: [number, number]; halo?: number }

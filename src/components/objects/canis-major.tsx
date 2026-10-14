@@ -13,6 +13,9 @@ import { useStage } from "@/lib/stage/store"
 import { FieldPoints } from "../stage/field-points"
 import { SKY_COLORS, emptyField, rng, starColor, starMaterial } from "../stage/star-points"
 
+/** Half the visible height at z = 0 for the default camera (z 10, fov 45). */
+const HALF_H = 10 * Math.tan((45 / 2) * (Math.PI / 180))
+
 export function CanisMajor({ labelHost }: { labelHost: HTMLElement }) {
   const portal = useMemo(() => ({ current: labelHost }), [labelHost])
   const group = useRef<THREE.Group>(null)
@@ -20,6 +23,13 @@ export function CanisMajor({ labelHost }: { labelHost: HTMLElement }) {
   const { size } = useThree()
   const pos = useMemo(() => new Map(CMA.map((s) => [s.key, project(s)])), [])
   const order = useMemo(() => [...CMA].sort((a, b) => a.mag - b.mag).map((s) => s.key), [])
+  // The constellation's extent in its own units (κ sizes it to fit the space above the closing lines).
+  const bounds = useMemo(() => {
+    const xs = [...pos.values()].map((p) => p[0])
+    const ys = [...pos.values()].map((p) => p[1])
+    const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]
+    return { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, w: x1 - x0, h: y1 - y0 }
+  }, [pos])
 
   const field = useMemo(() => {
     const r = rng(5)
@@ -61,10 +71,23 @@ export function CanisMajor({ labelHost }: { labelHost: HTMLElement }) {
     const away = sc.canisAway
     const px = s.reduced ? 0 : s.pointer[0]
     const py = s.reduced ? 0 : s.pointer[1]
-    // Narrow screens: smaller and shifted left so the right-hand labels (β Mirzam, ζ Furud) stay on screen.
-    g.position.set((narrow ? -0.35 : 1.5) - px * 0.15, (narrow ? 0.9 : 0.25) - py * 0.1, -away * 12)
-    g.rotation.z = away * 0.12
-    g.scale.setScalar(narrow ? 0.5 : 1)
+    if (sc.canisPlace > 0.5) {
+      // κ: the hound closes the book, centred in the space above the closing lines and sized to fit it
+      // (labels run right of their stars, so a little width is kept for them).
+      const viewH = 2 * HALF_H
+      const viewW = viewH * (size.width / size.height)
+      // Between the nav (top ~9%) and the closing lines (from 45–50%).
+      const k = Math.min(((narrow ? 0.29 : 0.33) * viewH) / bounds.h, (viewW * 0.82 - (narrow ? 1.6 : 2.2)) / bounds.w)
+      const yC = (0.5 - (narrow ? 0.27 : 0.29)) * viewH
+      g.position.set(-bounds.cx * k - (narrow ? 0.35 : 0.5) - px * 0.1, yC - bounds.cy * k - py * 0.06, -away * 12)
+      g.rotation.z = 0
+      g.scale.setScalar(k)
+    } else {
+      // α. Narrow screens: smaller and shifted left so the right-hand labels (β Mirzam, ζ Furud) stay on screen.
+      g.position.set((narrow ? -0.35 : 1.5) - px * 0.15, (narrow ? 0.9 : 0.25) - py * 0.1, -away * 12)
+      g.rotation.z = away * 0.12
+      g.scale.setScalar(narrow ? 0.5 : 1)
+    }
     mat.uniforms.uForm.value = sc.canisForm * 1.42
     mat.uniforms.uTime.value = s.reduced ? 0 : clock.elapsedTime
     mat.uniforms.uPR.value = gl.getPixelRatio()

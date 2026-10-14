@@ -178,7 +178,7 @@ Depth comes from space, not shadows.
 4. **Projected labels:** DOM text pinned to 3D points (Bayer letters, coin labels, the reading).
 5. **Copy:** on the fixed stage, above everything.
 
-No drop shadows and no glow. Post-processing is limited to the scroll-locked crawl, very light film grain and a vignette. Bloom is banned.
+No drop shadows and no glow. Post-processing is limited to the scroll-locked crawl and very light film grain. Bloom is banned, and so is a vignette (it left a hard oval contour on the near-black void; P3 critique).
 
 ## Shapes
 
@@ -196,7 +196,7 @@ A mono pill reading `○ SAMPLE`, `◆ PAPER` or `● LIVE · 12:04`, with a das
 A cyan Greek letter, plus the proper name in faint mono capitals for named stars (`α SIRIUS`). They fade in after the lines finish drawing.
 
 ### Radar (β)
-Every axis means something (owner decision, T15 critique): **the half** is the venue carrying the short leg (right = short Lighter, left = short Binance; within its half a coin keeps a bearing hashed from its symbol), and **the radius** is signed net APR, with the outer ring at break-even, louder spreads nearer the centre, and spreads that lose after costs just outside the ring, dimmed and unlabelled. Alerting (clean) coins are scent orange, never overdriven toward red. A caption names it and tags its figures, with a one-line mono key ("centre = louder · ring = break-even · ● clean scent"), and the two halves carry small captions. The cyan sweep and its pings are the chapter's one piece of ambient motion.
+There is no crosshair (its lines ran through labels); short ticks at the ring's top and bottom mark the left/right division. Every axis means something (owner decision, T15 critique): **the half** is the venue carrying the short leg (right = short Lighter, left = short Binance; within its half a coin keeps a bearing hashed from its symbol), and **the radius** is signed net APR, with the outer ring at break-even, louder spreads nearer the centre, and spreads that lose after costs just outside the ring, dimmed and unlabelled. Alerting (clean) coins are scent orange, never overdriven toward red. A caption names it and tags its figures, with a one-line mono key ("centre = louder · ring = break-even · ● clean scent"), and the two halves carry small captions. The cyan sweep and its pings are the chapter's one piece of ambient motion.
 
 ### Astrolabe (γ)
 One coin, two legs, in thin lines like the radar: a cyan ring (the long leg) inside an orange ring (the short leg), 48 ticks each, around the coin's star. As you scroll the rings counter-rotate, then slide apart into the two venues; a starlight hairline joins the two stars (the spread). Then a price swing carries both legs up and down together while the hairline keeps its length ("price moves both legs · the gap stays"). Everything is scroll-locked. The coin is the same loudest scent β featured; leg labels (`long · Binance`, `short · Lighter`) come from live data, and a caption tags them.
@@ -220,7 +220,7 @@ Every live coin across the whole sky at a fixed spot from its symbol; the spots 
 A small orb in the hound's glass (shared `components/stage/glass.ts`), tuned to a crisp edge only: no grey body, no highlight bloom, and no stars "seen through" it, because everything inside is real data. Its pocket sky is exactly the live clean coins that clear the paper book's bar (net at the book's own hold and cost, ≥ its minimum), in scent orange; with none, the orb is empty. It turns with the scroll. The second beat "The paper book" shows the book's settings tagged PAPER (or says they are the defaults when nothing is saved) and the coins clearing the bar now, tagged LIVE/SAMPLE. No paper results are shown, because Phase 0 records none.
 
 ### Ledger (κ)
-The last chapter. The background sky dims to almost nothing with the scroll and Sirius stands alone above the closing lines, labelled with its real J2000 position (the HUD's home coordinate). "Paper only." and the disclaimer sit mid-screen; nothing blurs out after them. The ledger footer is real, focusable page content, quiet mono lines with no box: where the figures come from (in words, with a SourceTag), the scanner's address, "Phase 0 · paper only · no order code · no exchange keys", the nav's links, "↑ back to the overture" (mirroring the overture's "↓ α"), ©. The HUD's source line steps back while the ledger states it. The last section can only scroll until its bottom meets the viewport's, so κ's choreography finishes inside that range.
+The last chapter. The background sky dims to almost nothing with the scroll and Canis Major re-forms around Sirius above the closing lines (owner decision, P3 close): stars, then lines, then the Bayer letters, as in α, so the hound closes the book. "Paper only." and the disclaimer sit mid-screen; nothing blurs out after them. The ledger footer is real, focusable page content, quiet mono lines with no box: where the figures come from (in words, with a SourceTag), the scanner's address, "Phase 0 · paper only · no order code · no exchange keys", the nav's links, "↑ back to the overture" (mirroring the overture's "↓ α"), ©. The HUD's source line steps back while the ledger states it. The last section can only scroll until its bottom meets the viewport's, so κ's choreography finishes inside that range.
 
 ### Coin labels (radar)
 The symbol in starlight-dim mono and the net APR in starlight, or in orange when alerting. Only the loudest positive spreads (five, three on phones), never two labels that touch, never the featured coin. Labels point inward so they never leave the screen. Projected from the 3D radar each frame as plain DOM, never drei `<Html>` (see Don'ts).
@@ -240,7 +240,10 @@ Copy resolves from a small blur and rises; **body copy never blurs past 3px** (`
 `@spell/logos-carousel` showing the coins the hound is watching, in groups of five, with a staggered rise in and out. Each symbol shows its net APR underneath, orange if alerting. The featured coin is excluded, and one SourceTag covers the carousel.
 
 ### Shimmer title
-`@spell/shimmer-text` wrapping the display title. The shimmer contrast is pure white, and the base colour is starlight at 0.82.
+`@spell/shimmer-text` wrapping the display title. The shimmer contrast is pure white (the component's upstream `dark:` black is removed: this site's `dark` variant always applies), and the base colour is starlight at 0.82. The title's size class also sits on the shimmer wrapper so its em padding leaves room for descenders. Under reduced motion the title is plain starlight, no frozen gradient.
+
+### Colour in shaders
+`SKY_COLORS` are THREE.Colors, already linear through three's colour management. Shaders use them as they are and apply the 2.2 curve to the falloff only; applying it to the colour too linearised twice and turned scent orange red (P3 critique). The glass keeps its own tuned curve.
 
 ### Signature: the bite crawl
 The scene-to-scene transition, done as a post effect plus matching DOM masks.
