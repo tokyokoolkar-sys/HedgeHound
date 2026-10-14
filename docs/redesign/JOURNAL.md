@@ -28,6 +28,8 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 18 | SAMPLE has only three skipped coins, so η looks sparse offline; checked with a long-list mock (`T24-shots/mock-long-lists.png`). Re-check with LIVE. | T24 | — | open |
 | 19 | θ's "Enter the sky" portal (dive into `/sky`, no canvas remount). | T25 | T33 | later |
 | 20 | With SAMPLE's twenty coins the atlas is a quiet field; it fills out with LIVE. | T25 | — | open |
+| 21 | Add the "Open the den" hairline CTA to ι once `/den` is restyled. | T26 | T34 | later |
+| 22 | Paper results: Phase 0 records no paper trades, so ι shows settings and a live count only. Revisit if a paper book of trades is ever built. | T26 | — | owner |
 
 ## Decided, kept for reference
 - β reading stays mid-chapter, not as the chapter's ending (owner, T15).

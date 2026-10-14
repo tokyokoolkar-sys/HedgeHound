@@ -264,7 +264,30 @@ export const CHAPTERS: ChapterDef[] = [
   // θ is a quiet breath: title and subtitle over the atlas (no body, no second beat). "Enter the sky"
   // arrives with T33, when /sky exists.
   { id: "sky", letter: "θ", kicker: "The sky", title: "The Sky", subtitle: "Every coin, charted.", length: "300svh", enter: "rise", layout: "left" },
-  { id: "den", letter: "ι", kicker: "The den", title: "The Den", subtitle: "A paper desk for a small research budget.", length: "220svh", enter: "rise", layout: "left" },
+  {
+    id: "den",
+    letter: "ι",
+    kicker: "The den",
+    title: "The Den",
+    subtitle: "A paper desk for a small research budget.",
+    body: [
+      "Nothing here is placed. There are no keys and, in Phase 0, no order code at all: the hound sniffs, a person decides. A small paper budget earns its keep by testing the method against the tape before any real money moves. The orb holds what clears your bar right now.",
+    ],
+    out: [0.52, 0.6],
+    // The rows are the book's settings (PAPER) and a live count, filled in by chapters/09-den.tsx.
+    beat: {
+      kicker: "Your book",
+      title: "The paper book",
+      rows: [],
+      note: "No paper results yet: Phase 0 records none, so none are shown",
+      in: [0.62, 0.76],
+      out: [0.86, 1],
+    },
+    stacked: { out: [0.47, 0.53], beatIn: [0.82, 0.92], beatOut: [0.96, 1] },
+    length: "440svh",
+    enter: "rise",
+    layout: "left",
+  },
   {
     id: "ledger",
     letter: "κ",

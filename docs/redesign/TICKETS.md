@@ -152,9 +152,9 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 - Files: `chapters/08-sky.tsx`, `chapters/sky-scene.ts`, `objects/atlas.tsx`, `lib/stage/atlas.ts` (+ test); `steadiestRows` moved to `lib/stage/comet.ts`, `kennelLoudest` to `lib/stage/kennel.ts`.
 - (a) The atlas now; the "Enter the sky" portal (dive + `navigate("/sky")`, no canvas remount, plain link under reduced motion) moves to T33. (b) Recap labels with each chapter's letters. (c) Title and subtitle only.
 
-### T26 IX Den teaser
-- Files: `chapters/09-den.tsx`, `objects/desk-orb.tsx` (small glass orb holding a pocket sky).
-- Sheet: 3 stat tiles from the paper book (localStorage `hedgehound.book` via existing den logic, tag PAPER), a static preview of "A year of what-ifs" → `/den`.
+### T26 IX Den (rescoped, owner-approved a/b/c/d)
+- Files: `chapters/09-den.tsx`, `chapters/den-scene.ts`, `objects/desk-orb.tsx`, `objects/use-book.ts`, `lib/stage/den.ts` (+ test); glass shader shared in `components/stage/glass.ts`.
+- (a) Book settings (PAPER) + live count clearing the bar; no stat tiles from sample trades. (b) Pocket sky = coins clearing the bar. (c) No "Open the den" link until T34. (d) What-ifs: one line, no numbers.
 
 ### T27 X Ledger
 - Files: `chapters/10-ledger.tsx`. Stars fade except Sirius. Footer: data source status (LIVE/SAMPLE, last ts, scanner URL), "Phase 0 · paper only" badge, disclaimer "Not financial advice. No order code exists in Phase 0.", route links, ©.
@@ -245,7 +245,8 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T23 | O | done | ζ Kennel: meme cluster with measured twinkle, live medians + verdict, 1000-prefix explained; beats now fit above the HUD; 381 tests; branch T23-kennel (notes/T23.md) |
 | T24 | O | done | η Embers: one ember per skipped coin in three streams, scroll-locked fall and cooling, rows per reason; hash avalanche + side-aware radar labels; 390 tests; branch T24-embers (notes/T24.md) |
 | T25 | O | done | θ Sky: the atlas (every coin, camera pull-back, measured twinkle), recap rings + letters, caption with counts; portal moved to T33; 394 tests; branch T25-sky (notes/T25.md) |
-| T26–T27 | S | todo | |
+| T26 | O | done | ι Den: desk orb (shared glass, crisp edge) whose pocket sky clears your bar, the paper book beat (PAPER settings + LIVE count); 399 tests; branch T26-den (notes/T26.md) |
+| T27 | S | todo | |
 | T30–T35 | S/H | todo | |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |

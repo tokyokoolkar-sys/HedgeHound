@@ -73,6 +73,13 @@ export type Scene = {
   atlasPull: number
   atlasLabels: number
   atlasAway: number
+  /** ι den orb: shown, arrival, stacked focus, scroll turn (0..1), caption, recede. */
+  denOn: number
+  denAppear: number
+  denFocus: number
+  denTurn: number
+  denLabels: number
+  denAway: number
   /** Distance flown through the dust layers (grows with scroll; drives parallax). */
   flight: number
 }
@@ -127,6 +134,12 @@ export const EMPTY_SCENE: Scene = {
   atlasPull: 0,
   atlasLabels: 0,
   atlasAway: 0,
+  denOn: 0,
+  denAppear: 0,
+  denFocus: 0,
+  denTurn: 0,
+  denLabels: 0,
+  denAway: 0,
   flight: 0,
 }
 

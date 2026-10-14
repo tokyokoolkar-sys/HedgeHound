@@ -216,6 +216,9 @@ One ember per coin the scanner skipped this poll (`meta.skipped_*`), nothing dec
 ### Atlas (θ)
 Every live coin across the whole sky at a fixed spot from its symbol; the spots carry no meaning, so no RA/Dec grid is drawn over them. Brightness is net APR, orange is clean and paying, the twinkle is measured shakiness (as in ζ). The camera pulls back with the scroll from close-up to the whole field. Each earlier chapter's key coin gets a thin ring and a two-line label with its Greek letters (one coin can carry several), picked by those chapters' own rules; a caption counts the field and η's skipped coins, with one SourceTag. θ is a quiet breath: title and subtitle only. "Enter the sky" arrives with `/sky` (T33).
 
+### Den orb (ι)
+A small orb in the hound's glass (shared `components/stage/glass.ts`), tuned to a crisp edge only: no grey body, no highlight bloom, and no stars "seen through" it, because everything inside is real data. Its pocket sky is exactly the live clean coins that clear the paper book's bar (net at the book's own hold and cost, ≥ its minimum), in scent orange; with none, the orb is empty. It turns with the scroll. The second beat "The paper book" shows the book's settings tagged PAPER (or says they are the defaults when nothing is saved) and the coins clearing the bar now, tagged LIVE/SAMPLE. No paper results are shown, because Phase 0 records none.
+
 ### Coin labels (radar)
 The symbol in starlight-dim mono and the net APR in starlight, or in orange when alerting. Only the loudest positive spreads (five, three on phones), never two labels that touch, never the featured coin. Labels point inward so they never leave the screen. Projected from the 3D radar each frame as plain DOM, never drei `<Html>` (see Don'ts).
 
