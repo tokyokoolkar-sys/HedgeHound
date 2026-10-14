@@ -210,6 +210,9 @@ Every live coin as a star on two honest axes: net APR after costs across (linear
 ### Kennel (ζ)
 Our own editorial list of meme coins (labelled "our list", matched with or without the `1000` size prefix) as a loose cluster inside a faint dashed pen. Brightness is net APR; orange only for clean coins that pay after costs. The twinkle is the chapter's ambient life and it is measured: depth and speed grow with 1 − persistence, so a steady coin barely flickers and a flipping one trembles (held still under reduced motion). The second beat checks the subtitle's claim live: kennel and "the rest" medians (held, net), a verdict sentence computed from them (it says "not worse today" when that is what the data says), then the loudest kennel coins, and what the `1000` prefix means.
 
+### Cold embers (η)
+One ember per coin the scanner skipped this poll (`meta.skipped_*`), nothing decorative: three loose streams (zero / young / thin), headed with their counts and an honest "+N more" when a stream draws only its first fourteen (eight on phones). They fall with the scroll and stop when it stops, cooling from warm starlight (`star-warm`) to chart-line grey; never scent orange, which stays for alerts. One named ember per stream. The second beat gives each reason one ruled row (count, the reason line, the first names, "+N more") and points back to β for the full rules.
+
 ### Coin labels (radar)
 The symbol in starlight-dim mono and the net APR in starlight, or in orange when alerting. Only the loudest positive spreads (five, three on phones), never two labels that touch, never the featured coin. Labels point inward so they never leave the screen. Projected from the 3D radar each frame as plain DOM, never drei `<Html>` (see Don'ts).
 

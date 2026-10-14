@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 import { frameToWorld } from "./layout.ts"
-import { R_OUT, bearingFor, dockFor, placeCoins, radiusFor, topCoins } from "./radar.ts"
+import { R_OUT, bearingFor, captionsBelow, dockFor, labelSpan, placeCoins, radiusFor, symbolHash, topCoins } from "./radar.ts"
 
 const row = (symbol: string, net_apr: number, short = "Lighter", status = "ok") => ({ symbol, net_apr, status, short })
 
@@ -13,6 +13,10 @@ describe("radar axes", () => {
     }
   })
 
+  it("spreads near-identical names apart", () => {
+    const hs = ["NEWA", "NEWB", "NEWC", "NEWD"].map(symbolHash)
+    assert.ok(Math.max(...hs) - Math.min(...hs) > 0.3)
+  })
   it("keeps a coin's bearing stable", () => {
     assert.equal(bearingFor("PEPE", "Lighter"), bearingFor("PEPE", "Lighter"))
     assert.notEqual(bearingFor("PEPE", "Lighter"), bearingFor("WIF", "Lighter"))
@@ -46,9 +50,23 @@ describe("radar placement", () => {
       top.map((k) => k.net),
       [...top].map((k) => k.net).sort((a, b) => b - a),
     )
-    for (const a of top) for (const b of top) if (a !== b) assert.ok(Math.abs(a.x - b.x) >= 1.5 || Math.abs(a.y - b.y) >= 0.42)
+    for (const a of top)
+      for (const b of top) if (a !== b) assert.ok(Math.abs(a.y - b.y) >= 0.42 || labelSpan(a)[1] <= labelSpan(b)[0] || labelSpan(b)[1] <= labelSpan(a)[0])
   })
 
+  it("keeps labels off the reading's leader line and the half captions", () => {
+    const placed = placeCoins(Array.from({ length: 40 }, (_, i) => row(`C${i}`, 5 + i, i % 2 ? "Lighter" : "Binance")))
+    const anchor = placed[placed.length - 1]
+    for (const k of topCoins(placed, anchor.symbol, 8)) {
+      assert.ok(Math.abs(k.y - anchor.y) >= 0.42)
+      const [c0, c1] = captionsBelow(anchor) ? [-0.75, 0.25] : [-0.25, 0.75]
+      assert.ok(!(k.y > c0 && k.y < c1 && Math.abs(k.x) > R_OUT - 2.9))
+    }
+  })
+  it("puts the half captions on the side of the axis away from the featured star", () => {
+    assert.equal(captionsBelow({ y: 0.4 }), true)
+    assert.equal(captionsBelow({ y: -0.4 }), false)
+  })
   it("docks the reading outside the ring", () => {
     const [k] = placeCoins([row("A", 10)])
     assert.ok(dockFor(k, "right")[0] > R_OUT)

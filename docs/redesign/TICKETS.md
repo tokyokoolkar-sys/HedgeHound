@@ -143,10 +143,10 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 - (a) Twinkle by 1 − persistence as ambient life. (b) Subtitle kept; a live verdict checks it. (c) Twenty-coin editorial list, labelled as ours.
 - No shadcn Table (ruled rows on the sky, DESIGN.md).
 
-### T24 VII Embers
-- Files: `chapters/07-embers.tsx`, `objects/ember-field.tsx`.
-- Ember field: 200–600 instanced sparks drifting down, colour lerp `--scent`→`#5a5f70` over lifetime; the filtered coins are larger, labelled embers.
-- Sheet: FeatureTable of risk rules (PLAN §3 row VII) + three live lists from `meta.skipped_zero/young/thin` with reason copy (reuse the `filterReason` strings from `scent.ts`).
+### T24 VII Embers (rescoped, owner-approved a/b/c)
+- Files: `chapters/07-embers.tsx`, `chapters/embers-scene.ts`, `objects/ember-field.tsx`, `lib/stage/embers.ts` (+ test).
+- (a) Embers fall with the scroll. (b) Warm starlight cooling to grey, no orange. (c) One line per reason, rules stay in β.
+- Only real skipped coins (no decorative sparks); no FeatureTable.
 
 ### T25 VIII Sky portal
 - Files: `chapters/08-sky.tsx`. Plate: the camera pulls back to the full atlas (waypoint `sky-overview`). CTA "Enter the sky" → animate the store to the `sky` waypoint over 1.1s (GSAP), then `navigate({ to: "/sky" })`. **No canvas remount** (S1).
@@ -242,7 +242,8 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T21 | O | done | δ Trail: comet over a 24 h arc from live fields only (window, last flip, persistence), the six steadiest as strips; 362 tests; branch T21-trail (notes/T21.md) |
 | T22 | O | done | ε Hedge: field chart (net × held), shortlist beat; phone instruments now end before the second beat in every chapter; 371 tests; branch T22-hedge (notes/T22.md) |
 | T23 | O | done | ζ Kennel: meme cluster with measured twinkle, live medians + verdict, 1000-prefix explained; beats now fit above the HUD; 381 tests; branch T23-kennel (notes/T23.md) |
-| T24–T27 | S | todo | |
+| T24 | O | done | η Embers: one ember per skipped coin in three streams, scroll-locked fall and cooling, rows per reason; hash avalanche + side-aware radar labels; 390 tests; branch T24-embers (notes/T24.md) |
+| T25–T27 | S | todo | |
 | T30–T35 | S/H | todo | |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |

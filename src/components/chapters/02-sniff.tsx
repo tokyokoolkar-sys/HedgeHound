@@ -8,7 +8,7 @@ import { useRef } from "react"
 import { cn } from "@/lib/cn"
 import { band } from "@/lib/motion/math"
 import { formatNet } from "@/lib/scan/loudest"
-import { R_OUT, dockFor, radarToWorld, topCoins } from "@/lib/stage/radar"
+import { R_OUT, captionsBelow, dockFor, radarToWorld, topCoins } from "@/lib/stage/radar"
 import type { ChapterDef } from "@/content/edition"
 import { useInstrumentLayout, useRadar } from "../objects/use-radar"
 import { Beat } from "../edition/beat"
@@ -47,6 +47,7 @@ function RadarLabels() {
   const dock = anchor ? dockFor(anchor, layout.dock) : null
   const below = layout.dock === "below"
   const compact = layout.r < 180
+  const capsBelow = captionsBelow(anchor)
   const tag = <SourceTag kind={scan.live ? "live" : "sample"} ts={scan.ts ?? undefined} stale={scan.stale} className="text-starlight" />
 
   useScrollFrame((s) => {
@@ -68,13 +69,14 @@ function RadarLabels() {
             <span className={cn("figure text-xs", k.ok ? "text-scent" : "text-starlight")}>{formatNet(k.net)}</span>
           </ProjectedLabel>
         ))}
-        {/* The halves: which venue carries the short leg (two lines on small rings, so they never meet). */}
-        <ProjectedLabel point={() => radarToWorld(-R_OUT + 0.15, 0.12)} offset="translate(0, -100%)" className="label whitespace-nowrap text-starlight-dim">
+        {/* The halves: which venue carries the short leg (two lines on small rings, so they never meet),
+            on the side of the axis away from the featured star so the leader line never crosses them. */}
+        <ProjectedLabel point={() => radarToWorld(-R_OUT + 0.15, capsBelow ? -0.12 : 0.12)} offset={capsBelow ? "translate(0, 0)" : "translate(0, -100%)"} className="label whitespace-nowrap text-starlight-dim">
           ◂ short{compact ? <br /> : " "}Binance
         </ProjectedLabel>
         <ProjectedLabel
-          point={() => radarToWorld(R_OUT - 0.15, 0.12)}
-          offset="translate(-100%, -100%)"
+          point={() => radarToWorld(R_OUT - 0.15, capsBelow ? -0.12 : 0.12)}
+          offset={capsBelow ? "translate(-100%, 0)" : "translate(-100%, -100%)"}
           className="label text-right whitespace-nowrap text-starlight-dim"
         >
           short{compact ? <br /> : " "}Lighter ▸
