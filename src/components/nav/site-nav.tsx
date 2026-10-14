@@ -1,7 +1,7 @@
 // Site nav (T30, every page): the wordmark and mono links straight on the sky, no bar and no glass.
 // Desktop: pages, the scanner's poll status and ⌘K coin search. Phones: the wordmark and a "menu" that
 // opens as text on the void: the pages, the status, search, and on the Edition the chapters α–κ to jump
-// to (the phone's position cue). "Open scanner" (a starlight hairline) arrives with /scanner in T31.
+// to (the phone's position cue). "Scanner" joined the links with /scanner (T31).
 import { Link, useRouterState } from "@tanstack/react-router"
 import { Dialog } from "radix-ui"
 import { useState } from "react"
@@ -16,6 +16,7 @@ import { PollStatus } from "./poll-status"
 /** Pages in the nav. Each P4 ticket adds its own when the page exists. */
 const LINKS = [
   { to: "/", label: "Edition" },
+  { to: "/scanner", label: "Scanner" },
   { to: SKY_ROUTE, label: "Sky" },
   { to: "/den", label: "Den" },
 ] as const

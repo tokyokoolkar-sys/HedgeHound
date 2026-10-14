@@ -1,6 +1,6 @@
 // Non-component hooks into the scroll engine (S5: keep these out of the component module).
 
-type Lenis = { scrollTo: (target: number | HTMLElement, opts?: { immediate?: boolean; offset?: number }) => void }
+type Lenis = { scrollTo: (target: number | HTMLElement, opts?: { immediate?: boolean; offset?: number; force?: boolean }) => void; resize: () => void }
 
 let lenis: Lenis | null = null
 
@@ -17,7 +17,12 @@ export const getLenis = () => lenis
 
 /** Scroll to a position or element, smoothly when Lenis is active, natively otherwise. */
 export function scrollToTarget(target: number | HTMLElement, opts: { immediate?: boolean; offset?: number } = {}) {
-  if (lenis) return lenis.scrollTo(target, opts)
+  if (lenis) {
+    // Right after a route change Lenis may still hold the previous page's scroll limit (e.g. 0 on /scanner),
+    // and would clamp the jump to it: measure first.
+    if (opts.immediate) lenis.resize()
+    return lenis.scrollTo(target, { ...opts, force: true })
+  }
   const y = typeof target === "number" ? target : target.getBoundingClientRect().top + window.scrollY + (opts.offset ?? 0)
   window.scrollTo({ top: y, behavior: opts.immediate ? "instant" : "smooth" })
 }

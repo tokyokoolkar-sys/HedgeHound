@@ -20,9 +20,11 @@ type Props = {
    *  visual only: a chapter with live rows also renders them as screen-reader text. */
   rows?: Array<[string, ReactNode]>
   footer?: ReactNode
+  /** A real link under the block (e.g. ε's "Open scanner"): focusable and clickable while the beat shows. */
+  action?: ReactNode
 }
 
-export function Beat({ section, beat, letter, stacked, rows, footer }: Props) {
+export function Beat({ section, beat, letter, stacked, rows, footer, action }: Props) {
   const block = useRef<HTMLDivElement>(null)
   const head = useRef<HTMLDivElement>(null)
 
@@ -65,13 +67,14 @@ export function Beat({ section, beat, letter, stacked, rows, footer }: Props) {
   })
 
   return (
+    // The block is visual only (aria-hidden), except the action; it is unreachable while the block is
+    // hidden because applyLook sets visibility: hidden at zero opacity.
     <div
       ref={block}
-      aria-hidden="true"
       className="pointer-events-none fixed top-[16svh] left-[max(16px,7vw)] z-10 w-[min(500px,calc(100%_-_2*max(16px,7vw)))]"
       style={{ visibility: "hidden" }}
     >
-      <div ref={head}>
+      <div ref={head} aria-hidden="true">
         <p className="label m-0 text-starlight-dim">
           <span className="bayer mr-1">{letter}</span> · {beat.kicker}
         </p>
@@ -81,7 +84,7 @@ export function Beat({ section, beat, letter, stacked, rows, footer }: Props) {
           </ShimmerTitle>
         </div>
       </div>
-      <dl className="m-0 mt-6 grid">
+      <dl aria-hidden="true" className="m-0 mt-6 grid">
         {(rows ?? beat.rows).map(([k, v]) => (
           <div key={k} data-row data-fit className="grid grid-cols-[6.5rem_1fr] items-baseline gap-3 border-t border-starlight-faint py-3">
             <dt className="label text-starlight-dim">{k}</dt>
@@ -90,14 +93,19 @@ export function Beat({ section, beat, letter, stacked, rows, footer }: Props) {
         ))}
       </dl>
       {footer && (
-        <div data-row className="mt-4">
+        <div data-row aria-hidden="true" className="mt-4">
           {footer}
         </div>
       )}
       {beat.note && (
-        <p data-row className="label mt-4 mb-0 text-starlight-dim">
+        <p data-row aria-hidden="true" className="label mt-4 mb-0 text-starlight-dim">
           {beat.note}
         </p>
+      )}
+      {action && (
+        <div data-row className="pointer-events-auto mt-2">
+          {action}
+        </div>
       )}
     </div>
   )
