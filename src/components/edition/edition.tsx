@@ -11,6 +11,8 @@ import { Spread } from "../chapters/03-spread"
 import { spreadScene } from "../chapters/spread-scene"
 import { Trail } from "../chapters/04-trail"
 import { trailScene } from "../chapters/trail-scene"
+import { Hedge } from "../chapters/05-hedge"
+import { hedgeScene } from "../chapters/hedge-scene"
 import { sniffScene } from "../chapters/sniff-scene"
 import { Chapter } from "./chapter"
 import { ChapterIndex } from "./chapter-index"
@@ -20,7 +22,7 @@ import { SymbolCarousel } from "./symbol-carousel"
 import { useScrollFrame } from "./use-scroll-frame"
 
 /** Chapters with their own instrument and labels; the rest render as a plain <Chapter>. */
-const CHAPTER_VIEWS: Partial<Record<ChapterId, typeof Chapter>> = { sniff: Sniff, spread: Spread, trail: Trail }
+const CHAPTER_VIEWS: Partial<Record<ChapterId, typeof Chapter>> = { sniff: Sniff, spread: Spread, trail: Trail, hedge: Hedge }
 
 export function Edition() {
   useRequestSky("edition")
@@ -53,6 +55,7 @@ export function Edition() {
         ...sniffScene(s),
         ...spreadScene(s),
         ...trailScene(s),
+        ...hedgeScene(s),
       },
     })
   })
