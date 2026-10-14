@@ -213,7 +213,30 @@ export const CHAPTERS: ChapterDef[] = [
     enter: "rise",
     layout: "left",
   },
-  { id: "kennel", letter: "ζ", kicker: "The kennel", title: "The Kennel", subtitle: "Faster funding, worse manners.", length: "240svh", enter: "rise", layout: "left" },
+  {
+    id: "kennel",
+    letter: "ζ",
+    kicker: "The kennel",
+    title: "The Kennel",
+    subtitle: "Faster funding, worse manners.",
+    body: [
+      "Meme coins draw crowds that pile onto one side, so their funding tends to run hotter and swing faster. A fat rate that flips within the hour never pays, so here persistence has to earn the alert. The kennel is our own list of meme coins; the measurements below check whether it earns its name today.",
+    ],
+    out: [0.52, 0.6],
+    // The rows are live (medians, a verdict and the kennel coins), filled in by chapters/06-kennel.tsx.
+    beat: {
+      kicker: "Measured",
+      title: "The kennel, measured",
+      rows: [],
+      note: "Medians from the scanner · the kennel is our list, not the scanner's",
+      in: [0.62, 0.76],
+      out: [0.86, 1],
+    },
+    stacked: { out: [0.47, 0.53], beatIn: [0.82, 0.92], beatOut: [0.96, 1] },
+    length: "440svh",
+    enter: "rise",
+    layout: "left",
+  },
   { id: "embers", letter: "η", kicker: "Cold embers", title: "Cold Embers", subtitle: "Walked past on purpose.", length: "240svh", enter: "rise", layout: "left" },
   { id: "sky", letter: "θ", kicker: "The sky", title: "The Sky", subtitle: "Every coin, charted.", length: "220svh", enter: "rise", layout: "left" },
   { id: "den", letter: "ι", kicker: "The den", title: "The Den", subtitle: "A paper desk for a small research budget.", length: "220svh", enter: "rise", layout: "left" },
@@ -228,6 +251,33 @@ export const CHAPTERS: ChapterDef[] = [
     layout: "center",
   },
 ]
+
+/**
+ * ζ's kennel: our own editorial list of meme coins (owner-approved), matched with or without the
+ * exchanges' size prefix (1000PEPE → PEPE). Membership is a label, not a measurement, and is shown as such.
+ */
+export const KENNEL = [
+  "DOGE",
+  "SHIB",
+  "PEPE",
+  "FLOKI",
+  "BONK",
+  "WIF",
+  "BOME",
+  "MEME",
+  "POPCAT",
+  "NEIRO",
+  "TRUMP",
+  "FARTCOIN",
+  "PENGU",
+  "MOODENG",
+  "PNUT",
+  "GOAT",
+  "MEW",
+  "BRETT",
+  "TURBO",
+  "MOG",
+] as const
 
 /** Section id for a chapter's crawl-in region. */
 export const enterId = (id: ChapterId) => `${id}:enter`

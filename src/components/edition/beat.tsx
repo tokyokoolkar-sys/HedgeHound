@@ -1,7 +1,7 @@
 // A second copy beat in a chapter (PLAN §4.3): it takes the place of the chapter's first copy once that
 // has blurred out (ChapterDef.out), in the same left column. The heading resolves from blur, the ruled
 // rows rise in sequence, and the beat blurs out upward at the end. Scroll-locked and reversible.
-import { useRef, type ReactNode } from "react"
+import { useEffect, useRef, type ReactNode } from "react"
 import { band, smooth } from "@/lib/motion/math"
 import { BODY_BLUR, resolveIn } from "@/lib/motion/choreo"
 import type { Beat as BeatDef } from "@/content/edition"
@@ -25,6 +25,23 @@ type Props = {
 export function Beat({ section, beat, letter, stacked, rows, footer }: Props) {
   const block = useRef<HTMLDivElement>(null)
   const head = useRef<HTMLDivElement>(null)
+
+  // Fit the viewport: drop trailing rows (never the footer or the note) until the block clears the HUD
+  // line at the bottom. Lists here are always "top N", so a shorter list stays truthful.
+  const rowCount = (rows ?? beat.rows).length
+  useEffect(() => {
+    const el = block.current
+    if (!el) return
+    const fit = () => {
+      const items = Array.from(el.querySelectorAll<HTMLElement>("[data-fit]"))
+      items.forEach((it) => (it.hidden = false))
+      const limit = window.innerHeight - 72
+      for (let i = items.length - 1; i >= 2 && el.offsetTop + el.offsetHeight > limit; i--) items[i].hidden = true
+    }
+    fit()
+    window.addEventListener("resize", fit)
+    return () => window.removeEventListener("resize", fit)
+  }, [rowCount])
 
   useScrollFrame((s) => {
     const p = s.sections[section] ?? 0
@@ -66,7 +83,7 @@ export function Beat({ section, beat, letter, stacked, rows, footer }: Props) {
       </div>
       <dl className="m-0 mt-6 grid">
         {(rows ?? beat.rows).map(([k, v]) => (
-          <div key={k} data-row className="grid grid-cols-[6.5rem_1fr] items-baseline gap-3 border-t border-starlight-faint py-3">
+          <div key={k} data-row data-fit className="grid grid-cols-[6.5rem_1fr] items-baseline gap-3 border-t border-starlight-faint py-3">
             <dt className="label text-starlight-dim">{k}</dt>
             <dd className="text-body m-0 text-starlight">{v}</dd>
           </div>
