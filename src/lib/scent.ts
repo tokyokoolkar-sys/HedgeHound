@@ -3,8 +3,8 @@
  *
  * Split (T40):
  *  - LAYOUT: sector, 3D position and blurb per coin, plus LINKS (art direction).
- *  - SAMPLE: static figures. `allRows()`, `boardRows()`, `trailFor()`, `CLOSED`, `REBALANCE`
- *    and `OPEN_SEED` are all derived from or part of the sample and are SAMPLE data.
+ *  - SAMPLE: static figures. `allRows()`, `boardRows()` and `trailFor()` are derived from the sample
+ *    and are SAMPLE data. (The sample paper book of trades was deleted in T34: Phase 0 records none.)
  *    `trailFor()` synthesizes its points from a seeded RNG; it never reads a measurement.
  *  - Live data lives in `src/lib/scan`.
  */
@@ -15,7 +15,6 @@ export const MIN_OI = 50_000
 export const CAPITAL = 20
 export const KILL_LOSS = CAPITAL * 0.25
 export const SETTINGS_KEY = "hedgehound.book"
-export const WATCH_KEY = "hedgehound.watch"
 
 export type Venue = "Lighter" | "Binance"
 export type Sector = "canis" | "hedge" | "kennel" | "embers"
@@ -382,108 +381,6 @@ export function readBook(): BookSettings {
 
 export function writeBook(book: BookSettings) {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(book))
-}
-
-export function readWatch(): string[] {
-  if (typeof localStorage === "undefined") return []
-  try {
-    const raw = localStorage.getItem(WATCH_KEY)
-    const list = raw ? (JSON.parse(raw) as unknown) : []
-    if (!Array.isArray(list)) return []
-    return list.filter((x) => typeof x === "string")
-  } catch {
-    return []
-  }
-}
-
-export function writeWatch(list: string[]) {
-  localStorage.setItem(WATCH_KEY, JSON.stringify(list))
-}
-
-export type ClosedTrade = {
-  symbol: string
-  hours: number
-  long: Venue
-  short: Venue
-  funding: number
-  expected: number
-  pricePnl: number
-  variable: number
-  exit: string
-  adverse: number
-}
-
-/** SAMPLE: fabricated closed trades. Not the owner's paper book. */
-export const CLOSED: ClosedTrade[] = [
-  { symbol: "WIF", hours: 54, long: "Binance", short: "Lighter", funding: 0.074, expected: 0.11, pricePnl: 0.012, variable: 0.06, exit: "Net fell under half the entry", adverse: 4.2 },
-  { symbol: "OP", hours: 41, long: "Binance", short: "Lighter", funding: 0.041, expected: 0.07, pricePnl: -0.018, variable: 0.06, exit: "Sign flipped and held 3 hours", adverse: 9.1 },
-  { symbol: "TIA", hours: 80, long: "Binance", short: "Lighter", funding: 0.088, expected: 0.1, pricePnl: 0.006, variable: 0.06, exit: "Spread cooled under the bar", adverse: 3.4 },
-  { symbol: "SEI", hours: 36, long: "Lighter", short: "Binance", funding: 0.052, expected: 0.09, pricePnl: -0.033, variable: 0.06, exit: "Mark moved hard — early warning, not a liquidation", adverse: 14.0 },
-  { symbol: "INJ", hours: 62, long: "Lighter", short: "Binance", funding: 0.066, expected: 0.08, pricePnl: 0.015, variable: 0.06, exit: "Net fell under half the entry", adverse: 6.2 },
-  { symbol: "NEAR", hours: 28, long: "Binance", short: "Lighter", funding: 0.031, expected: 0.06, pricePnl: -0.009, variable: 0.06, exit: "Sign flipped and held 3 hours", adverse: 8.4 },
-]
-
-/** SAMPLE: fabricated rebalance log. */
-export const REBALANCE = [
-  { when: "12 Oct · 02:10", amount: 8, cost: 1, reason: "Top up the short leg" },
-]
-
-/** SAMPLE: fabricated open positions. */
-export const OPEN_SEED = [
-  {
-    symbol: "ARB",
-    settledHours: 18,
-    long: "Binance" as Venue,
-    short: "Lighter" as Venue,
-    spreadHr: 0.000082,
-    pricePnl: -0.012,
-    notional: 20,
-    watch: "Still above half the entry spread. Forced review at 7 days.",
-  },
-  {
-    symbol: "SUI",
-    settledHours: 9,
-    long: "Lighter" as Venue,
-    short: "Binance" as Venue,
-    spreadHr: -0.000074,
-    pricePnl: 0.008,
-    notional: 20,
-    watch: "No sign flip. Mark still inside the 20% early-warning band.",
-  },
-]
-
-export const ENTRY_COST_PCT = 0.0015
-
-export function openFunding(spreadHr: number, notional: number, settledHours: number) {
-  return Math.abs(spreadHr) * notional * settledHours
-}
-
-export function closedStats() {
-  const nets = CLOSED.map((t) => t.funding + t.pricePnl - t.variable)
-  const total = nets.reduce((a, b) => a + b, 0)
-  const wins = nets.filter((n) => n > 0).length
-  const avgHold = CLOSED.reduce((a, t) => a + t.hours, 0) / CLOSED.length
-  const ratios = CLOSED.map((t) => t.funding / t.expected).sort((a, b) => a - b)
-  const mid = ratios.length / 2
-  const medianRatio =
-    ratios.length % 2 === 0
-      ? ((ratios[mid - 1] ?? 0) + (ratios[mid] ?? 0)) / 2
-      : (ratios[Math.floor(mid)] ?? 0)
-  const fixed = REBALANCE.reduce((a, r) => a + r.cost, 0)
-  const worst = Math.max(...CLOSED.map((t) => t.adverse))
-  return {
-    nets,
-    total,
-    wins,
-    n: CLOSED.length,
-    avgHold,
-    medianRatio,
-    ratioLo: ratios[0] ?? 0,
-    ratioHi: ratios[ratios.length - 1] ?? 0,
-    worst,
-    fixed,
-    afterFixed: total - fixed,
-  }
 }
 
 export function money(n: number, digits = 2) {

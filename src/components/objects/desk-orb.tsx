@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 import { smooth } from "@/lib/motion/math"
 import { useScan } from "@/lib/scan/use-scan"
-import { ORB_R, clearsBar, pocketSpot } from "@/lib/stage/den"
+import { ORB_R, clearsBar, denAnchor, pocketSpot } from "@/lib/stage/den"
 import { instrumentLayout, layoutToWorld, mixLayout, tucked } from "@/lib/stage/layout"
 import { useStage } from "@/lib/stage/store"
 import { glassMaterial } from "../stage/glass"
@@ -80,7 +80,14 @@ export function DeskOrb() {
     if (!g.visible) return
 
     const layout = instrumentLayout(size.width, size.height)
-    const placed = layout.mode === "narrow" ? mixLayout(tucked(layout, size.height), layout, smooth(sc.denFocus)) : layout
+    // /den: over its anchor element (the box's shorter side is the orb's layout diameter).
+    const box = s.mode === "den" ? denAnchor.el?.getBoundingClientRect() : undefined
+    // denFocus there is the glide from ι's spot (0) into the box (1).
+    const placed = box
+      ? mixLayout(layout, { ...layout, cx: box.left + box.width / 2, cy: box.top + box.height / 2, r: Math.min(box.width, box.height) / 2 }, smooth(sc.denFocus))
+      : layout.mode === "narrow"
+        ? mixLayout(tucked(layout, size.height), layout, smooth(sc.denFocus))
+        : layout
     const at = layoutToWorld(placed, size.width, size.height)
     const appear = sc.denAppear
     const away = smooth(sc.denAway)

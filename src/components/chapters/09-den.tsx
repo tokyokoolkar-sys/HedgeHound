@@ -1,9 +1,10 @@
 // ι The Den (PLAN §3 ι, TICKETS T26). Owner decisions: (a) the book's settings (PAPER) and a live count of
-// what clears that bar, no invented results; (b) the orb's pocket sky is exactly those coins; (c) no "Open
-// the den" link until T34 restyles /den; (d) the year of what-ifs is a one-line pointer, no numbers.
+// what clears that bar, no invented results; (b) the orb's pocket sky is exactly those coins; (c) "Open
+// the den →" under the book (T34); (d) the year of what-ifs is a one-line pointer, no numbers.
 // - copy: <Chapter> (a paper desk; no order code in Phase 0), then "Your book": the settings (PAPER, or the
 //   defaults, said as such) and the coins clearing the bar now (LIVE/SAMPLE);
 // - instrument: objects/desk-orb.tsx, channels in den-scene.ts; one caption pinned beside it.
+import { Link } from "@tanstack/react-router"
 import { useRef, type ReactNode } from "react"
 import { CAPITAL } from "@/lib/scent"
 import { formatNet } from "@/lib/scan/loudest"
@@ -63,7 +64,7 @@ export function Den({ def, exitInto, last }: Props) {
     <span className="grid justify-items-start gap-2">
       <SourceTag kind="paper" className="text-starlight" />
       <span className="label text-starlight-dim">{saved ? "your settings, saved in this browser" : "the defaults: nothing saved in this browser yet"}</span>
-      <span className="label text-starlight-dim">a year of what-ifs runs in the den: a simulation, not a forecast</span>
+      <span className="label text-starlight-dim">a year of what-ifs runs in the den: simulated, not a forecast</span>
     </span>
   )
 
@@ -78,6 +79,11 @@ export function Den({ def, exitInto, last }: Props) {
           stacked={def.stacked && { in: def.stacked.beatIn, out: def.stacked.beatOut }}
           rows={rows}
           footer={footer}
+          action={
+            <Link to="/den" className="label inline-flex min-h-11 items-center text-starlight underline decoration-starlight-faint decoration-1 underline-offset-[6px] hover:decoration-starlight focus-visible:text-scan">
+              Open the den →
+            </Link>
+          }
         />
       )}
       {/* The book as text for screen readers (the beat above is visual only). */}

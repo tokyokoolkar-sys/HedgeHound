@@ -3,7 +3,6 @@
 // The column header sits outside the scrolling rows, so rows clip crisply at its hairline instead of
 // sliding under it (no band, no fade). Rows open the coin on the sky.
 import { Link, useNavigate } from "@tanstack/react-router"
-import { Slider } from "radix-ui"
 import { useEffect, useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
 import { useRequestSky } from "@/lib/stage/request-sky"
@@ -12,6 +11,7 @@ import { SHAKY_BELOW } from "@/lib/stage/field"
 import { DEFAULT_SCAN_PARAMS, type ScanRow } from "@/lib/scan/types"
 import { useScan } from "@/lib/scan/use-scan"
 import { MIN_RANGE, OK_SAMPLES, firstDir, formatFlip, nextSort, pct, tableRows, type ScannerSearch, type SortKey, type StatusFilter } from "@/lib/scan/table"
+import { HairlineSlider } from "../controls/hairline-slider"
 import { SourceTag } from "../edition/source-tag"
 import { SKY_ROUTE } from "../nav/coin-search"
 
@@ -335,31 +335,17 @@ function Cell({ children, num, at }: { children: ReactNode; num?: boolean; at?: 
   )
 }
 
-/** The net floor: a hairline slider; the far left means no floor ("any"). */
+/** The net floor: the shared hairline slider; the far left means no floor ("any"). */
 function NetFloor({ value, onChange }: { value: number | undefined; onChange: (v: number | undefined) => void }) {
-  const v = value ?? MIN_RANGE[0]
-  const text = value == null ? "any" : `≥ ${pct(value)}`
   return (
-    <div className="flex items-center gap-4">
-      <span id="net-floor" className="label text-starlight-dim">
-        net
-      </span>
-      <Slider.Root
-        aria-labelledby="net-floor"
-        min={MIN_RANGE[0]}
-        max={MIN_RANGE[1]}
-        step={1}
-        value={[v]}
-        onValueChange={([n]) => onChange(n <= MIN_RANGE[0] ? undefined : n)}
-        className="relative flex h-11 w-40 touch-none items-center select-none"
-      >
-        <Slider.Track className="relative h-px grow bg-starlight-faint" />
-        <Slider.Thumb
-          aria-valuetext={text}
-          className="block size-3 rounded-full border border-starlight bg-void outline-none focus-visible:border-scan focus-visible:ring-1 focus-visible:ring-scan"
-        />
-      </Slider.Root>
-      <span className="label w-[8ch] tabular-nums text-starlight">{text}</span>
-    </div>
+    <HairlineSlider
+      label="net"
+      min={MIN_RANGE[0]}
+      max={MIN_RANGE[1]}
+      step={1}
+      value={value ?? MIN_RANGE[0]}
+      text={value == null ? "any" : `≥ ${pct(value)}`}
+      onChange={(n) => onChange(n <= MIN_RANGE[0] ? undefined : n)}
+    />
   )
 }

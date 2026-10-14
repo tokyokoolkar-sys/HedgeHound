@@ -41,6 +41,12 @@ export function pocketSpot(symbol: string): [number, number, number] {
   return [r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta)]
 }
 
+/**
+ * /den (T34) places the orb over a DOM element of its own (beside the desk on wide screens, under the header on
+ * phones, scrolling with the page). The Edition leaves this null and uses the instrument layout.
+ */
+export const denAnchor: { el: { getBoundingClientRect(): { left: number; top: number; width: number; height: number } } | null } = { el: null }
+
 /** True when the saved book is exactly the defaults (or nothing is saved). */
 export const isDefaultBook = (book: BookSettings, defaults: BookSettings) =>
   book.minNet === defaults.minNet && book.hold === defaults.hold && book.lev === defaults.lev && book.cost === defaults.cost
