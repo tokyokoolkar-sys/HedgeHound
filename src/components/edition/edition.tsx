@@ -9,6 +9,8 @@ import { useRequestSky } from "@/lib/stage/request-sky"
 import { Sniff } from "../chapters/02-sniff"
 import { Spread } from "../chapters/03-spread"
 import { spreadScene } from "../chapters/spread-scene"
+import { Trail } from "../chapters/04-trail"
+import { trailScene } from "../chapters/trail-scene"
 import { sniffScene } from "../chapters/sniff-scene"
 import { Chapter } from "./chapter"
 import { ChapterIndex } from "./chapter-index"
@@ -18,7 +20,7 @@ import { SymbolCarousel } from "./symbol-carousel"
 import { useScrollFrame } from "./use-scroll-frame"
 
 /** Chapters with their own instrument and labels; the rest render as a plain <Chapter>. */
-const CHAPTER_VIEWS: Partial<Record<ChapterId, typeof Chapter>> = { sniff: Sniff, spread: Spread }
+const CHAPTER_VIEWS: Partial<Record<ChapterId, typeof Chapter>> = { sniff: Sniff, spread: Spread, trail: Trail }
 
 export function Edition() {
   useRequestSky("edition")
@@ -50,6 +52,7 @@ export function Edition() {
         // Chapters with an instrument map their own channels (β is the reference).
         ...sniffScene(s),
         ...spreadScene(s),
+        ...trailScene(s),
       },
     })
   })

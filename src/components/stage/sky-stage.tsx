@@ -14,6 +14,7 @@ import { afterScroll } from "@/lib/motion/scroll-bus"
 import { palette } from "@/lib/palette"
 import { useStage, type Quality } from "@/lib/stage/store"
 import { CanisMajor } from "../objects/canis-major"
+import { CometTrail } from "../objects/comet-trail"
 import { GlassHound } from "../objects/glass-hound"
 import { HedgeAstrolabe } from "../objects/hedge-astrolabe"
 import { Radar } from "../objects/radar"
@@ -58,6 +59,7 @@ export default function SkyStage() {
           {labelHost && <CanisMajor labelHost={labelHost} />}
           <Radar />
           <HedgeAstrolabe />
+          <CometTrail />
           <CameraRig />
           <Projector />
           <Effects />

@@ -38,6 +38,14 @@ export type Scene = {
   legLabels: number
   spreadSwing: number
   astroAway: number
+  /** δ comet trail: shown, arrival, stacked focus, the head replaying the day (0..1), the flip tick and the
+   *  six-hour bracket with their labels, recede. */
+  trailOn: number
+  trailAppear: number
+  trailFocus: number
+  trailDraw: number
+  trailMarks: number
+  trailAway: number
   /** Distance flown through the dust layers (grows with scroll; drives parallax). */
   flight: number
 }
@@ -63,6 +71,12 @@ export const EMPTY_SCENE: Scene = {
   legLabels: 0,
   spreadSwing: 0,
   astroAway: 0,
+  trailOn: 0,
+  trailAppear: 0,
+  trailFocus: 0,
+  trailDraw: 0,
+  trailMarks: 0,
+  trailAway: 0,
   flight: 0,
 }
 
