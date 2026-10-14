@@ -219,6 +219,9 @@ Every live coin across the whole sky at a fixed spot from its symbol; the spots 
 ### Den orb (ι)
 A small orb in the hound's glass (shared `components/stage/glass.ts`), tuned to a crisp edge only: no grey body, no highlight bloom, and no stars "seen through" it, because everything inside is real data. Its pocket sky is exactly the live clean coins that clear the paper book's bar (net at the book's own hold and cost, ≥ its minimum), in scent orange; with none, the orb is empty. It turns with the scroll. The second beat "The paper book" shows the book's settings tagged PAPER (or says they are the defaults when nothing is saved) and the coins clearing the bar now, tagged LIVE/SAMPLE. No paper results are shown, because Phase 0 records none.
 
+### Ledger (κ)
+The last chapter. The background sky dims to almost nothing with the scroll and Sirius stands alone above the closing lines, labelled with its real J2000 position (the HUD's home coordinate). "Paper only." and the disclaimer sit mid-screen; nothing blurs out after them. The ledger footer is real, focusable page content, quiet mono lines with no box: where the figures come from (in words, with a SourceTag), the scanner's address, "Phase 0 · paper only · no order code · no exchange keys", the nav's links, "↑ back to the overture" (mirroring the overture's "↓ α"), ©. The HUD's source line steps back while the ledger states it. The last section can only scroll until its bottom meets the viewport's, so κ's choreography finishes inside that range.
+
 ### Coin labels (radar)
 The symbol in starlight-dim mono and the net APR in starlight, or in orange when alerting. Only the loudest positive spreads (five, three on phones), never two labels that touch, never the featured coin. Labels point inward so they never leave the screen. Projected from the 3D radar each frame as plain DOM, never drei `<Html>` (see Don'ts).
 

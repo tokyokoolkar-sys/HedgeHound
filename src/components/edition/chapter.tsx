@@ -143,7 +143,7 @@ export function Chapter({ def, exitInto, last, children }: Props) {
 
   const position =
     def.layout === "center"
-      ? "inset-x-0 bottom-[16svh] flex flex-col items-center px-4 text-center"
+      ? cn("inset-x-0 flex flex-col items-center px-4 text-center", def.anchor === "top" ? "top-[36svh]" : "bottom-[16svh]")
       : def.anchor === "bottom"
         ? "left-[max(16px,7vw)] bottom-[9svh] w-[min(500px,calc(100%_-_2*max(16px,7vw)))]"
         : "left-[max(16px,7vw)] top-[16svh] w-[min(500px,calc(100%_-_2*max(16px,7vw)))]"

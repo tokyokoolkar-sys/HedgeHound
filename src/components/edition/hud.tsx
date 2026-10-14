@@ -16,6 +16,7 @@ const RISING = CHAPTERS.filter((c) => c.enter === "rise")
 export function Hud() {
   const hud = useRef<HTMLDivElement>(null)
   const coord = useRef<HTMLSpanElement>(null)
+  const status = useRef<HTMLSpanElement>(null)
   const scan = useScan()
   useScrollFrame((s) => {
     if (coord.current) coord.current.textContent = formatCoordinate(s.reduced ? 0 : s.pointer[0], s.reduced ? 0 : s.pointer[1])
@@ -29,12 +30,15 @@ export function Hud() {
       }
     }
     applyLook(hud.current, { opacity: 1 - passing, y: 0, blur: 0 })
+    // κ's ledger states the source itself, right above; the HUD's line steps back there.
+    const ledger = s.sections.ledger ?? 0
+    applyLook(status.current, { opacity: s.reduced ? (ledger > 0 ? 0 : 1) : 1 - band(ledger, 0.15, 0.3), y: 0, blur: 0 })
   })
   return (
     <div ref={hud} className="label pointer-events-none fixed bottom-5 left-[max(16px,7vw)] z-20 flex items-baseline gap-4 text-starlight-dim">
       <span ref={coord}>{formatCoordinate(0, 0)}</span>
       {!scan.loading && (
-        <span className="hidden items-baseline gap-2 md:inline-flex">
+        <span ref={status} className="hidden items-baseline gap-2 md:inline-flex">
           {scan.live ? "scanner live" : "scanner offline · showing a sample"}
           <SourceTag kind={scan.live ? "live" : "sample"} ts={scan.ts ?? undefined} stale={scan.stale} className="text-starlight" />
         </span>
