@@ -135,7 +135,7 @@ function MiniSky({ rows }: { rows: Row[] }) {
       {rows.map((r) => (
         <Link
           key={r.symbol}
-          to="/universe"
+          to="/sky"
           search={{ star: r.symbol }}
           aria-label={`${r.symbol}${r.alert ? ", scent" : ""}`}
           className="absolute flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center"
@@ -286,10 +286,10 @@ export function DenDesk() {
           </div>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-v1-muted">{featured.note}</p>
           <div className="mt-4 flex flex-wrap gap-3">
-            <Link to="/universe" search={{ star: featured.symbol }} className={btn}>
+            <Link to="/sky" search={{ star: featured.symbol }} className={btn}>
               Zoom {featured.symbol} in the sky
             </Link>
-            <Link to="/universe" className={btnGhost}>
+            <Link to="/sky" className={btnGhost}>
               Wander
             </Link>
           </div>
@@ -346,7 +346,7 @@ export function DenDesk() {
             {rows.map((r) => (
               <tr key={r.symbol} className="border-b border-line/70">
                 <td className="px-3 py-3 font-extrabold">
-                  <Link to="/universe" search={{ star: r.symbol }} className="inline-flex min-h-11 items-center gap-2">
+                  <Link to="/sky" search={{ star: r.symbol }} className="inline-flex min-h-11 items-center gap-2">
                     {r.symbol}
                     {r.alert ? <span className="text-brand">scent</span> : null}
                   </Link>
@@ -373,7 +373,7 @@ export function DenDesk() {
         {rows.map((r) => (
           <li key={r.symbol} className="rounded-card border border-line bg-surface/70 p-4">
             <div className="flex items-baseline justify-between gap-3">
-              <Link to="/universe" search={{ star: r.symbol }} className="font-sans text-xl font-extrabold">
+              <Link to="/sky" search={{ star: r.symbol }} className="font-sans text-xl font-extrabold">
                 {r.symbol}
               </Link>
               <span className={cn("font-sans text-2xl font-extrabold", r.alert ? "text-brand" : "text-fg")}>{r.netApr.toFixed(1)}%</span>

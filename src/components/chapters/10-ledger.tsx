@@ -22,7 +22,7 @@ type Props = { def: ChapterDef; exitInto?: string; last?: boolean }
 
 const LINKS = [
   { to: "/", label: "Edition" },
-  { to: "/universe", label: "Sky" },
+  { to: "/sky", label: "Sky" },
   { to: "/den", label: "Den" },
 ] as const
 

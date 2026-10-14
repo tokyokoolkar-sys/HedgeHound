@@ -387,3 +387,19 @@
   --sidebar-border: rgb(244 241 234 / 0.14);
   --sidebar-ring: var(--color-scan);
 }
+
+/* /sky (T33): the page's own words arrive once, rising a little, when the field has carried on from θ. */
+@keyframes sky-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+.sky-arrive {
+  animation: sky-arrive 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.35s both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sky-arrive {
+    animation: none;
+  }
+}
