@@ -121,11 +121,11 @@ npm i @fontsource-variable/bricolage-grotesque @fontsource-variable/jetbrains-mo
 ## P3 — Chapters [S] (start from tag `foundation-v1`; each one touches only its listed files)
 Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), `useScan()` for data, `SourceTag` on every figure. Before handing in, run Impeccable's audit on your chapter and fix what it finds within your files.
 
-### T20 III Spread
-- Files: `chapters/03-spread.tsx`, `objects/hedge-astrolabe.tsx`.
-- Astrolabe: coin core (beveled cylinder, metal; transmission on high), ring A (`--scan`, long) and ring B (`--scent`, short) counter-rotating; 48 instanced tick marks. Scroll 0.2→0.7: rings slide apart ±1.4 units on x, drei `Html` labels "LONG · {venue}" / "SHORT · {venue}" from the live top row's `long/short`.
-- Sheet: magicui AnimatedBeam (Lighter ⇄ coin ⇄ Binance), the 4 CARDS (copy from old `hero-film.tsx`), a live "loudest clean scent" card (top `status==="ok"` row, NumberTicker on net APR).
-- **Accept:** rings separate smoothly at 60fps high; labels match live data; SAMPLE tag when offline.
+### T20 III Spread (rescoped to the Almagest direction, owner-approved a/b/c)
+- Files: `chapters/03-spread.tsx`, `chapters/spread-scene.ts`, `objects/hedge-astrolabe.tsx`, `lib/stage/astrolabe.ts` (+ test); shared layout moved to `lib/stage/layout.ts`.
+- Astrolabe in thin lines (a), rotation scroll-locked (b), the "price cancels" swing included (c). Leg labels and the live legs list from the loudest scent's row; one SourceTag per group.
+- No cards, no AnimatedBeam, no NumberTicker, no drei `Html` (DESIGN.md).
+- **Accept:** legs separate and swing smoothly; labels match live data; SAMPLE tag when offline; stacked layout takes turns on phones.
 
 ### T21 IV Trail
 - Files: `chapters/04-trail.tsx`, `objects/comet-trail.tsx`.
@@ -235,7 +235,8 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T13 | O | done | building blocks + Edition skeleton on `/` (legacy home at /v1), new global nav; notes/T13.md |
 | T14 | O | done | Overture (CSS load intro, decision b) + α timing + α→β carousel with net APR; void page bg; notes/T14.md |
 | T15 | O | done | β Sniff + radar (meaningful axes: half = short venue, radius = signed net), reading, second beat; full Impeccable critique (17/28) folded into the primitives; 345 tests; branch T15-sniff (notes/T15.md) |
-| T20–T27 | S | todo | |
+| T20 | O | done | γ Spread: astrolabe (thin lines, scroll-locked turn, price swing), definition of the spread + 3 steps, live legs beat; layout shared in lib/stage/layout.ts; 352 tests; branch T20-spread (notes/T20.md) |
+| T21–T27 | S | todo | |
 | T30–T35 | S/H | todo | |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |

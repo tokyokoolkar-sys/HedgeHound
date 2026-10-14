@@ -5,10 +5,10 @@
 //   within its half a coin keeps a bearing hashed from its symbol, so it holds still across refreshes;
 // - radius: signed net APR. The outer ring is break-even; louder spreads sit nearer the centre, and
 //   spreads that lose after costs sit just outside the ring, dimmed and unlabelled.
-import type { Point3 } from "./projector.ts"
+import { INSTRUMENT_EXTENT, frameToWorld, makeFrame, type DockMode } from "./layout.ts"
 
 /** Outer ring radius (break-even), in the radar's local units. */
-export const R_OUT = 3.6
+export const R_OUT = INSTRUMENT_EXTENT
 /** Most coins drawn on the radar. */
 export const RADAR_MAX = 40
 
@@ -69,82 +69,13 @@ export function topCoins(placed: RadarCoin[], exclude: string | null, n = 5) {
   return out
 }
 
-export type DockMode = "right" | "below"
-
 /** Where the reading docks, in radar units: right of the ring, or centred below it. */
 export function dockFor(anchor: RadarCoin, mode: DockMode): [number, number] {
   return mode === "below" ? [0, -R_OUT - 0.45] : [R_OUT + 0.4, Math.max(-1.6, Math.min(1.6, anchor.y))]
 }
 
-export type RadarLayout = {
-  mode: "wide" | "mid" | "narrow"
-  dock: DockMode
-  /** Centre and outer-ring radius in CSS px. */
-  cx: number
-  cy: number
-  r: number
-  labels: number
-}
-
-/** Space kept for the reading beside the ring (its widest line is the symbol in title type). */
-const READING_W = 260
-
-/**
- * Where the radar sits for a viewport (CSS px). Desktop keeps it clear of the copy column
- * (gutter + 500 px) with the reading docked to the right; when that leaves too small a ring, the
- * reading moves below it; phones stack it under the copy.
- */
-export function radarLayout(w: number, h: number): RadarLayout {
-  const gutter = Math.max(16, 0.07 * w)
-  // Stacked: this is the featured state (the radar on its own, caption above, reading below);
-  // `tucked` gives the small rings-only state under the copy that it grows from.
-  const stacked = (): RadarLayout => {
-    const r = Math.min(0.4 * w, 0.19 * h, w < 768 ? 170 : 220)
-    return { mode: "narrow", dock: "below", cx: w / 2, cy: 0.44 * h, r, labels: w < 768 ? 3 : 5 }
-  }
-  if (w < 768) return stacked()
-  const left = gutter + Math.min(500, w - 2 * gutter) + 48
-  const wideRight = w - gutter - READING_W
-  const wideR = Math.min((wideRight - left) / 2 - 16, 0.3 * h)
-  if (wideR >= 170) return { mode: "wide", dock: "right", cx: (left + wideRight) / 2, cy: 0.5 * h, r: wideR, labels: 5 }
-  const right = w - gutter
-  const r = Math.min((right - left) / 2 - 12, 0.27 * h)
-  // Too little room beside the copy (portrait tablets): stack it like a phone.
-  if (r < 120) return stacked()
-  return { mode: "mid", dock: "below", cx: (left + right) / 2, cy: 0.42 * h, r, labels: 5 }
-}
-
-/** Stacked layouts only: the small rings-only radar under the copy, before it is featured. */
-export function tucked(l: RadarLayout, h: number): RadarLayout {
-  const r = l.r * 0.6
-  return { ...l, r, cy: 0.58 * h + r }
-}
-
-/** Blend two layouts (position and size), t = 0 → a, 1 → b. */
-export function mixLayout(a: RadarLayout, b: RadarLayout, t: number): RadarLayout {
-  const m = (x: number, y: number) => x + (y - x) * t
-  return { ...b, cx: m(a.cx, b.cx), cy: m(a.cy, b.cy), r: m(a.r, b.r) }
-}
-
-/** The stacked (phone) arrangement: copy steps take turns and the radar leaves before the second beat. */
-export const isStacked = (w: number, h: number) => radarLayout(w, h).mode === "narrow"
-
-/** World-space centre and scale for a layout, on the z = 0 plane of the default camera (z 10, fov 45). */
-export function layoutToWorld(l: RadarLayout, w: number, h: number) {
-  const unit = h / (2 * 10 * Math.tan((45 / 2) * (Math.PI / 180)))
-  return { x: (l.cx - w / 2) / unit, y: (h / 2 - l.cy) / unit, scale: l.r / (R_OUT * unit) }
-}
-
-/**
- * The radar's local → world transform, written by the 3D radar every frame before the Projector runs,
- * so projected labels can pin themselves to radar coordinates. `matrix` is column-major (three.js order).
- */
-export const radarFrame: { matrix: ArrayLike<number> | null; visible: boolean } = { matrix: null, visible: false }
+/** The radar's transform, published by objects/radar.tsx every frame (see layout.ts). */
+export const radarFrame = makeFrame()
 
 /** A radar-local point in world space, or null while the radar is hidden. */
-export function radarToWorld(x: number, y: number, frame = radarFrame): Point3 | null {
-  const m = frame.matrix
-  if (!frame.visible || !m) return null
-  const w = m[3] * x + m[7] * y + m[15] || 1
-  return [(m[0] * x + m[4] * y + m[12]) / w, (m[1] * x + m[5] * y + m[13]) / w, (m[2] * x + m[6] * y + m[14]) / w]
-}
+export const radarToWorld = (x: number, y: number) => frameToWorld(radarFrame, x, y)

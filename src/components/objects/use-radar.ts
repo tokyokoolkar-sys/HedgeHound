@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react"
 import { pickLoudest } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"
-import { placeCoins, radarLayout, type RadarLayout } from "@/lib/stage/radar"
+import { instrumentLayout, type InstrumentLayout } from "@/lib/stage/layout"
+import { placeCoins } from "@/lib/stage/radar"
 
 export function useRadar() {
   const scan = useScan()
@@ -16,11 +17,11 @@ export function useRadar() {
   return { scan, ...data }
 }
 
-/** The radar's layout for the current viewport, in step with the 3D radar (same pure function). */
-export function useRadarLayout() {
-  const [layout, setLayout] = useState<RadarLayout>(() => radarLayout(1440, 900))
+/** The instrument layout for the current viewport, in step with the 3D objects (same pure function). */
+export function useInstrumentLayout() {
+  const [layout, setLayout] = useState<InstrumentLayout>(() => instrumentLayout(1440, 900))
   useEffect(() => {
-    const on = () => setLayout(radarLayout(document.documentElement.clientWidth, window.innerHeight))
+    const on = () => setLayout(instrumentLayout(document.documentElement.clientWidth, window.innerHeight))
     on()
     window.addEventListener("resize", on)
     return () => window.removeEventListener("resize", on)

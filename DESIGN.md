@@ -198,6 +198,9 @@ A cyan Greek letter, plus the proper name in faint mono capitals for named stars
 ### Radar (β)
 Every axis means something (owner decision, T15 critique): **the half** is the venue carrying the short leg (right = short Lighter, left = short Binance; within its half a coin keeps a bearing hashed from its symbol), and **the radius** is signed net APR, with the outer ring at break-even, louder spreads nearer the centre, and spreads that lose after costs just outside the ring, dimmed and unlabelled. Alerting (clean) coins are scent orange, never overdriven toward red. A caption names it and tags its figures, with a one-line mono key ("centre = louder · ring = break-even · ● clean scent"), and the two halves carry small captions. The cyan sweep and its pings are the chapter's one piece of ambient motion.
 
+### Astrolabe (γ)
+One coin, two legs, in thin lines like the radar: a cyan ring (the long leg) inside an orange ring (the short leg), 48 ticks each, around the coin's star. As you scroll the rings counter-rotate, then slide apart into the two venues; a starlight hairline joins the two stars (the spread). Then a price swing carries both legs up and down together while the hairline keeps its length ("price moves both legs · the gap stays"). Everything is scroll-locked. The coin is the same loudest scent β featured; leg labels (`long · Binance`, `short · Lighter`) come from live data, and a caption tags them.
+
 ### Coin labels (radar)
 The symbol in starlight-dim mono and the net APR in starlight, or in orange when alerting. Only the loudest positive spreads (five, three on phones), never two labels that touch, never the featured coin. Labels point inward so they never leave the screen. Projected from the 3D radar each frame as plain DOM, never drei `<Html>` (see Don'ts).
 

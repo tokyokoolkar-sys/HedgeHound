@@ -28,6 +28,16 @@ export type Scene = {
   radarLabels: number
   reading: number
   radarAway: number
+  /** γ astrolabe: shown, arrival, stacked focus, scroll turn (0..1 = the chapter), legs split apart,
+   *  leg labels, the price swing, recede. */
+  astroOn: number
+  astroAppear: number
+  astroFocus: number
+  astroTurn: number
+  spreadSplit: number
+  legLabels: number
+  spreadSwing: number
+  astroAway: number
   /** Distance flown through the dust layers (grows with scroll; drives parallax). */
   flight: number
 }
@@ -45,6 +55,14 @@ export const EMPTY_SCENE: Scene = {
   radarLabels: 0,
   reading: 0,
   radarAway: 0,
+  astroOn: 0,
+  astroAppear: 0,
+  astroFocus: 0,
+  astroTurn: 0,
+  spreadSplit: 0,
+  legLabels: 0,
+  spreadSwing: 0,
+  astroAway: 0,
   flight: 0,
 }
 
