@@ -1,7 +1,7 @@
 // ι's scene channels (kept apart from the chapter's components so fast refresh keeps working).
 import { band } from "@/lib/motion/math"
 import { isStacked } from "@/lib/stage/layout"
-import { arrival, departure, useRhythm } from "@/lib/stage/rhythm"
+import { arrival, departure, EDITION, RHYTHM } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 
 type DenChannels = Pick<Scene, "denOn" | "denAppear" | "denFocus" | "denTurn" | "denLabels" | "denAway">
@@ -14,7 +14,8 @@ type DenChannels = Pick<Scene, "denOn" | "denAppear" | "denFocus" | "denTurn" | 
 export function denScene(s: StageState): DenChannels {
   const p = s.sections.den ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const { rhythm, defs } = useRhythm.getState()
+  const rhythm = RHYTHM
+  const defs = EDITION
   const arr = arrival(s.sections, defs, "den", rhythm)
   const dep = departure(s.sections, defs, "den", rhythm)
   const denOn = arr.started && (stacked ? p < 0.78 : dep.until) ? 1 : 0

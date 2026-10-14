@@ -228,6 +228,9 @@ The symbol in starlight-dim mono and the net APR in starlight, or in orange when
 ### The reading
 The loudest coin, called out from the radar. A thin leader line draws from the coin to outside the ring. Then a caption ("LOUDEST CLEAN SCENT"), the symbol in display type, the net APR as a figure and a SourceTag gather out of 2px star specks, dim and slightly soft at first, then crisp. Scroll-locked and reversible.
 
+### Rhythm: four acts (owner pick, D2)
+The Edition runs in four acts, not ten equal chapters: **I · the hound** (overture, α), **II · the scent** (β, γ, δ), **III · the field** (ε, ζ, η), **IV · the atlas** (θ, ι, κ). The bite crawl runs only between acts (into β, ε and θ), so it stays a signature, not a habit. Inside an act there is no empty sky: an instrument hands over in place at the very end of its chapter, and the coins themselves travel into the next instrument, locked to the scroll, with a short tail: the loudest scent flies off β's radar into γ's astrolabe and on to δ's comet, the kennel coins fly from ε's chart into ζ's pen, and the coins that clear your bar drop from θ's atlas into ι's orb. δ and η run shorter while their live data is thin. Phones and reduced motion hand over in place without the flights. Code: `lib/stage/rhythm.ts` (RHYTHM, EDITION, arrival/departure), `lib/stage/travel.ts`, `objects/travelers.tsx`.
+
 ### Second beat
 Beats fit the viewport: trailing rows drop out (never the footer, SourceTag or note) until the block clears the HUD line. Every list in a beat is a "top N", so a shorter list stays truthful.
 

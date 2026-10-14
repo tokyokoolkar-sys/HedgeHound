@@ -1,7 +1,7 @@
 // ζ's scene channels (kept apart from the chapter's components so fast refresh keeps working).
 import { band } from "@/lib/motion/math"
 import { isStacked } from "@/lib/stage/layout"
-import { arrival, departure, useRhythm } from "@/lib/stage/rhythm"
+import { arrival, departure, EDITION, RHYTHM } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 
 type KennelChannels = Pick<Scene, "kennelOn" | "kennelAppear" | "kennelFocus" | "kennelForm" | "kennelLabels" | "kennelAway">
@@ -15,7 +15,8 @@ type KennelChannels = Pick<Scene, "kennelOn" | "kennelAppear" | "kennelFocus" | 
 export function kennelScene(s: StageState): KennelChannels {
   const p = s.sections.kennel ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const { rhythm, defs } = useRhythm.getState()
+  const rhythm = RHYTHM
+  const defs = EDITION
   const arr = arrival(s.sections, defs, "kennel", rhythm)
   const dep = departure(s.sections, defs, "kennel", rhythm)
   const kennelOn = arr.started && (stacked ? p < 0.78 : dep.until) ? 1 : 0

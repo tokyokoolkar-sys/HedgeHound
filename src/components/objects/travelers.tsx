@@ -16,7 +16,6 @@ import { placeKennel } from "@/lib/stage/kennel"
 import { instrumentLayout, layoutToWorld } from "@/lib/stage/layout"
 import { placeAtlas } from "@/lib/stage/atlas"
 import { placeCoins } from "@/lib/stage/radar"
-import { useRhythm } from "@/lib/stage/rhythm"
 import { useStage } from "@/lib/stage/store"
 import { TRAVEL_SEAMS, boxToWorld, flight, flightAlpha, seamT, type Seam } from "@/lib/stage/travel"
 import { SKY_COLORS } from "../stage/star-points"
@@ -101,7 +100,7 @@ export function Travelers() {
     const s = useStage.getState()
     const pts = ref.current
     if (!pts) return
-    const on = useRhythm.getState().rhythm.handover === "travel" && !s.reduced && size.width >= 768
+    const on = !s.reduced && size.width >= 768
     pts.visible = on
     if (!on) return
     const pos = geo.attributes.position.array as Float32Array

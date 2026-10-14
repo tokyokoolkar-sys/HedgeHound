@@ -19,5 +19,5 @@ Default (the recommendation): `acts` · `travel` · `varied`. `rise · recede ·
 - `npm test` 411 pass; typecheck clean; lint only the pre-existing `no-empty`.
 - Headed Chromium 1440, 390, reduced motion on the default and on `every·fade·uniform` and `rise·recede·uniform`: no console errors beyond the scanner-off 502 / THREE.Clock; no horizontal scroll.
 
-## After the owner picks
-Remove the panel and the URL switches, collapse `rhythm.ts` to the chosen settings, write the result into DESIGN.md and PLAN §3, update the journal.
+## Owner's pick: acts · travel · varied
+The panel and URL switches are removed; `rhythm.ts` exports the pick as `RHYTHM` and the chapter list as `EDITION` (the other values stay as tested, documented options). Instruments no longer fly into depth. DESIGN.md "Rhythm: four acts", PLAN §3 and the journal are updated.

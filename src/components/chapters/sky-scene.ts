@@ -1,6 +1,6 @@
 // θ's scene channels (kept apart from the chapter's components so fast refresh keeps working).
 import { band } from "@/lib/motion/math"
-import { arrival, departure, useRhythm } from "@/lib/stage/rhythm"
+import { arrival, departure, EDITION, RHYTHM } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 
 type AtlasChannels = Pick<Scene, "atlasOn" | "atlasAppear" | "atlasPull" | "atlasLabels" | "atlasAway">
@@ -12,7 +12,8 @@ type AtlasChannels = Pick<Scene, "atlasOn" | "atlasAppear" | "atlasPull" | "atla
  */
 export function skyScene(s: StageState): AtlasChannels {
   const p = s.sections.sky ?? 0
-  const { rhythm, defs } = useRhythm.getState()
+  const rhythm = RHYTHM
+  const defs = EDITION
   const arr = arrival(s.sections, defs, "sky", rhythm)
   const dep = departure(s.sections, defs, "sky", rhythm)
   const atlasOn = arr.started && dep.until ? 1 : 0

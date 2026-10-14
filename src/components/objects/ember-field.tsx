@@ -9,7 +9,6 @@ import { smooth } from "@/lib/motion/math"
 import { useScan } from "@/lib/scan/use-scan"
 import { EMBER_CAP, emberAt, emberFrame, placeEmbers } from "@/lib/stage/embers"
 import { instrumentLayout, layoutToWorld, mixLayout, tucked } from "@/lib/stage/layout"
-import { flies, useRhythm } from "@/lib/stage/rhythm"
 import { useStage } from "@/lib/stage/store"
 import { SKY_COLORS } from "../stage/star-points"
 
@@ -88,7 +87,7 @@ export function EmberField() {
     const py = s.reduced ? 0 : s.pointer[1]
     g.scale.setScalar(at.scale * (0.8 + 0.2 * appear))
     g.rotation.set(py * 0.05, px * 0.08, 0)
-    g.position.set(at.x, at.y, (-2 + appear * 2 - away * 8) * (flies(useRhythm.getState().rhythm) ? 1 : 0))
+    g.position.set(at.x, at.y, 0)
     g.updateMatrixWorld()
     emberFrame.matrix = g.matrixWorld.elements
 

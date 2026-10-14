@@ -30,9 +30,7 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 20 | With SAMPLE's twenty coins the atlas is a quiet field; it fills out with LIVE. | T25 | — | open |
 | 21 | Add the "Open the den" hairline CTA to ι once `/den` is restyled. | T26 | T34 | later |
 | 22 | Paper results: Phase 0 records no paper trades, so ι shows settings and a live count only. Revisit if a paper book of trades is ever built. | T26 | — | owner |
-| 23 | Rhythm: γ–ι share one template and the bite crawl appears once in ~42 screens. Shape 2–3 movements (crawls into γ and θ, instruments handing over), prototype with switches. | P3 critique | next round (v0.5) | owner |
 | 24 | δ's strips colour by short venue (orange = short on Lighter) while orange means "clean" elsewhere; reads as "ARB alerts". | P3 critique | — | open |
-| 25 | 1000PEPE leads five chapters on SAMPLE; consider an arc where θ reveals the steadiest coin, or vary the featured coin. | P3 critique | rhythm round | owner |
 | 26 | Phones have no chapter index or position cue across ~36,000 px (also #6). | P3 critique | — | owner |
 
 ## Decided, kept for reference
@@ -53,5 +51,7 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | "Spread" never defined | T20 (γ's opening sentence) |
 | The "1000" prefix in 1000PEPE never explained | T23 (ζ's footer, shown when a prefixed kennel coin is on the list) |
 | Second beats could run under the HUD on 768 px tall screens | T23 (Beat fits the viewport) |
+| One template, one crawl (#23) | D2 (four acts, crawls between acts, travelling coins) |
+| 1000PEPE leading five chapters (#25) | D2 (it is now the deliberate thread of act II, flying instrument to instrument; θ names ARB "the one that stayed") |
 | Scent orange rendered red on point instruments; dark shimmer band; clipped descenders (again); radar lines through labels; ε label overlap; ε copy vs list contradiction; phone beats flashing by; captions clipped at phone edges; η heads bunching; κ duplicate coordinate; vignette contour | P3 close |
 | Shimmer titles clipped descenders; α pop at the crawl hand-off; β fog; radar collisions at 1024–1366 px; SourceTag and index contrast; hound base line | T15 (critique fixes) |

@@ -101,7 +101,7 @@ Post: crawl effect + film grain (0.03). No bloom, no vignette (P3).
 
 ## 3. Chapter map (the `/` Edition)
 
-Copy follows `PRODUCT.md`: every number on screen is LIVE, PAPER or SAMPLE and carries a `<SourceTag>`. Copy that already exists in `hero-film.tsx` / `den-desk.tsx` is reused where it fits. Each chapter = an **instrument** (3D, right) + **copy on the sky** (left), joined to the next by a bite crawl (or a lighter transition where noted).
+Copy follows `PRODUCT.md`: every number on screen is LIVE, PAPER or SAMPLE and carries a `<SourceTag>`. Copy that already exists in `hero-film.tsx` / `den-desk.tsx` is reused where it fits. Each chapter = an **instrument** (3D, right) + **copy on the sky** (left). Since D2 the chapters run in **four acts** (I overture–α · II β–δ · III ε–η · IV θ–κ): a bite crawl joins the acts (into β, ε, θ); inside an act instruments hand over in place and the coins travel between them (DESIGN.md "Rhythm").
 
 | # | id | Title | Subtitle | Instrument (3D) | Copy on the sky |
 |---|---|---|---|---|---|

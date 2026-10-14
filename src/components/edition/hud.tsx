@@ -6,7 +6,7 @@ import { useRef } from "react"
 import { band } from "@/lib/motion/math"
 import { useScan } from "@/lib/scan/use-scan"
 import { formatCoordinate } from "@/lib/stage/coordinates"
-import { useRhythm } from "@/lib/stage/rhythm"
+import { EDITION } from "@/lib/stage/rhythm"
 import { applyLook } from "./look"
 import { SourceTag } from "./source-tag"
 import { useScrollFrame } from "./use-scroll-frame"
@@ -22,7 +22,7 @@ export function Hud() {
     // Fade out while any rising block is in transit (its rise band), back once it has settled.
     let passing = 0
     if (!s.reduced) {
-      for (const c of useRhythm.getState().defs.filter((d) => d.enter === "rise")) {
+      for (const c of EDITION.filter((d) => d.enter === "rise")) {
         const p = s.sections[c.id] ?? 0
         const [r0, r1] = c.rise ?? [0, 0.16]
         passing = Math.max(passing, band(p, r0, r0 + 0.02) * (1 - band(p, r1 - 0.03, r1)))

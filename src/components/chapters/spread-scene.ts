@@ -1,7 +1,7 @@
 // γ's scene channels (kept apart from the chapter's components so fast refresh keeps working).
 import { band } from "@/lib/motion/math"
 import { isStacked } from "@/lib/stage/layout"
-import { arrival, departure, useRhythm } from "@/lib/stage/rhythm"
+import { arrival, departure, EDITION, RHYTHM } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 
 type AstroChannels = Pick<
@@ -18,7 +18,8 @@ type AstroChannels = Pick<
 export function spreadScene(s: StageState): AstroChannels {
   const p = s.sections.spread ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const { rhythm, defs } = useRhythm.getState()
+  const rhythm = RHYTHM
+  const defs = EDITION
   const arr = arrival(s.sections, defs, "spread", rhythm)
   const dep = departure(s.sections, defs, "spread", rhythm)
   const astroOn = arr.started && (stacked ? p < 0.78 : dep.until) ? 1 : 0

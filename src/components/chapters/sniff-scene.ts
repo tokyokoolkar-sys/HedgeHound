@@ -1,7 +1,7 @@
 // β's scene channels (kept apart from the chapter's components so fast refresh keeps working).
 import { band, smooth } from "@/lib/motion/math"
 import { isStacked } from "@/lib/stage/layout"
-import { departure, useRhythm } from "@/lib/stage/rhythm"
+import { departure, EDITION, RHYTHM } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 import { enterId } from "@/content/edition"
 
@@ -32,7 +32,8 @@ export function sniffScene(s: StageState): RadarChannels {
       radarAway: band(b, 0.73, 0.78),
     }
   }
-  const { rhythm, defs } = useRhythm.getState()
+  const rhythm = RHYTHM
+  const defs = EDITION
   const dep = departure(s.sections, defs, "sniff", rhythm)
   const radarOn = c >= 0.5 && dep.until ? 1 : 0
   if (s.reduced) return { radarOn, radarAppear: 1, radarFocus: 1, radarLabels: radarOn, reading: radarOn, radarAway: 0 }

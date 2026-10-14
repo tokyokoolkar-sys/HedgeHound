@@ -1,7 +1,7 @@
 // δ's scene channels (kept apart from the chapter's components so fast refresh keeps working).
 import { band } from "@/lib/motion/math"
 import { isStacked } from "@/lib/stage/layout"
-import { arrival, departure, useRhythm } from "@/lib/stage/rhythm"
+import { arrival, departure, EDITION, RHYTHM } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 
 type TrailChannels = Pick<Scene, "trailOn" | "trailAppear" | "trailFocus" | "trailDraw" | "trailMarks" | "trailAway">
@@ -15,7 +15,8 @@ type TrailChannels = Pick<Scene, "trailOn" | "trailAppear" | "trailFocus" | "tra
 export function trailScene(s: StageState): TrailChannels {
   const p = s.sections.trail ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const { rhythm, defs } = useRhythm.getState()
+  const rhythm = RHYTHM
+  const defs = EDITION
   const arr = arrival(s.sections, defs, "trail", rhythm)
   const dep = departure(s.sections, defs, "trail", rhythm)
   const trailOn = arr.started && (stacked ? p < 0.78 : dep.until) ? 1 : 0

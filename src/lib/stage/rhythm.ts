@@ -1,12 +1,11 @@
-// The Edition's rhythm (D2 prototype, the "rhythm round"): how chapters join. Three switches the owner
-// scrolls and picks from (temporary panel on `/`), then this collapses to the chosen settings.
+// The Edition's rhythm (D2, the rhythm round): how chapters join. The owner scrolled three switches on a
+// prototype and chose acts · travel · varied (RHYTHM below); the other values stay as documented options.
 // - seams:    where the bite crawl runs: "rise" (only into β, as P3 shipped), "acts" (into β, ε and θ,
 //             the starts of acts II–IV), "every" (into every chapter from β to ι);
 // - handover: how one instrument gives way to the next inside an act: "recede" (into depth, as P3),
 //             "fade" (in place, no empty sky), "travel" (in place, and the coins themselves fly across);
 // - pace:     "uniform" lengths, or "varied" (δ and η shorter while their live data is thin).
-// Pure apart from the small zustand store; scenes read it with getState() inside the frame.
-import { create } from "zustand"
+// Pure.
 import { band, smooth } from "../motion/math.ts"
 import { CHAPTERS, enterId, type ChapterDef, type ChapterId } from "../../content/edition.ts"
 
@@ -15,26 +14,8 @@ export type Handover = "recede" | "fade" | "travel"
 export type Pace = "uniform" | "varied"
 export type Rhythm = { seams: Seams; handover: Handover; pace: Pace }
 
-/** The recommendation (what the page shows without switches). */
-export const DEFAULT_RHYTHM: Rhythm = { seams: "acts", handover: "travel", pace: "varied" }
-
-export const SEAMS: Seams[] = ["rise", "acts", "every"]
-export const HANDOVERS: Handover[] = ["recede", "fade", "travel"]
-export const PACES: Pace[] = ["uniform", "varied"]
-
-/** Read the switches from a query string; anything unknown falls back to the default. */
-export function parseRhythm(search: string): Rhythm {
-  const q = new URLSearchParams(search)
-  const pick = <T extends string>(key: string, all: T[], fallback: T) => {
-    const v = q.get(key) as T | null
-    return v && all.includes(v) ? v : fallback
-  }
-  return {
-    seams: pick("seams", SEAMS, DEFAULT_RHYTHM.seams),
-    handover: pick("handover", HANDOVERS, DEFAULT_RHYTHM.handover),
-    pace: pick("pace", PACES, DEFAULT_RHYTHM.pace),
-  }
-}
+/** The owner's pick (D2): crawls between acts, coins travel inside an act, δ and η shorter. */
+export const RHYTHM: Rhythm = { seams: "acts", handover: "travel", pace: "varied" }
 
 /** The starts of acts II, III and IV. */
 export const ACT_STARTS: ChapterId[] = ["sniff", "hedge", "sky"]
@@ -53,13 +34,8 @@ export function chaptersFor(base: ChapterDef[], r: Rhythm): ChapterDef[] {
   })
 }
 
-type RhythmState = { rhythm: Rhythm; defs: ChapterDef[]; set: (r: Rhythm) => void }
-
-export const useRhythm = create<RhythmState>((set) => ({
-  rhythm: DEFAULT_RHYTHM,
-  defs: chaptersFor(CHAPTERS, DEFAULT_RHYTHM),
-  set: (rhythm) => set({ rhythm, defs: chaptersFor(CHAPTERS, rhythm) }),
-}))
+/** The Edition's chapter list for the chosen rhythm. */
+export const EDITION: ChapterDef[] = chaptersFor(CHAPTERS, RHYTHM)
 
 type Sections = Record<string, number>
 
