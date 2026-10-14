@@ -2,7 +2,7 @@
 // to its chapter. Hidden under 768px. Active state is written per frame, not through React state.
 import { useRef } from "react"
 import { CHAPTERS, chapterOf } from "@/content/edition"
-import { scrollToTarget } from "@/lib/motion/scroll-bus"
+import { jumpToChapter } from "./jump"
 import { useScrollFrame } from "./use-scroll-frame"
 
 const LETTERED = CHAPTERS.filter((c) => c.letter)
@@ -31,10 +31,8 @@ export function ChapterIndex() {
           data-chapter={c.id}
           title={c.title}
           onClick={(e) => {
-            const el = document.getElementById(`chapter-${c.id}`)
-            if (!el) return
             e.preventDefault()
-            scrollToTarget(el)
+            jumpToChapter(c.id)
           }}
           className="bayer text-starlight-dim transition-[color,translate] duration-500 hover:text-starlight focus-visible:text-scan data-[on]:translate-x-1 data-[on]:text-scan"
         >
