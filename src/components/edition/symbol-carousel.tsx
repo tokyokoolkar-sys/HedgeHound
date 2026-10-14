@@ -6,6 +6,7 @@ import { useMemo, useRef } from "react"
 import { LogosCarousel } from "@/components/logos-carousel"
 import { cn } from "@/lib/cn"
 import { band } from "@/lib/motion/math"
+import { useReducedMotion } from "@/lib/motion/use-reduced-motion"
 import { carouselRows, formatNet, pickLoudest } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"
 import { SourceTag } from "./source-tag"
@@ -19,11 +20,20 @@ export function SymbolCarousel({ section }: { section: string }) {
 
   useScrollFrame((s) => {
     const c = s.sections[section] ?? 0
-    const o = s.reduced ? 0 : band(c, 0.26, 0.38) * (1 - band(c, 0.62, 0.74))
-    applyLook(ref.current, { opacity: o, y: (1 - o) * 16, blur: (1 - o) * 8 })
+    // Reduced motion: no crawl to hide behind, so the first five simply sit there while the section passes.
+    if (s.reduced) return applyLook(ref.current, { opacity: c > 0.26 && c < 0.74 ? 1 : 0, y: 0, blur: 0 })
+    const o = band(c, 0.26, 0.38) * (1 - band(c, 0.62, 0.74))
+    applyLook(ref.current, { opacity: o, y: (1 - o) * 16, blur: (1 - o) * 3 })
   })
 
+  const reduced = useReducedMotion()
   if (rows.length === 0) return null
+  const coin = (r: (typeof rows)[number]) => (
+    <span key={r.symbol} className="inline-flex flex-col items-center gap-1.5">
+      <span className="label text-base tracking-[0.3em] text-starlight">{r.symbol}</span>
+      <span className={cn("figure text-xs", r.alert ? "text-scent" : "text-starlight-dim")}>{formatNet(r.net)}</span>
+    </span>
+  )
   return (
     <div
       ref={ref}
@@ -33,14 +43,13 @@ export function SymbolCarousel({ section }: { section: string }) {
       <p className="label m-0 text-starlight-dim">
         <span className="bayer">α → β</span> · on the hound’s nose
       </p>
-      <LogosCarousel count={5} stagger={0.12} interval={2200} duration={700} className="gap-5 sm:gap-10">
-        {rows.map((r) => (
-          <span key={r.symbol} className="inline-flex flex-col items-center gap-1.5">
-            <span className="label text-base tracking-[0.3em] text-starlight">{r.symbol}</span>
-            <span className={cn("figure text-xs", r.alert ? "text-scent" : "text-starlight-dim")}>{formatNet(r.net)}</span>
-          </span>
-        ))}
-      </LogosCarousel>
+      {reduced ? (
+        <div className="flex gap-5 sm:gap-10">{rows.slice(0, 5).map(coin)}</div>
+      ) : (
+        <LogosCarousel count={5} stagger={0.12} interval={2200} duration={700} className="gap-5 sm:gap-10">
+          {rows.map(coin)}
+        </LogosCarousel>
+      )}
       <SourceTag kind={scan.live ? "live" : "sample"} ts={scan.ts ?? undefined} stale={scan.stale} className="text-starlight" />
     </div>
   )

@@ -199,7 +199,8 @@ The chapter writes `{chapter, progress}` to the store, and the instrument in Sky
 | 0.00–0.20 | (if `enter="crawl"`) second crawl front rebuilds the scene and the copy, cell by cell |
 | 0.00–0.16 | title resolves from blur 12px → 0 with the shimmer; kicker "β · SNIFF" with it |
 | 0.16–0.48 | body items rise and resolve in sequence (stagger 0.07) |
-| 0.32–0.62 | instrument extras: leader line draws (first 30%), then the reading gathers from star specks |
+| 0.26–0.42 | instrument extras (β): leader line draws (first 30%), then the reading gathers from star specks |
+| 0.52–0.60 | (with a second beat) the first beat blurs out; the second beat resolves 0.62–0.76, strictly after |
 | 0.86–1.00 | copy blurs out upward; or the next chapter's crawl takes over |
 
 Never name a file `*.client.*` (TanStack Start import protection breaks `vite build`, S5).

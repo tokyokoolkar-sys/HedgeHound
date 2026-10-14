@@ -163,8 +163,9 @@ Two families, both loaded locally through `@fontsource`.
 ## Layout
 
 - **Full-bleed sky, fixed stage.** One WebGL canvas fills the viewport. Copy lives on a fixed stage above it, and scroll length decides how long each scene lasts. There is no visible page "flow" of boxes.
-- **Copy left, instruments right** on desktop. Copy column at `max(16px, 7vw)` from the left, up to ~500px wide. Instruments (constellation, radar, reading) take the right half.
-- **HUD in the corners.** Top-left: the coordinate that drifts with the cursor around Sirius. Top-right: the edition name. Left edge: the α–κ chapter index, with the active letter lit cyan. Hidden under 768px.
+- **Copy left, instruments right** on desktop. Copy column at `max(16px, 7vw)` from the left, up to ~500px wide. Instruments (constellation, radar, reading) are placed from the copy column's right edge, never under it (`radarLayout`): the reading docks right of the ring when it fits, below it when it doesn't.
+- **Stacked on phones (and portrait tablets): one thing at a time.** The copy, the instrument and the second beat take turns instead of sharing the screen (β: steps over tucked rings, then the radar featured alone with its reading, then the rules).
+- **HUD.** Bottom-left: the coordinate that drifts with the cursor around Sirius, and on desktop where the figures come from ("scanner live" / "scanner offline · showing a sample" + SourceTag). It steps aside while rising copy passes. Left edge: the α–κ chapter index, inactive letters starlight-dim, the active one lit cyan. Hidden under 768px.
 - **Mobile (390×844).** The instrument goes above the copy, the HUD shrinks to the coordinate only, and options collapse. No horizontal scroll.
 - **Chapters are named by Bayer letters** α to κ, not Roman numerals.
 
@@ -189,16 +190,25 @@ Hairlines and points. Lines are 1px chart lines; stars are round points with a t
 Quiet by default. The primary action is a starlight hairline (outline at 40% starlight, starlight text, cyan focus ring); a filled starlight button exists for rare emphasis. There is no orange button.
 
 ### SourceTag
-A mono pill reading `○ SAMPLE`, `◆ PAPER` or `● LIVE · 12:04`, with a dashed `◌ … · STALE` variant. It is required next to every figure or group of figures.
+A mono pill reading `○ SAMPLE`, `◆ PAPER` or `● LIVE · 12:04`, with a dashed `◌ … · STALE` variant. It is required next to every figure or group of figures. It inherits its colour at full strength, with no extra opacity (T15: opacity on dim text fell below AA); SAMPLE and PAPER read quieter through their hollow marks.
 
 ### Chart labels (Bayer letters)
 A cyan Greek letter, plus the proper name in faint mono capitals for named stars (`α SIRIUS`). They fade in after the lines finish drawing.
 
+### Radar (β)
+Every axis means something (owner decision, T15 critique): **the half** is the venue carrying the short leg (right = short Lighter, left = short Binance; within its half a coin keeps a bearing hashed from its symbol), and **the radius** is signed net APR, with the outer ring at break-even, louder spreads nearer the centre, and spreads that lose after costs just outside the ring, dimmed and unlabelled. Alerting (clean) coins are scent orange, never overdriven toward red. A caption names it and tags its figures, with a one-line mono key ("centre = louder · ring = break-even · ● clean scent"), and the two halves carry small captions. The cyan sweep and its pings are the chapter's one piece of ambient motion.
+
 ### Coin labels (radar)
-The symbol in starlight-dim mono and the net APR in starlight, or in orange when alerting. Projected from the 3D radar each frame as plain DOM, never drei `<Html>` (see Don'ts).
+The symbol in starlight-dim mono and the net APR in starlight, or in orange when alerting. Only the loudest positive spreads (five, three on phones), never two labels that touch, never the featured coin. Labels point inward so they never leave the screen. Projected from the 3D radar each frame as plain DOM, never drei `<Html>` (see Don'ts).
 
 ### The reading
 The loudest coin, called out from the radar. A thin leader line draws from the coin to outside the ring. Then a caption ("LOUDEST CLEAN SCENT"), the symbol in display type, the net APR as a figure and a SourceTag gather out of 2px star specks, dim and slightly soft at first, then crisp. Scroll-locked and reversible.
+
+### Second beat
+A chapter may hand its left column to a second beat (β: "What the scanner checks"): a kicker, a shimmer title and a quiet ruled list (mono keys, body values, starlight-faint hairlines). Beats are strictly sequential, never double-exposed: the first is gone before the second begins.
+
+### Copy motion
+Copy resolves from a small blur and rises; **body copy never blurs past 3px** (`BODY_BLUR`), because more turns paragraphs into grey fog. A chapter carried out by the next crawl does not fade first (no pop back). Steps are numbered with mono figures (01, 02, 03), never Roman numerals. Every chapter's copy is also in its scroll section as screen-reader text; the fixed visual block is `aria-hidden`.
 
 ### Symbol carousel
 `@spell/logos-carousel` showing the coins the hound is watching, in groups of five, with a staggered rise in and out. Each symbol shows its net APR underneath, orange if alerting. The featured coin is excluded, and one SourceTag covers the carousel.

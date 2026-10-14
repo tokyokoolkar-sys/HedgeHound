@@ -3,6 +3,8 @@
 //   and the DOM always share a frame (S5).
 // - DPR capped by quality tier; drei PerformanceMonitor steps the tier down if frames drop.
 // - Post: bite crawl + grain + vignette. No bloom.
+// - Objects run their useFrame before the Projector (mount order), so projected labels see this frame's
+//   transforms (the radar publishes its own, see lib/stage/radar.ts).
 // - Labels render into a fixed layer above the canvas (eventSource is document.body, so drei would
 //   otherwise portal them into <body> and scroll them away; D1 bug).
 import { PerformanceMonitor } from "@react-three/drei"
@@ -13,6 +15,7 @@ import { palette } from "@/lib/palette"
 import { useStage, type Quality } from "@/lib/stage/store"
 import { CanisMajor } from "../objects/canis-major"
 import { GlassHound } from "../objects/glass-hound"
+import { Radar } from "../objects/radar"
 import { CameraRig } from "./camera-rig"
 import { Effects } from "./effects"
 import { Projector } from "./projector"
@@ -52,6 +55,7 @@ export default function SkyStage() {
           <Starfield quality={quality} />
           <GlassHound quality={quality} />
           {labelHost && <CanisMajor labelHost={labelHost} />}
+          <Radar />
           <CameraRig />
           <Projector />
           <Effects />

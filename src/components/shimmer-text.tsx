@@ -63,13 +63,16 @@ export function ShimmerText({
   variant = "default",
   duration = 1.5,
   delay = 1.5,
-}: ShimmerTextProps) {
+  still = false,
+}: ShimmerTextProps & { still?: boolean }) {
   return (
-    <div className="group overflow-hidden">
+    // HedgeHound: no overflow clip, and the painted box is padded past the ink (descenders, italic
+    // overhang) with matching negative margins, so background-clip:text never cuts a glyph.
+    <div className="group">
       <div>
         <motion.div
           className={cn(
-            "inline-block [--shimmer-contrast:rgba(255,255,255,0.6)] dark:[--shimmer-contrast:rgba(0,0,0,0.5)]",
+            "-mx-[0.08em] -mb-[0.22em] inline-block px-[0.08em] pb-[0.22em] [--shimmer-contrast:rgba(255,255,255,0.6)] dark:[--shimmer-contrast:rgba(0,0,0,0.5)]",
             variantMap[variant],
             className,
           )}
@@ -85,7 +88,7 @@ export function ShimmerText({
           initial={{
             backgroundPositionX: "250%",
           }}
-          animate={{
+          animate={still ? undefined : {
             backgroundPositionX: ["-100%", "250%"],
           }}
           transition={{

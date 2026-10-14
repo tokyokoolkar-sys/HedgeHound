@@ -1,5 +1,6 @@
-// The Edition's chapters (PLAN §3, DESIGN.md). Copy only: no figures live here, so nothing needs a
-// SourceTag. Live readings are added by the chapters themselves (T14–T27), always tagged.
+// The Edition's chapters (PLAN §3, DESIGN.md). Copy only: no readings live here, so nothing needs a
+// SourceTag. Live readings are added by the chapters themselves (T14–T27), always tagged. The few
+// numbers here are the scanner's own rules (β's beat), labelled as such on screen.
 
 export type ChapterId =
   | "overture"
@@ -41,6 +42,30 @@ export type ChapterDef = {
   titleReveal?: [number, number]
   /** Progress band over which the body resolves word by word. */
   bodyWords?: [number, number]
+  /** Numbered steps (title + line) after the body; they stack on desktop and swap one at a time on phones. */
+  steps?: Array<{ title: string; body: string }>
+  /** Progress band over which the copy blurs out upward (default [0.86, 1]); earlier when a second beat follows. */
+  out?: [number, number]
+  /** A second copy beat that takes the first one's place (e.g. β's "What the scanner checks"). */
+  beat?: Beat
+  /** Title type role (default "title"; β's one-word title takes the larger "chapter" size). */
+  size?: "chapter" | "title"
+  /**
+   * Timing on stacked (phone) layouts, where the instrument can't sit beside the copy: the first beat,
+   * the instrument and the second beat take turns instead (one thing at a time).
+   */
+  stacked?: { out: [number, number]; beatIn: [number, number]; beatOut: [number, number] }
+}
+
+export type Beat = {
+  kicker: string
+  title: string
+  /** Key / line pairs, shown as a quiet ruled list. */
+  rows: Array<[string, string]>
+  note?: string
+  /** Progress band over which the rows resolve, and over which the beat leaves. */
+  in: [number, number]
+  out: [number, number]
 }
 
 export const CHAPTERS: ChapterDef[] = [
@@ -74,8 +99,39 @@ export const CHAPTERS: ChapterDef[] = [
     letter: "β",
     kicker: "Sniff",
     title: "Sniff",
+    size: "chapter",
     subtitle: "Every five minutes, the hound lifts its nose.",
-    length: "330svh",
+    steps: [
+      {
+        title: "Normalize",
+        body: "Hourly equals the printed rate divided by the interval. Lighter’s public rate is eight-hour scale, so the hour is that rate divided by eight.",
+      },
+      { title: "Cancel", body: "Long the cheap hour, short the rich one, about the same notional. A spike hits both legs. What should remain is the spread." },
+      {
+        title: "Doubt",
+        body: "Net APR subtracts the round trip, amortized over the hold you actually expect. A fat snapshot that dies in an hour never paid the ticket.",
+      },
+    ],
+    // Strictly one beat at a time: the steps are gone before the rules start (no double exposure).
+    out: [0.52, 0.6],
+    // Every figure here is a rule in the scanner's source (WhaleHunterAlt scanner/server.py), not a reading.
+    beat: {
+      kicker: "The rules",
+      title: "What the scanner checks",
+      rows: [
+        ["Poll", "Both venues, every 300 s."],
+        ["Trust", "144 five-minute samples (12 hours) within the last day before a scent may alert."],
+        ["Age", "Listed for 30 days or more."],
+        ["Depth", "$250k of 24 h volume and $50k of open interest, on both legs."],
+        ["Zero", "An exact-zero Binance rate is no signal. It is skipped."],
+      ],
+      note: "Thresholds from the scanner’s source · not readings",
+      in: [0.62, 0.76],
+      out: [0.86, 1],
+    },
+    // Phones: steps (to 0.53), then the radar alone with the reading (0.48–0.84), then the rules.
+    stacked: { out: [0.47, 0.53], beatIn: [0.82, 0.92], beatOut: [0.96, 1] },
+    length: "440svh",
     enter: "crawl",
     enterLength: "190svh",
     layout: "left",

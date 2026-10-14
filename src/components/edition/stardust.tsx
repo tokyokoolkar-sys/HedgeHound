@@ -16,7 +16,9 @@ type Props = {
 export function Stardust({ progress, className, style, children }: Props) {
   const ref = useRef<HTMLDivElement>(null)
   useScrollFrame((s) => {
-    if (ref.current) applyStardust(ref.current, s.reduced ? 1 : progress(s))
+    // Reduced motion jumps to the end state, but only while the text is meant to be there at all.
+    const p = progress(s)
+    if (ref.current) applyStardust(ref.current, s.reduced ? (p > 0 ? 1 : 0) : p)
   })
   return (
     <div ref={ref} className={className} style={{ visibility: "hidden", ...style }}>

@@ -4,7 +4,7 @@ import { band, smooth } from "@/lib/motion/math";
 import { afterScroll } from "@/lib/motion/scroll-bus";
 import { useSection } from "@/lib/motion/scroll-progress";
 import { useRequestSky } from "@/lib/stage/request-sky";
-import { useStage } from "@/lib/stage/store";
+import { EMPTY_SCENE, useStage } from "@/lib/stage/store";
 
 // Throwaway check page for T12 (the sky stage). Deleted in T52.
 // It maps section progress onto scene channels with the D1 values; T14 owns this mapping for real.
@@ -31,6 +31,7 @@ function StagePage() {
       s.set({
         transition: c,
         scene: {
+          ...EMPTY_SCENE,
           houndAway: reduced ? (h > 0.5 ? 1 : 0) : band(h, 0.12, 1),
           canisOn: h > 0.5 && c < 0.5 ? 1 : 0,
           canisForm: reduced ? 1 : band(a, 0, 0.42),
