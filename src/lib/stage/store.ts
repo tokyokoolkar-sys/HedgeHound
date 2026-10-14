@@ -46,6 +46,13 @@ export type Scene = {
   trailDraw: number
   trailMarks: number
   trailAway: number
+  /** ε field chart: shown, arrival, stacked focus, stars gathering into place, labels, recede. */
+  fieldOn: number
+  fieldAppear: number
+  fieldFocus: number
+  fieldForm: number
+  fieldLabels: number
+  fieldAway: number
   /** Distance flown through the dust layers (grows with scroll; drives parallax). */
   flight: number
 }
@@ -77,6 +84,12 @@ export const EMPTY_SCENE: Scene = {
   trailDraw: 0,
   trailMarks: 0,
   trailAway: 0,
+  fieldOn: 0,
+  fieldAppear: 0,
+  fieldFocus: 0,
+  fieldForm: 0,
+  fieldLabels: 0,
+  fieldAway: 0,
   flight: 0,
 }
 

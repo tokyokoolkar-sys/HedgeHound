@@ -15,6 +15,7 @@ import { palette } from "@/lib/palette"
 import { useStage, type Quality } from "@/lib/stage/store"
 import { CanisMajor } from "../objects/canis-major"
 import { CometTrail } from "../objects/comet-trail"
+import { FieldChart } from "../objects/field-chart"
 import { GlassHound } from "../objects/glass-hound"
 import { HedgeAstrolabe } from "../objects/hedge-astrolabe"
 import { Radar } from "../objects/radar"
@@ -60,6 +61,7 @@ export default function SkyStage() {
           <Radar />
           <HedgeAstrolabe />
           <CometTrail />
+          <FieldChart />
           <CameraRig />
           <Projector />
           <Effects />

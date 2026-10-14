@@ -22,6 +22,8 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 12 | Under reduced motion there is no price swing, only its caption, so "price cancels" is told rather than shown. | T20 | — | owner |
 | 13 | δ's trail shows only what live fields allow (window, last flip, 6 h persistence); the real shape of the day needs `/api/history`. | T21 | T41 (needs owner OK) | owner |
 | 14 | When the sign flipped very recently (sample: 1.4 h), the solid part of the trail is a tiny stub at the `now` end, so the comet reads mostly dashed. Honest, but quiet. | T21 | — | open |
+| 15 | Add the "Open scanner" hairline CTA to ε's shortlist once `/scanner` exists. | T22 | T31 | later |
+| 16 | In the sample most coins sit at 100% held, so ε's stars bunch along the top edge; live data may spread them. Revisit with LIVE data. | T22 | — | open |
 
 ## Decided, kept for reference
 - β reading stays mid-chapter, not as the chapter's ending (owner, T15).

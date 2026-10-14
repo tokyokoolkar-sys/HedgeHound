@@ -133,9 +133,10 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 - Second beat: the six steadiest coins as inline SVG strips + mono shorthand, one SourceTag.
 - After T41: feed `/api/history` into the same `segments()` / strip to add the real shape.
 
-### T22 V Hedge
-- Files: `chapters/05-hedge.tsx`. Waypoint `hedge` lights the Hedge sector.
-- Sheet (glass tone): live cards for `sector==="hedge"` or all `status==="ok"` rows, each with BorderBeam (beam colour `--scan`, duration 6s, only the top 3), NumberTicker net APR, persistence bar, direction line "Long Binance · Short Lighter", "Open in scanner" → `/scanner?sym=`.
+### T22 V Hedge (rescoped, owner-approved a/b/c)
+- Files: `chapters/05-hedge.tsx`, `chapters/hedge-scene.ts`, `objects/field-chart.tsx`, `lib/stage/field.ts` (+ test).
+- (a) Field chart: net APR after costs × persistence from live rows (no sample "sector"). (b) Shortlist of 8, clean first (5 on phones). (c) No "Open scanner" link until T31 builds `/scanner`.
+- No cards, BorderBeam or NumberTicker (DESIGN.md).
 
 ### T23 VI Kennel
 - Files: `chapters/06-kennel.tsx`. Twinkle jitter driven by `1 - persistence` (passes through store/adapter, no new shader).
@@ -238,7 +239,8 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T15 | O | done | β Sniff + radar (meaningful axes: half = short venue, radius = signed net), reading, second beat; full Impeccable critique (17/28) folded into the primitives; 345 tests; branch T15-sniff (notes/T15.md) |
 | T20 | O | done | γ Spread: astrolabe (thin lines, scroll-locked turn, price swing), definition of the spread + 3 steps, live legs beat; layout shared in lib/stage/layout.ts; 352 tests; branch T20-spread (notes/T20.md) |
 | T21 | O | done | δ Trail: comet over a 24 h arc from live fields only (window, last flip, persistence), the six steadiest as strips; 362 tests; branch T21-trail (notes/T21.md) |
-| T22–T27 | S | todo | |
+| T22 | O | done | ε Hedge: field chart (net × held), shortlist beat; phone instruments now end before the second beat in every chapter; 371 tests; branch T22-hedge (notes/T22.md) |
+| T23–T27 | S | todo | |
 | T30–T35 | S/H | todo | |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |
