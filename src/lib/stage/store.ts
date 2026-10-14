@@ -67,6 +67,12 @@ export type Scene = {
   emberFall: number
   emberLabels: number
   emberAway: number
+  /** θ atlas: shown, arrival, the camera pulling back (0 close … 1 whole field), recap labels, recede. */
+  atlasOn: number
+  atlasAppear: number
+  atlasPull: number
+  atlasLabels: number
+  atlasAway: number
   /** Distance flown through the dust layers (grows with scroll; drives parallax). */
   flight: number
 }
@@ -116,6 +122,11 @@ export const EMPTY_SCENE: Scene = {
   emberFall: 0,
   emberLabels: 0,
   emberAway: 0,
+  atlasOn: 0,
+  atlasAppear: 0,
+  atlasPull: 0,
+  atlasLabels: 0,
+  atlasAway: 0,
   flight: 0,
 }
 

@@ -213,6 +213,9 @@ Our own editorial list of meme coins (labelled "our list", matched with or witho
 ### Cold embers (η)
 One ember per coin the scanner skipped this poll (`meta.skipped_*`), nothing decorative: three loose streams (zero / young / thin), headed with their counts and an honest "+N more" when a stream draws only its first fourteen (eight on phones). They fall with the scroll and stop when it stops, cooling from warm starlight (`star-warm`) to chart-line grey; never scent orange, which stays for alerts. One named ember per stream. The second beat gives each reason one ruled row (count, the reason line, the first names, "+N more") and points back to β for the full rules.
 
+### Atlas (θ)
+Every live coin across the whole sky at a fixed spot from its symbol; the spots carry no meaning, so no RA/Dec grid is drawn over them. Brightness is net APR, orange is clean and paying, the twinkle is measured shakiness (as in ζ). The camera pulls back with the scroll from close-up to the whole field. Each earlier chapter's key coin gets a thin ring and a two-line label with its Greek letters (one coin can carry several), picked by those chapters' own rules; a caption counts the field and η's skipped coins, with one SourceTag. θ is a quiet breath: title and subtitle only. "Enter the sky" arrives with `/sky` (T33).
+
 ### Coin labels (radar)
 The symbol in starlight-dim mono and the net APR in starlight, or in orange when alerting. Only the loudest positive spreads (five, three on phones), never two labels that touch, never the featured coin. Labels point inward so they never leave the screen. Projected from the 3D radar each frame as plain DOM, never drei `<Html>` (see Don'ts).
 

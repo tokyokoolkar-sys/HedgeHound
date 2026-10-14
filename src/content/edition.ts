@@ -261,7 +261,9 @@ export const CHAPTERS: ChapterDef[] = [
     enter: "rise",
     layout: "left",
   },
-  { id: "sky", letter: "θ", kicker: "The sky", title: "The Sky", subtitle: "Every coin, charted.", length: "220svh", enter: "rise", layout: "left" },
+  // θ is a quiet breath: title and subtitle over the atlas (no body, no second beat). "Enter the sky"
+  // arrives with T33, when /sky exists.
+  { id: "sky", letter: "θ", kicker: "The sky", title: "The Sky", subtitle: "Every coin, charted.", length: "300svh", enter: "rise", layout: "left" },
   { id: "den", letter: "ι", kicker: "The den", title: "The Den", subtitle: "A paper desk for a small research budget.", length: "220svh", enter: "rise", layout: "left" },
   {
     id: "ledger",

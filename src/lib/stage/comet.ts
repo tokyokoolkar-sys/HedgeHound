@@ -84,6 +84,11 @@ export function stripLabel(r: TrailInput) {
   return `persist ${r.persistence.toFixed(2)} · ${flipped(r) ? `flip ${r.hours_since_flip.toFixed(1)}h` : "no flip"} · window ${r.window_h.toFixed(1)}h`
 }
 
+/** The six steadiest coins (δ's second beat): highest persistence, then louder net. */
+export function steadiestRows<T extends { persistence: number; net_apr: number }>(rows: T[], n = 6): T[] {
+  return [...rows].sort((a, b) => b.persistence - a.persistence || b.net_apr - a.net_apr).slice(0, n)
+}
+
 /** The trail's transform, published by objects/comet-trail.tsx every frame. */
 export const trailFrame = makeFrame()
 
