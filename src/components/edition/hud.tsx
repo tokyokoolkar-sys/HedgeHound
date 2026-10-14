@@ -3,15 +3,14 @@
 // Updated per frame from the scroll engine, never through React state. It steps aside while a rising
 // chapter's copy travels past it (T15 critique: text crossing text).
 import { useRef } from "react"
-import { CHAPTERS } from "@/content/edition"
 import { band } from "@/lib/motion/math"
 import { useScan } from "@/lib/scan/use-scan"
 import { formatCoordinate } from "@/lib/stage/coordinates"
+import { EDITION } from "@/lib/stage/rhythm"
 import { applyLook } from "./look"
 import { SourceTag } from "./source-tag"
 import { useScrollFrame } from "./use-scroll-frame"
 
-const RISING = CHAPTERS.filter((c) => c.enter === "rise")
 
 export function Hud() {
   const hud = useRef<HTMLDivElement>(null)
@@ -23,7 +22,7 @@ export function Hud() {
     // Fade out while any rising block is in transit (its rise band), back once it has settled.
     let passing = 0
     if (!s.reduced) {
-      for (const c of RISING) {
+      for (const c of EDITION.filter((d) => d.enter === "rise")) {
         const p = s.sections[c.id] ?? 0
         const [r0, r1] = c.rise ?? [0, 0.16]
         passing = Math.max(passing, band(p, r0, r0 + 0.02) * (1 - band(p, r1 - 0.03, r1)))

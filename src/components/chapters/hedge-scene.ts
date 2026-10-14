@@ -1,6 +1,7 @@
 // ε's scene channels (kept apart from the chapter's components so fast refresh keeps working).
-import { band, smooth } from "@/lib/motion/math"
+import { band } from "@/lib/motion/math"
 import { isStacked } from "@/lib/stage/layout"
+import { arrival, departure, EDITION, RHYTHM } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 
 type FieldChannels = Pick<Scene, "fieldOn" | "fieldAppear" | "fieldFocus" | "fieldForm" | "fieldLabels" | "fieldAway">
@@ -14,12 +15,16 @@ type FieldChannels = Pick<Scene, "fieldOn" | "fieldAppear" | "fieldFocus" | "fie
 export function hedgeScene(s: StageState): FieldChannels {
   const p = s.sections.hedge ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const fieldOn = p > 0 && p < (stacked ? 0.78 : 1) ? 1 : 0
+  const rhythm = RHYTHM
+  const defs = EDITION
+  const arr = arrival(s.sections, defs, "hedge", rhythm)
+  const dep = departure(s.sections, defs, "hedge", rhythm)
+  const fieldOn = arr.started && (stacked ? p < 0.78 : dep.until) ? 1 : 0
   if (s.reduced) {
     const featured = !stacked || p >= 0.53 ? 1 : 0
     return { fieldOn, fieldAppear: 1, fieldFocus: featured, fieldForm: 1, fieldLabels: fieldOn * featured, fieldAway: 0 }
   }
-  const appear = smooth(band(p, 0.02, 0.2))
+  const appear = arr.appear
   if (stacked) {
     return {
       fieldOn,
@@ -36,6 +41,6 @@ export function hedgeScene(s: StageState): FieldChannels {
     fieldFocus: 1,
     fieldForm: band(p, 0.18, 0.48),
     fieldLabels: band(p, 0.44, 0.52) * (1 - band(p, 0.86, 0.94)),
-    fieldAway: band(p, 0.86, 1),
+    fieldAway: dep.away,
   }
 }

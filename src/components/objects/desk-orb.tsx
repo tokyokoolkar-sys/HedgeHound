@@ -87,7 +87,7 @@ export function DeskOrb() {
     const px = s.reduced ? 0 : s.pointer[0]
     const py = s.reduced ? 0 : s.pointer[1]
     g.scale.setScalar(at.scale * (0.8 + 0.2 * appear))
-    g.position.set(at.x, at.y, -2 + appear * 2 - away * 8)
+    g.position.set(at.x, at.y, 0)
     if (spin.current) {
       spin.current.rotation.y = sc.denTurn * Math.PI * 0.9 + px * 0.2
       spin.current.rotation.x = 0.18 - py * 0.12

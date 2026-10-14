@@ -118,7 +118,7 @@ export function HedgeAstrolabe() {
     const py = s.reduced ? 0 : s.pointer[1]
     g.scale.setScalar(at.scale * (0.8 + 0.2 * appear))
     g.rotation.set(-0.16 + py * 0.05, px * 0.08, 0)
-    g.position.set(at.x, at.y, -2 + appear * 2 - away * 8)
+    g.position.set(at.x, at.y, 0)
     g.updateMatrixWorld()
     astrolabeFrame.matrix = g.matrixWorld.elements
 

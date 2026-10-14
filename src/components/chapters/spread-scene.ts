@@ -1,6 +1,7 @@
 // γ's scene channels (kept apart from the chapter's components so fast refresh keeps working).
-import { band, smooth } from "@/lib/motion/math"
+import { band } from "@/lib/motion/math"
 import { isStacked } from "@/lib/stage/layout"
+import { arrival, departure, EDITION, RHYTHM } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 
 type AstroChannels = Pick<
@@ -17,7 +18,11 @@ type AstroChannels = Pick<
 export function spreadScene(s: StageState): AstroChannels {
   const p = s.sections.spread ?? 0
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
-  const astroOn = p > 0 && p < (stacked ? 0.78 : 1) ? 1 : 0
+  const rhythm = RHYTHM
+  const defs = EDITION
+  const arr = arrival(s.sections, defs, "spread", rhythm)
+  const dep = departure(s.sections, defs, "spread", rhythm)
+  const astroOn = arr.started && (stacked ? p < 0.78 : dep.until) ? 1 : 0
   if (s.reduced) {
     const featured = !stacked || p >= 0.53 ? 1 : 0
     return {
@@ -31,7 +36,7 @@ export function spreadScene(s: StageState): AstroChannels {
       astroAway: 0,
     }
   }
-  const appear = smooth(band(p, 0.02, 0.2))
+  const appear = arr.appear
   if (stacked) {
     return {
       astroOn,
@@ -52,6 +57,6 @@ export function spreadScene(s: StageState): AstroChannels {
     spreadSplit: band(p, 0.22, 0.45),
     legLabels: band(p, 0.4, 0.48) * (1 - band(p, 0.86, 0.94)),
     spreadSwing: band(p, 0.5, 0.7),
-    astroAway: band(p, 0.86, 1),
+    astroAway: dep.away,
   }
 }

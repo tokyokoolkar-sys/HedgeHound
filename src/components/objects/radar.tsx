@@ -167,7 +167,7 @@ export function Radar() {
     // Placed beside (or under) the copy column for this viewport; it grows into place as it arrives.
     g.scale.setScalar(at.scale * (0.77 + 0.23 * appear))
     g.rotation.set(-0.18 + py * 0.05, px * 0.08, away * 0.1)
-    g.position.set(at.x, at.y, -2 + appear * 2 - away * 8)
+    g.position.set(at.x, at.y, 0)
     g.updateMatrixWorld()
     radarFrame.matrix = g.matrixWorld.elements
 
