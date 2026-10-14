@@ -9,7 +9,6 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | # | Item | From | Home | Status |
 |---|---|---|---|---|
 | 1 | Glass hound silhouette is still the draft mark from S4; needs proper art. | T12, T14, T15 | — | open |
-| 2 | Mono / tabular digits for buttons, badges, tables and figures (T10 critique P2); `/den` dollar columns don't align. | T10 | T34 | later |
 | 3 | First-time viewers: "spread" is defined in γ, but β already uses the word. | T15 critique | — | open |
 | 4 | Very short phones (≤ 667 px tall) aren't tuned: on β the reading can meet the HUD. | T15 | T52 | later |
 | 5 | Real iPhone and real GPU check (PerformanceMonitor tiers, Lenis touch). | T12 | T52 | later |
@@ -25,10 +24,8 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 17 | The kennel list is editorial and fixed; new meme listings need adding by hand. | T23 | — | later |
 | 18 | SAMPLE has only three skipped coins, so η looks sparse offline; checked with a long-list mock (`T24-shots/mock-long-lists.png`). Re-check with LIVE. | T24 | — | open |
 | 20 | With SAMPLE's twenty coins the atlas is a quiet field; it fills out with LIVE. | T25 | — | open |
-| 21 | Add the "Open the den" hairline CTA to ι once `/den` is restyled. | T26 | T34 | later |
 | 22 | Paper results: Phase 0 records no paper trades, so ι shows settings and a live count only. Revisit if a paper book of trades is ever built. | T26 | — | owner |
 | 24 | δ's strips colour by short venue (orange = short on Lighter) while orange means "clean" elsewhere; reads as "ARB alerts". | P3 critique | — | open |
-| 27 | `/den` (and any page still on the legacy look) never asks for the sky, so its opaque background hides whatever the Edition left there; restyled pages call `useRequestSky("quiet")` like /scanner. | T31 | T34 | later |
 
 ## Decided, kept for reference
 - ε lists by net and clean status and marks "shaky" (held under half of six hours); no persistence threshold is invented (owner, P3 close).
@@ -41,6 +38,9 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 
 | Item | Closed by |
 |---|---|
+| #2 `/den` dollar columns and figures in tabular digits | T34 |
+| #21 "Open the den" under ι's book | T34 |
+| #27 `/den` asks for the quiet sky | T34 |
 | #19 θ's "Enter the sky" without a canvas remount | T33 |
 | #15 "Open scanner" under ε's shortlist | T31 |
 | #6, #26 Phones had no chapter index or position cue | T30 (the phone menu lists α–κ, lights the current chapter, and jumps to it) |
