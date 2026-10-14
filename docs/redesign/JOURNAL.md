@@ -24,7 +24,6 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 16 | In the sample most coins sit at 100% held, so ε's stars bunch along the top edge; live data may spread them. Revisit with LIVE data. | T22 | — | open |
 | 17 | The kennel list is editorial and fixed; new meme listings need adding by hand. | T23 | — | later |
 | 18 | SAMPLE has only three skipped coins, so η looks sparse offline; checked with a long-list mock (`T24-shots/mock-long-lists.png`). Re-check with LIVE. | T24 | — | open |
-| 19 | θ's "Enter the sky" portal (dive into `/sky`, no canvas remount). | T25 | T33 | later |
 | 20 | With SAMPLE's twenty coins the atlas is a quiet field; it fills out with LIVE. | T25 | — | open |
 | 21 | Add the "Open the den" hairline CTA to ι once `/den` is restyled. | T26 | T34 | later |
 | 22 | Paper results: Phase 0 records no paper trades, so ι shows settings and a live count only. Revisit if a paper book of trades is ever built. | T26 | — | owner |
@@ -42,6 +41,7 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 
 | Item | Closed by |
 |---|---|
+| #19 θ's "Enter the sky" without a canvas remount | T33 |
 | #15 "Open scanner" under ε's shortlist | T31 |
 | #6, #26 Phones had no chapter index or position cue | T30 (the phone menu lists α–κ, lights the current chapter, and jumps to it) |
 | Legacy `/` swash initial ("I t does not chase price") | T14 (`/` is the Edition; legacy moved to `/v1`) |

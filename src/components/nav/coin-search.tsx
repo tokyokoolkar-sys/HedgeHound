@@ -10,8 +10,8 @@ import { formatNet } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"
 import { SourceTag } from "../edition/source-tag"
 
-/** Where a coin opens. T33 moves the sky to /sky; until then it is the existing /universe view. */
-export const SKY_ROUTE = "/universe" as const
+/** Where a coin opens: the sky, with the coin in focus (T33). */
+export const SKY_ROUTE = "/sky" as const
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void }
 

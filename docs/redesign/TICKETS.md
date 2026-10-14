@@ -175,8 +175,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 - Files: `routes/playbook.tsx`. Port `pages/Playbook.tsx` content into parchment Sheets with SwashHeading + FeatureTable. Pure content; no new animation beyond the primitives.
 
 ### T33 [S] /sky on SkyStage
-- Also: θ's "Enter the sky" hairline CTA (from T25): animate the atlas into the `/sky` view, then `navigate({ to: "/sky" })`, no canvas remount; reduced motion: plain link.
-- Files: `routes/sky.tsx`, `routes/universe.tsx` (→ redirect `/sky` keeping `?star`), `components/universe-view.tsx`. Remove its own `<Canvas>`; drive SkyStage `mode: "sky"` + `focus`. Keep the sidebar (restyle: glass, mono, sector headings in Fraunces italic) and the detail card. Delete `three/universe-scene.tsx` once parity is confirmed.
+- Rescoped in P4 (owner-approved a–e, focus "fly" picked from a prototype): θ's atlas on SkyStage with real scan rows, a list column, focus that flies into a depth field with a β-style reading, θ's "Enter the sky" with no cut, `/universe` → `/sky` redirect. The legacy view (SAMPLE blurbs, sectors, seeded sparklines, watchlist) is deleted, not restyled. Files: `routes/sky.tsx`, `components/sky/*`, `lib/stage/atlas.ts`, `objects/atlas.tsx`.
 
 ### T34 [S] /den restyle
 - Files: `components/den-desk.tsx`, `routes/den.tsx`. Tokens/type only + GlassPanel cards + NumberTicker; MiniSky uses a drei View instead of its own canvas. Don't change `lib/monte.ts` logic.
@@ -251,7 +250,8 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T27 | O | done | κ Ledger: sky dims, Sirius alone with its J2000 position, the ledger footer (source, phase, links, back to the overture); 400 tests; branch T27-ledger (notes/T27.md) |
 | T30 | O | done | nav on every page: links, poll status + SourceTag, ⌘K coin search (cmdk, → sky `?star=`), phone menu with the chapters α–κ (journal #6/#26 closed); rail and menu land on settled copy; 411 tests; branch T30-nav (notes/T30.md) |
 | T31 | O | done | /scanner: operator table on a quiet sky, filters + sort + `?sym=` in the URL, two-line rows under 1024, row → sky; quiet sky mode; Scanner in the nav; ε "Open scanner" (journal #15); `/#chapter-<id>` lands on settled copy; 417 tests; branch T31-scanner (notes/T31.md) |
-| T32–T34 | S/H | todo | T35 skipped (owner) |
+| T33 | O | done | /sky: θ's atlas explorable on the one canvas, list column, focus flies (owner pick over "reading"), β-style reading, θ "Enter the sky" without a cut (journal #19), /universe redirect, legacy universe view deleted; 443 tests; branch T33-sky (notes/T33.md) |
+| T32, T34 | S/H | todo | T35 skipped (owner) |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |
 | T41 | S | blocked: owner OK | |

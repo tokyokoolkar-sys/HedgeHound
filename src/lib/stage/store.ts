@@ -73,6 +73,19 @@ export type Scene = {
   atlasPull: number
   atlasLabels: number
   atlasAway: number
+  /**
+   * /sky (T33): a coin in focus. `atlasFocus` 0 = the whole field … 1 = arrived at the coin; `atlasFx/Fy/Fz`
+   * its atlas-local spot and depth; `atlasDepth` 0 = flat (θ) … 1 = stars at their own depths (projected to
+   * the same spots at rest); `atlasFly` 0 = "reading" (ease toward the coin) … 1 = "fly" (travel into the field).
+   */
+  atlasFocus: number
+  atlasFx: number
+  atlasFy: number
+  atlasFz: number
+  atlasDepth: number
+  atlasFly: number
+  /** Share of the view's width on the left that /sky's list takes; the field fits beside it (0 in θ). */
+  atlasInset: number
   /** ι den orb: shown, arrival, stacked focus, scroll turn (0..1), caption, recede. */
   denOn: number
   denAppear: number
@@ -138,6 +151,13 @@ export const EMPTY_SCENE: Scene = {
   atlasPull: 0,
   atlasLabels: 0,
   atlasAway: 0,
+  atlasFocus: 0,
+  atlasFx: 0,
+  atlasFy: 0,
+  atlasFz: 0,
+  atlasDepth: 0,
+  atlasFly: 0,
+  atlasInset: 0,
   denOn: 0,
   denAppear: 0,
   denFocus: 0,

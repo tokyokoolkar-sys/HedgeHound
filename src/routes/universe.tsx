@@ -1,24 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { UniverseView } from "@/components/universe-view";
+import { createFileRoute, redirect } from "@tanstack/react-router"
 
-type UniverseSearch = { star?: string };
-
+// The old Grok-built universe view is gone (T33): /universe now lands on /sky, keeping the coin in focus.
 export const Route = createFileRoute("/universe")({
-  validateSearch: (search: Record<string, unknown>): UniverseSearch => {
-    const star =
-      typeof search.star === "string" && search.star.length > 0 && search.star.length < 24
-        ? search.star
-        : undefined;
-    return { star };
+  beforeLoad: ({ search }) => {
+    const star = (search as { star?: unknown }).star
+    throw redirect({ to: "/sky", search: { star: typeof star === "string" ? star : undefined }, replace: true })
   },
-  component: UniversePage,
-});
-
-function UniversePage() {
-  const { star } = Route.useSearch();
-  return (
-    <main className="h-dvh overflow-hidden bg-bg">
-      <UniverseView initialStar={star} />
-    </main>
-  );
-}
+})

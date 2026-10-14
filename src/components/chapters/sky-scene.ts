@@ -3,7 +3,13 @@ import { band } from "@/lib/motion/math"
 import { arrival, departure, EDITION, RHYTHM } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 
-type AtlasChannels = Pick<Scene, "atlasOn" | "atlasAppear" | "atlasPull" | "atlasLabels" | "atlasAway">
+type AtlasChannels = Pick<
+  Scene,
+  "atlasOn" | "atlasAppear" | "atlasPull" | "atlasLabels" | "atlasAway" | "atlasFocus" | "atlasFx" | "atlasFy" | "atlasFz" | "atlasDepth" | "atlasFly" | "atlasInset"
+>
+
+/** In the Edition the field is flat and never takes a focus (that is /sky's, T33). */
+const FLAT = { atlasFocus: 0, atlasFx: 0, atlasFy: 0, atlasFz: 0, atlasDepth: 0, atlasFly: 0, atlasInset: 0 }
 
 /**
  * θ's scene channels. The atlas fills the whole sky on every layout (there is no second beat to take turns
@@ -17,8 +23,9 @@ export function skyScene(s: StageState): AtlasChannels {
   const arr = arrival(s.sections, defs, "sky", rhythm)
   const dep = departure(s.sections, defs, "sky", rhythm)
   const atlasOn = arr.started && dep.until ? 1 : 0
-  if (s.reduced) return { atlasOn, atlasAppear: 1, atlasPull: 1, atlasLabels: atlasOn, atlasAway: 0 }
+  if (s.reduced) return { ...FLAT, atlasOn, atlasAppear: 1, atlasPull: 1, atlasLabels: atlasOn, atlasAway: 0 }
   return {
+    ...FLAT,
     atlasOn,
     atlasAppear: arr.appear,
     atlasPull: band(p, 0.05, 0.6),
