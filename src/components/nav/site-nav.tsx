@@ -19,6 +19,7 @@ const LINKS = [
   { to: "/scanner", label: "Scanner" },
   { to: SKY_ROUTE, label: "Sky" },
   { to: "/den", label: "Den" },
+  { to: "/playbook", label: "Playbook" },
 ] as const
 
 export function SiteNav() {
@@ -47,7 +48,7 @@ export function SiteNav() {
             className="label inline-flex min-h-11 items-center gap-2 text-starlight-dim hover:text-starlight focus-visible:text-scan"
             aria-keyshortcuts="Meta+K Control+K"
           >
-            search <span aria-hidden="true">⌘K</span>
+            <span className="max-lg:sr-only">search</span> <span aria-hidden="true">⌘K</span>
           </button>
         </div>
 

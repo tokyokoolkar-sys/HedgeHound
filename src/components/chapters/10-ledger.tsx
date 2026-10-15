@@ -24,6 +24,7 @@ const LINKS = [
   { to: "/", label: "Edition" },
   { to: "/sky", label: "Sky" },
   { to: "/den", label: "Den" },
+  { to: "/playbook", label: "Playbook" },
 ] as const
 
 export function Ledger({ def, exitInto, last }: Props) {
