@@ -14,6 +14,7 @@ import { Route as KitchenRouteImport } from './routes/[_]kitchen'
 import { Route as MotionRouteImport } from './routes/[_]motion'
 import { Route as StageRouteImport } from './routes/[_]stage'
 import { Route as DenRouteImport } from './routes/den'
+import { Route as PlaybookRouteImport } from './routes/playbook'
 import { Route as ScannerRouteImport } from './routes/scanner'
 import { Route as SkyRouteImport } from './routes/sky'
 import { Route as UniverseRouteImport } from './routes/universe'
@@ -44,6 +45,11 @@ const DenRoute = DenRouteImport.update({
   path: '/den',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlaybookRoute = PlaybookRouteImport.update({
+  id: '/playbook',
+  path: '/playbook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ScannerRoute = ScannerRouteImport.update({
   id: '/scanner',
   path: '/scanner',
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/_motion': typeof MotionRoute
   '/_stage': typeof StageRoute
   '/den': typeof DenRoute
+  '/playbook': typeof PlaybookRoute
   '/scanner': typeof ScannerRoute
   '/sky': typeof SkyRoute
   '/universe': typeof UniverseRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/_motion': typeof MotionRoute
   '/_stage': typeof StageRoute
   '/den': typeof DenRoute
+  '/playbook': typeof PlaybookRoute
   '/scanner': typeof ScannerRoute
   '/sky': typeof SkyRoute
   '/universe': typeof UniverseRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/_motion': typeof MotionRoute
   '/_stage': typeof StageRoute
   '/den': typeof DenRoute
+  '/playbook': typeof PlaybookRoute
   '/scanner': typeof ScannerRoute
   '/sky': typeof SkyRoute
   '/universe': typeof UniverseRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/_motion'
     | '/_stage'
     | '/den'
+    | '/playbook'
     | '/scanner'
     | '/sky'
     | '/universe'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/_motion'
     | '/_stage'
     | '/den'
+    | '/playbook'
     | '/scanner'
     | '/sky'
     | '/universe'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/_motion'
     | '/_stage'
     | '/den'
+    | '/playbook'
     | '/scanner'
     | '/sky'
     | '/universe'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   MotionRoute: typeof MotionRoute
   StageRoute: typeof StageRoute
   DenRoute: typeof DenRoute
+  PlaybookRoute: typeof PlaybookRoute
   ScannerRoute: typeof ScannerRoute
   SkyRoute: typeof SkyRoute
   UniverseRoute: typeof UniverseRoute
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/playbook': {
+      id: '/playbook'
+      path: '/playbook'
+      fullPath: '/playbook'
+      preLoaderRoute: typeof PlaybookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/scanner': {
       id: '/scanner'
       path: '/scanner'
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   MotionRoute: MotionRoute,
   StageRoute: StageRoute,
   DenRoute: DenRoute,
+  PlaybookRoute: PlaybookRoute,
   ScannerRoute: ScannerRoute,
   SkyRoute: SkyRoute,
   UniverseRoute: UniverseRoute,
