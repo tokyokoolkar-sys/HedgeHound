@@ -19,6 +19,12 @@ const row = (symbol: string, net: number, ok: boolean, extra: Partial<ScanRow> =
   window_h: 24,
   n24: ok ? 144 : 20,
   status: ok ? "ok" : "building history",
+  lighter_hr: null,
+  binance_hr: null,
+  lighter_vol24_usd: null,
+  lighter_oi_usd: null,
+  binance_vol24_usd: null,
+  binance_oi_usd: null,
   ...extra,
 })
 

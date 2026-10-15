@@ -35,6 +35,13 @@ export function sampleScan(): ScanResult {
       window_h: r.windowH,
       n24: r.n24,
       status: r.status === "ok" ? "ok" : "building history",
+      // The sample has no per-venue measurements: those pieces of the UI hide rather than show made-up figures.
+      lighter_hr: null,
+      binance_hr: null,
+      lighter_vol24_usd: null,
+      lighter_oi_usd: null,
+      binance_vol24_usd: null,
+      binance_oi_usd: null,
     })
   }
 
