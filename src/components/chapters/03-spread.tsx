@@ -4,6 +4,7 @@
 // - instrument: objects/hedge-astrolabe.tsx, channels in spread-scene.ts;
 // - labels pinned to the astrolabe as <ProjectedLabel>s: each leg's venue, the spread hairline, the
 //   swing caption, and a caption that tags the live venue names.
+import { heldKnown } from "@/lib/scan/table"
 import { useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
 import { band } from "@/lib/motion/math"
@@ -43,7 +44,7 @@ function hedgeRows(r: ScanRow): Array<[string, ReactNode]> {
       "Net APR",
       <span className={cn("figure", r.status === "ok" ? "text-scent" : "text-starlight")}>{formatNet(r.net_apr)} after costs</span>,
     ],
-    ["Steady", `${Math.round(r.persistence * 100)}% of the last 6 h held its sign and size`],
+    ["Steady", heldKnown(r) ? `${Math.round(r.persistence * 100)}% of the last 6 h held its sign and size` : `too new to say: ${r.samples} of the last 6 h's samples so far`],
     ["Since flip", `${r.hours_since_flip.toFixed(1)} h since the sign last flipped`],
     ["History", r.status === "ok" ? `${r.n24} samples today · clean` : `building history · ${r.n24} of 144 samples`],
   ]

@@ -51,5 +51,6 @@ describe("comet geometry", () => {
   it("labels the strip in mono shorthand", () => {
     assert.equal(stripLabel(r(23.8, 4.4, 0.97)), "persist 0.97 · flip 4.4h · window 23.8h")
     assert.equal(stripLabel(r(9.5, 9.5, 1)), "persist 1.00 · no flip · window 9.5h")
+    assert.equal(stripLabel(r(0.1, 0.1, 1)), "under an hour of history so far")
   })
 })

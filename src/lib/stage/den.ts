@@ -26,6 +26,15 @@ export function clearsBar<T extends DenInput>(rows: T[], book: BookSettings): Ar
     .sort((a, b) => b.net - a.net)
 }
 
+/**
+ * Why nothing clears, when nothing does: no coin is clean yet (a fresh scanner needs a day's samples before any
+ * coin can alert), or the bar is simply higher than today's spreads. Null when something clears (T42).
+ */
+export function emptyReason(rows: DenInput[], clearing: number): "none-clean" | "bar" | null {
+  if (clearing > 0) return null
+  return rows.some((r) => r.status === "ok") ? "bar" : "none-clean"
+}
+
 /** Radius of the orb, and of the pocket sky inside it (local units). */
 export const ORB_R = 2.2
 export const POCKET_R = 1.6

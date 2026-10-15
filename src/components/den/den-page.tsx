@@ -3,12 +3,13 @@
 // year of what-ifs (simulated, never a forecast). ι's glass orb sits beside the desk holding exactly the coins
 // that clear; on phones it sits under the header and scrolls with the page. No trades exist in Phase 0, so
 // none are shown (owner, T34: the old sample book is deleted).
+import { formatHeld, heldKnown } from "@/lib/scan/table"
 import { Link } from "@tanstack/react-router"
 import { useEffect, useRef, useState } from "react"
 import { formatNet } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"
 import { CAPITAL, DEFAULT_BOOK, KILL_LOSS, dragPoints, money } from "@/lib/scent"
-import { clearsBar, denAnchor } from "@/lib/stage/den"
+import { clearsBar, denAnchor, emptyReason } from "@/lib/stage/den"
 import { SHAKY_BELOW } from "@/lib/stage/field"
 import { useRequestSky } from "@/lib/stage/request-sky"
 import { QUIET_SCENE, useStage } from "@/lib/stage/store"
@@ -175,14 +176,20 @@ export function DenPage() {
                     <span className="figure text-right tabular-nums text-scent">{formatNet(r.net)}</span>
                     <span className="label col-span-2 text-starlight-dim">
                       <span className="text-scan">↑</span> {r.long} <span className="text-scent">↓</span> {r.short} · held{" "}
-                      <span className="tabular-nums">{Math.round(r.persistence * 100)}%</span>
-                      {r.persistence < SHAKY_BELOW && <span className="text-starlight"> shaky</span>}
+                      <span className="tabular-nums">{formatHeld(r)}</span>
+                      {heldKnown(r) && r.persistence < SHAKY_BELOW && <span className="text-starlight"> shaky</span>}
                     </span>
                   </li>
                 ))}
               </ul>
             )}
-            {ready && clearing.length === 0 && <p className="label m-0 text-starlight-dim">Nothing clears this bar. Lower it, or accept a quiet hour.</p>}
+            {ready && clearing.length === 0 && (
+              <p className="label m-0 tracking-wide normal-case text-starlight-dim">
+                {emptyReason(scan.rows, 0) === "none-clean"
+                  ? "Nothing is clean yet: a coin needs a day of five-minute samples before it can clear any bar."
+                  : "Nothing clears this bar today. Lower it, or accept a quiet hour."}
+              </p>
+            )}
             <p className="label m-0 flex flex-wrap items-center gap-x-6 text-starlight-dim">
               <span>net re-counted at your hold and round trip; clean coins only</span>
               <Link

@@ -4,6 +4,7 @@
 //   strips, each the same 24-hour picture as the trail, with mono shorthand and one SourceTag;
 // - instrument: objects/comet-trail.tsx (the loudest scent, the same coin as β and γ), channels in
 //   trail-scene.ts; labels pinned to it as <ProjectedLabel>s.
+import { heldKnown } from "@/lib/scan/table"
 import { band } from "@/lib/motion/math"
 import { useRef, type ReactNode } from "react"
 import { pickLoudest } from "@/lib/scan/loudest"
@@ -129,7 +130,7 @@ function TrailLabels({ row, tag }: { row: ScanRow; tag: ReactNode }) {
             last six hours held. It never sits on the arc, the bracket or the end labels. */}
         <ProjectedLabel point={() => trailToWorld(ARC_W, ARC_Y0 - 0.45)} offset="translate(-100%, 0)" className="label grid justify-items-end gap-1 whitespace-nowrap text-starlight-dim">
           <span>{flipped(row) ? `last flip · ${row.hours_since_flip.toFixed(1)} h ago` : `held all ${row.window_h.toFixed(1)} h of samples`}</span>
-          <span>held {Math.round(row.persistence * 100)}% of the last 6 h</span>
+          <span>{heldKnown(row) ? `held ${Math.round(row.persistence * 100)}% of the last 6 h` : "too new to say how much it held"}</span>
         </ProjectedLabel>
       </div>
     </>

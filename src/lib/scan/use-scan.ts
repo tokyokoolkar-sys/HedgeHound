@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
+import { useMounted } from "../use-mounted.ts"
 import { fetchScan } from "./api.ts"
 import { secondsToNextPoll } from "./normalize.ts"
 import { isStale, nextMisses, refetchIntervalMs, scanKey, staleTimeMs } from "./query.ts"
@@ -55,7 +56,11 @@ export function useScan(params: Partial<ScanParams> = {}): UseScan {
     staleTime: (q) => staleTimeMs(q.state.data),
   })
 
-  const scan = query.data ?? sample()
+  // Hydration-safe: the server always renders the sample, so the first client render does too, even when a live
+  // answer is already in the cache by then (T42: a live poll arriving before hydration mismatched the carousel).
+  const mounted = useMounted()
+  const data = mounted ? query.data : undefined
+  const scan = data ?? sample()
   const ts = scan.ts
 
   // Ticks only on the client, after mount, so the server render never carries a clock.
@@ -76,6 +81,6 @@ export function useScan(params: Partial<ScanParams> = {}): UseScan {
     nextPollIn: ts !== null && now !== null ? secondsToNextPoll(ts, now) : null,
     stale: scan.live && isStale(ts, now),
     err: scan.err,
-    loading: query.data === undefined,
+    loading: data === undefined,
   }
 }

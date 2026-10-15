@@ -10,7 +10,20 @@ import { useMounted } from "@/lib/use-mounted"
 import { SHAKY_BELOW } from "@/lib/stage/field"
 import { DEFAULT_SCAN_PARAMS, type ScanRow } from "@/lib/scan/types"
 import { useScan } from "@/lib/scan/use-scan"
-import { MIN_RANGE, OK_SAMPLES, firstDir, formatFlip, nextSort, pct, tableRows, type ScannerSearch, type SortKey, type StatusFilter } from "@/lib/scan/table"
+import {
+  tableRows,
+  pct,
+  firstDir,
+  formatFlip,
+  formatHeld,
+  heldKnown,
+  MIN_RANGE,
+  nextSort,
+  OK_SAMPLES,
+  type ScannerSearch,
+  type SortKey,
+  type StatusFilter,
+} from "@/lib/scan/table"
 import { HairlineSlider } from "../controls/hairline-slider"
 import { SourceTag } from "../edition/source-tag"
 import { SKY_ROUTE } from "../nav/coin-search"
@@ -226,7 +239,11 @@ function HeaderCell({ col, sort, dir, onSort }: { col: (typeof COLUMNS)[number];
   const align = col.num ? "justify-end text-right" : "justify-start"
   if (!col.key)
     return (
-      <div role="columnheader" title={col.title} className={cn("label flex min-h-11 items-center whitespace-nowrap text-starlight-dim", align, col.wide && "hidden xl:flex")}>
+      <div
+        role="columnheader"
+        title={col.title}
+        className={cn("label flex min-h-11 items-center whitespace-nowrap text-starlight-dim", align, col.wide && "hidden xl:flex")}
+      >
         {col.label}
       </div>
     )
@@ -251,7 +268,7 @@ function HeaderCell({ col, sort, dir, onSort }: { col: (typeof COLUMNS)[number];
 function Row({ r, on, onOpen }: { r: ScanRow; on: boolean; onOpen: () => void }) {
   const ok = r.status === "ok"
   const alert = ok && r.net_apr > 0
-  const shaky = r.persistence < SHAKY_BELOW
+  const shaky = heldKnown(r) && r.persistence < SHAKY_BELOW
   const net = <span className={cn("figure tabular-nums", alert ? "text-scent" : "text-starlight")}>{pct(r.net_apr)}</span>
   const legs = (
     <span className="whitespace-nowrap">
@@ -296,7 +313,7 @@ function Row({ r, on, onOpen }: { r: ScanRow; on: boolean; onOpen: () => void })
         <Cell num>{net}</Cell>
       </div>
       <p role="cell" className="label m-0 text-starlight-dim lg:hidden">
-        {legs} · held <span className="tabular-nums">{Math.round(r.persistence * 100)}%</span>
+        {legs} · held <span className="tabular-nums">{formatHeld(r)}</span>
         {shaky && <span className="text-starlight"> shaky</span>}
       </p>
       <Cell num at="xl">
@@ -305,7 +322,7 @@ function Row({ r, on, onOpen }: { r: ScanRow; on: boolean; onOpen: () => void })
       <Cell num at="lg">
         <span className="label tabular-nums text-starlight-dim">
           {shaky && <span className="text-starlight">shaky </span>}
-          {Math.round(r.persistence * 100)}%
+          {formatHeld(r)}
         </span>
       </Cell>
       <Cell num at="lg">

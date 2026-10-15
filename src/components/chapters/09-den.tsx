@@ -9,7 +9,7 @@ import { useRef, type ReactNode } from "react"
 import { CAPITAL } from "@/lib/scent"
 import { formatNet } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"
-import { clearsBar } from "@/lib/stage/den"
+import { clearsBar, emptyReason } from "@/lib/stage/den"
 import type { ChapterDef } from "@/content/edition"
 import { useBook } from "../objects/use-book"
 import { useInstrumentLayout } from "../objects/use-radar"
@@ -97,13 +97,13 @@ export function Den({ def, exitInto, last }: Props) {
           <p>{scan.live ? "Live reading from the local scanner" : "Sample data, not a live reading"}</p>
         </div>
       )}
-      <OrbCaption count={clearing.length} minNet={book.minNet} hold={book.hold} tag={live} />
+      <OrbCaption count={clearing.length} minNet={book.minNet} hold={book.hold} tag={live} noneClean={emptyReason(scan.rows, clearing.length) === "none-clean"} />
     </>
   )
 }
 
 /** A fixed caption under the orb's column: what the pocket sky holds. */
-function OrbCaption({ count, minNet, hold, tag }: { count: number; minNet: number; hold: number; tag: ReactNode }) {
+function OrbCaption({ count, minNet, hold, tag, noneClean }: { count: number; minNet: number; hold: number; tag: ReactNode; noneClean: boolean }) {
   const layout = useInstrumentLayout()
   const ref = useRef<HTMLDivElement>(null)
   useScrollFrame((s) => applyLook(ref.current, { opacity: s.scene.denLabels, y: 0, blur: 0 }))
@@ -122,7 +122,7 @@ function OrbCaption({ count, minNet, hold, tag }: { count: number; minNet: numbe
         {tag}
       </span>
       <span>
-        net ≥ {minNet}% at a {hold} h hold
+        {noneClean ? "no coin is clean yet: the scanner needs a day of samples" : `net ≥ ${minNet}% at a ${hold} h hold`}
       </span>
     </div>
   )
