@@ -10,34 +10,15 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as KitchenRouteImport } from './routes/[_]kitchen'
-import { Route as MotionRouteImport } from './routes/[_]motion'
-import { Route as StageRouteImport } from './routes/[_]stage'
 import { Route as DenRouteImport } from './routes/den'
 import { Route as PlaybookRouteImport } from './routes/playbook'
 import { Route as ScannerRouteImport } from './routes/scanner'
 import { Route as SkyRouteImport } from './routes/sky'
 import { Route as UniverseRouteImport } from './routes/universe'
-import { Route as V1RouteImport } from './routes/v1'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KitchenRoute = KitchenRouteImport.update({
-  id: '/_kitchen',
-  path: '/_kitchen',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MotionRoute = MotionRouteImport.update({
-  id: '/_motion',
-  path: '/_motion',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StageRoute = StageRouteImport.update({
-  id: '/_stage',
-  path: '/_stage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DenRoute = DenRouteImport.update({
@@ -65,99 +46,48 @@ const UniverseRoute = UniverseRouteImport.update({
   path: '/universe',
   getParentRoute: () => rootRouteImport,
 } as any)
-const V1Route = V1RouteImport.update({
-  id: '/v1',
-  path: '/v1',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/_kitchen': typeof KitchenRoute
-  '/_motion': typeof MotionRoute
-  '/_stage': typeof StageRoute
   '/den': typeof DenRoute
   '/playbook': typeof PlaybookRoute
   '/scanner': typeof ScannerRoute
   '/sky': typeof SkyRoute
   '/universe': typeof UniverseRoute
-  '/v1': typeof V1Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/_kitchen': typeof KitchenRoute
-  '/_motion': typeof MotionRoute
-  '/_stage': typeof StageRoute
   '/den': typeof DenRoute
   '/playbook': typeof PlaybookRoute
   '/scanner': typeof ScannerRoute
   '/sky': typeof SkyRoute
   '/universe': typeof UniverseRoute
-  '/v1': typeof V1Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_kitchen': typeof KitchenRoute
-  '/_motion': typeof MotionRoute
-  '/_stage': typeof StageRoute
   '/den': typeof DenRoute
   '/playbook': typeof PlaybookRoute
   '/scanner': typeof ScannerRoute
   '/sky': typeof SkyRoute
   '/universe': typeof UniverseRoute
-  '/v1': typeof V1Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/_kitchen'
-    | '/_motion'
-    | '/_stage'
-    | '/den'
-    | '/playbook'
-    | '/scanner'
-    | '/sky'
-    | '/universe'
-    | '/v1'
+  fullPaths: '/' | '/den' | '/playbook' | '/scanner' | '/sky' | '/universe'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/_kitchen'
-    | '/_motion'
-    | '/_stage'
-    | '/den'
-    | '/playbook'
-    | '/scanner'
-    | '/sky'
-    | '/universe'
-    | '/v1'
+  to: '/' | '/den' | '/playbook' | '/scanner' | '/sky' | '/universe'
   id:
-    | '__root__'
-    | '/'
-    | '/_kitchen'
-    | '/_motion'
-    | '/_stage'
-    | '/den'
-    | '/playbook'
-    | '/scanner'
-    | '/sky'
-    | '/universe'
-    | '/v1'
+    '__root__' | '/' | '/den' | '/playbook' | '/scanner' | '/sky' | '/universe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  KitchenRoute: typeof KitchenRoute
-  MotionRoute: typeof MotionRoute
-  StageRoute: typeof StageRoute
   DenRoute: typeof DenRoute
   PlaybookRoute: typeof PlaybookRoute
   ScannerRoute: typeof ScannerRoute
   SkyRoute: typeof SkyRoute
   UniverseRoute: typeof UniverseRoute
-  V1Route: typeof V1Route
 }
 
 declare module '@tanstack/react-router' {
@@ -167,27 +97,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_kitchen': {
-      id: '/_kitchen'
-      path: '/_kitchen'
-      fullPath: '/_kitchen'
-      preLoaderRoute: typeof KitchenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_motion': {
-      id: '/_motion'
-      path: '/_motion'
-      fullPath: '/_motion'
-      preLoaderRoute: typeof MotionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_stage': {
-      id: '/_stage'
-      path: '/_stage'
-      fullPath: '/_stage'
-      preLoaderRoute: typeof StageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/den': {
@@ -225,27 +134,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UniverseRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/v1': {
-      id: '/v1'
-      path: '/v1'
-      fullPath: '/v1'
-      preLoaderRoute: typeof V1RouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  KitchenRoute: KitchenRoute,
-  MotionRoute: MotionRoute,
-  StageRoute: StageRoute,
   DenRoute: DenRoute,
   PlaybookRoute: PlaybookRoute,
   ScannerRoute: ScannerRoute,
   SkyRoute: SkyRoute,
   UniverseRoute: UniverseRoute,
-  V1Route: V1Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

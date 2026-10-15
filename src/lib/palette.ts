@@ -16,21 +16,6 @@ export const palette = {
   starlightDimAlpha: 0.62,
   starlightFaintAlpha: 0.38,
 
-  // v1 palette, used by the legacy pages and scenes until they are rebuilt (T10 decision 1b). Remove in T51.
-  bg: "#090705",
-  surface: "#16110c",
-  fg: "#f6f0e6",
-  v1Muted: "#b3a498",
-  faint: "#7a6d60",
-  line: "#3a2e24",
-  brand: "#ff6a1a",
-  ember: "#ffb15a",
-  scorch: "#c2410c",
-  clay: "#e07a64",
-  cream: "#f3ead7",
-  cream2: "#e6d9c4",
-  ink: "#1c140e",
-  inkSoft: "#5c4a3a",
 } as const
 
 export type PaletteKey = keyof typeof palette

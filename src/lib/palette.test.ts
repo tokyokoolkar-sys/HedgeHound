@@ -16,7 +16,7 @@ const hexTokens = Object.fromEntries(
 
 describe("palette.ts ↔ styles.css @theme", () => {
   it("found the @theme block", () => {
-    assert.ok(Object.keys(hexTokens).length >= 20, `only parsed ${Object.keys(hexTokens).length} hex tokens`)
+    assert.ok(Object.keys(hexTokens).length >= 7, `only parsed ${Object.keys(hexTokens).length} hex tokens`)
   })
 
   it("every hex token in styles.css has the same value in palette.ts", () => {
