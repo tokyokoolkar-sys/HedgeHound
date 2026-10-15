@@ -26,6 +26,8 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 20 | With SAMPLE's twenty coins the atlas is a quiet field; it fills out with LIVE. | T25 | — | open |
 | 22 | Paper results: Phase 0 records no paper trades, so ι shows settings and a live count only. Revisit if a paper book of trades is ever built. | T26 | — | owner |
 | 24 | δ's strips colour by short venue (orange = short on Lighter) while orange means "clean" elsewhere; reads as "ARB alerts". | P3 critique | — | open |
+| 28 | The Grok template's plumbing (`lib/auth`, `lib/app-data`, `lib/db`, `lib/multiplayer`, the preview bridge, pglite in vite.config) is unreachable from the routes but may be wired outside them; removing it is its own decision. | P4 close | — | owner |
+| 29 | `components/text-fx/*` (blur reveal, shimmer, gradient wave, perspective text) is kept as the owner's kit but nothing uses it yet. | P4 close | — | open |
 
 ## Decided, kept for reference
 - ε lists by net and clean status and marks "shaky" (held under half of six hours); no persistence threshold is invented (owner, P3 close).
