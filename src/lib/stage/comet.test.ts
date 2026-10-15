@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
-import { ARC_RISE, ARC_W, arcNormal, arcPoint, directionRole, flipped, headAt, segments, stripLabel } from "./comet.ts"
+import { ARC_RISE, ARC_W, historyPath, arcNormal, arcPoint, directionRole, flipped, headAt, segments, stripLabel } from "./comet.ts"
 import { INSTRUMENT_EXTENT } from "./layout.ts"
 
 const r = (window_h: number, hours_since_flip: number, persistence = 0.5, short = "Lighter") => ({ window_h, hours_since_flip, persistence, short })
@@ -52,5 +52,22 @@ describe("comet geometry", () => {
     assert.equal(stripLabel(r(23.8, 4.4, 0.97)), "persist 0.97 · flip 4.4h · window 23.8h")
     assert.equal(stripLabel(r(9.5, 9.5, 1)), "persist 1.00 · no flip · window 9.5h")
     assert.equal(stripLabel(r(0.1, 0.1, 1)), "under an hour of history so far")
+  })
+})
+
+describe("measured day (T43)", () => {
+  const now = 100 * 3600_000
+  it("draws oldest left, newest right, scaled about zero", () => {
+    const d = historyPath([{ ts: now - 24 * 3600_000, spreadApr: 10 }, { ts: now, spreadApr: -10 }], now, 240, 16)!
+    assert.equal(d, "M0.0 1.0 L240.0 15.0")
+  })
+  it("a young run fills the strip from its first poll", () => {
+    const d = historyPath([{ ts: now - 1800_000, spreadApr: 4 }, { ts: now - 900_000, spreadApr: 4 }, { ts: now, spreadApr: 4 }], now, 240, 16)!
+    assert.ok(d.startsWith("M0.0 ") && d.includes("L120.0 ") && d.endsWith(" 1.0"))
+  })
+  it("needs two points inside the day", () => {
+    assert.equal(historyPath([{ ts: now, spreadApr: 3 }], now, 240, 16), null)
+    assert.equal(historyPath([{ ts: now - 30 * 3600_000, spreadApr: 3 }, { ts: now, spreadApr: 3 }], now, 240, 16), null)
+    // (the old point is outside the day; one point left)
   })
 })

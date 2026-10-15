@@ -3,6 +3,9 @@
 // takes it into focus and its reading grows out of a leader line, as in β. A working page: the only motion is
 // the focus itself and the arrival from θ, both short eased tweens (instant under reduced motion).
 // Focus "flies" (owner pick, T33): the camera travels into the field, every coin at its own depth.
+import { hourlyApr } from "@/lib/scan/history"
+import { useHistory } from "@/lib/scan/use-history"
+import { historyPath, historyStart } from "@/lib/stage/comet"
 import { Link, useNavigate } from "@tanstack/react-router"
 import { Dialog } from "radix-ui"
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react"
@@ -253,7 +256,7 @@ export function SkyPage({ star }: { star?: string }) {
             <ProjectedLabel point={() => atlasWorld.get(focused.symbol) ?? null} offset="translate(18px, -50%)" className="flex items-center">
               <span ref={leader} className="block h-px origin-left bg-starlight-faint" style={{ width: LEADER_PX, transform: "scaleX(0)" }} />
               <Stardust progress={(s) => band(s.scene.atlasFocus, 0.6, 1)} className="pl-4">
-                <Reading r={focused} tag={tag} onBack={() => focus(undefined)} />
+                <Reading r={focused} tag={tag} live={scan.live} onBack={() => focus(undefined)} />
               </Stardust>
             </ProjectedLabel>
           )}
@@ -261,7 +264,7 @@ export function SkyPage({ star }: { star?: string }) {
       )}
       {docked && focused && (
         <div ref={dock} className="fixed inset-x-0 bottom-0 px-[max(16px,7vw)] pb-6" style={{ visibility: "hidden" }}>
-          <Reading r={focused} tag={tag} onBack={() => focus(undefined)} />
+          <Reading r={focused} tag={tag} live={scan.live} onBack={() => focus(undefined)} />
         </div>
       )}
       <p className="sr-only" aria-live="polite">
@@ -301,7 +304,31 @@ function StarLabel({ k, bright }: { k: AtlasStar; bright?: boolean }) {
   )
 }
 
-function Reading({ r, tag, onBack }: { r: ScanRow; tag: ReactNode; onBack: () => void }) {
+/** The coin's measured day (T41): the signed spread about a zero line, 24 h ago → now. Hidden without history. */
+function DayLine({ r, live }: { r: ScanRow; live: boolean }) {
+  const points = useHistory(r.symbol, live)
+  const now = Date.now()
+  const d = points ? historyPath(points, now, 240, 28) : null
+  if (!d || !points) return null
+  // Left end: 24 h ago, or the first poll of a younger run (its clock time).
+  const t0 = historyStart(points, now)
+  const since = now - t0 >= 23.5 * 3600_000 ? "−24 h" : new Date(t0).toTimeString().slice(0, 5)
+  return (
+    <figure className="m-0 mt-4 grid gap-1">
+      <svg viewBox="0 0 240 28" className="block h-7 w-60 max-w-full overflow-visible" aria-hidden="true">
+        <line x1={0} y1={14} x2={240} y2={14} stroke="currentColor" strokeWidth={1} className="text-starlight-faint" opacity={0.5} vectorEffect="non-scaling-stroke" />
+        <path d={d} fill="none" stroke="currentColor" strokeWidth={1.25} className="text-starlight" vectorEffect="non-scaling-stroke" />
+      </svg>
+      <figcaption className="label flex justify-between text-starlight-dim">
+        <span>{since}</span>
+        <span>the spread · zero in the middle</span>
+        <span>now</span>
+      </figcaption>
+    </figure>
+  )
+}
+
+function Reading({ r, tag, onBack, live }: { r: ScanRow; tag: ReactNode; onBack: () => void; live: boolean }) {
   const ok = r.status === "ok"
   const shaky = heldKnown(r) && r.persistence < SHAKY_BELOW
   const rows: Array<[string, ReactNode]> = [
@@ -321,6 +348,9 @@ function Reading({ r, tag, onBack }: { r: ScanRow; tag: ReactNode; onBack: () =>
         <span className="text-scan">↑</span> {r.long} <span className="text-scent">↓</span> {r.short}
       </span>,
     ],
+    ...(r.lighter_hr != null && r.binance_hr != null
+      ? ([["funding now", <span className="whitespace-nowrap">Lighter {hourlyApr(r.lighter_hr)} · Binance {hourlyApr(r.binance_hr)}</span>]] as Array<[string, ReactNode]>)
+      : []),
     // Liquidation distance comes from the leverage, not the coin (P4 critique), so it says which.
     [`liq dist at ${DEFAULT_SCAN_PARAMS.lev}×`, pct(r.liq_dist)],
   ]
@@ -343,6 +373,7 @@ function Reading({ r, tag, onBack }: { r: ScanRow; tag: ReactNode; onBack: () =>
           </div>
         ))}
       </dl>
+      <DayLine r={r} live={live} />
       <p className="label m-0 mt-3 flex flex-wrap items-center gap-x-6">
         <Link to="/scanner" search={{ sym: r.symbol }} className="inline-flex min-h-11 items-center text-starlight underline decoration-starlight-faint decoration-1 underline-offset-[6px] hover:decoration-starlight focus-visible:text-scan">
           Open in scanner →

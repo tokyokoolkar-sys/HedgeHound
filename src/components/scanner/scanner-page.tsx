@@ -2,6 +2,7 @@
 // title, filters that live in the URL, and every coin of the last poll as mono rows straight on the sky.
 // The column header sits outside the scrolling rows, so rows clip crisply at its hairline instead of
 // sliding under it (no band, no fade). Rows open the coin on the sky.
+import { hourlyApr } from "@/lib/scan/history"
 import { Link, useNavigate } from "@tanstack/react-router"
 import { useEffect, useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
@@ -34,9 +35,9 @@ const GUTTER = "px-[max(16px,7vw)]"
  * rows are two lines; at 1024 seven columns; gross and liq dist join from 1280 (`wide`).
  */
 const COLS =
-  "lg:grid lg:grid-cols-[minmax(6.5rem,1.3fr)_minmax(4.5rem,1fr)_minmax(6.5rem,1fr)_minmax(5rem,1fr)_minmax(5rem,1fr)_minmax(11rem,1.5fr)_minmax(5.5rem,1fr)] lg:gap-x-4 xl:grid-cols-[minmax(7rem,1.3fr)_minmax(4.5rem,1fr)_minmax(4.5rem,1fr)_minmax(6.5rem,1fr)_minmax(5rem,1fr)_minmax(5rem,1fr)_minmax(11rem,1.5fr)_minmax(4.5rem,1fr)_minmax(5.5rem,1fr)]"
+  "lg:grid lg:grid-cols-[minmax(6.5rem,1.3fr)_minmax(4.5rem,1fr)_minmax(6.5rem,1fr)_minmax(5rem,1fr)_minmax(5rem,1fr)_minmax(11rem,1.5fr)_minmax(5.5rem,1fr)] lg:gap-x-4 xl:grid-cols-[minmax(7rem,1.3fr)_minmax(4.5rem,1fr)_minmax(4.5rem,1fr)_minmax(6.5rem,1fr)_minmax(5rem,1fr)_minmax(5rem,1fr)_minmax(11rem,1.5fr)_minmax(4.5rem,1fr)_minmax(5.5rem,1fr)] hd:grid-cols-[minmax(7rem,1.3fr)_minmax(4.5rem,1fr)_minmax(4.5rem,1fr)_minmax(6.5rem,1fr)_minmax(5rem,1fr)_minmax(5rem,1fr)_minmax(11rem,1.5fr)_minmax(10rem,1.3fr)_minmax(4.5rem,1fr)_minmax(5.5rem,1fr)]"
 
-const COLUMNS: Array<{ key: SortKey | null; label: string; num?: boolean; wide?: boolean; title: string }> = [
+const COLUMNS: Array<{ key: SortKey | null; label: string; num?: boolean; wide?: boolean; widest?: boolean; title: string }> = [
   { key: "symbol", label: "coin", title: "Symbol" },
   { key: "net", label: "net", num: true, title: "Net APR after the round-trip cost at the hold" },
   { key: "gross", label: "gross", num: true, wide: true, title: "Gross APR of the funding spread" },
@@ -54,6 +55,8 @@ const COLUMNS: Array<{ key: SortKey | null; label: string; num?: boolean; wide?:
   },
   { key: "flip", label: "last flip", num: true, title: "Hours since the spread last changed sign" },
   { key: null, label: "legs", title: "Venue to be long (↑) and short (↓)" },
+  // T41: each venue's latest hourly funding, as APR; from 1440 px.
+  { key: null, label: "funding L · B", widest: true, title: "Latest hourly funding on Lighter and on Binance, as APR" },
   {
     key: "liq",
     wide: true,
@@ -242,14 +245,14 @@ function HeaderCell({ col, sort, dir, onSort }: { col: (typeof COLUMNS)[number];
       <div
         role="columnheader"
         title={col.title}
-        className={cn("label flex min-h-11 items-center whitespace-nowrap text-starlight-dim", align, col.wide && "hidden xl:flex")}
+        className={cn("label flex min-h-11 items-center whitespace-nowrap text-starlight-dim", align, col.wide && "hidden xl:flex", col.widest && "hidden hd:flex")}
       >
         {col.label}
       </div>
     )
   const key = col.key
   return (
-    <div role="columnheader" aria-sort={ariaSort} className={cn("flex", align, col.wide && "hidden xl:flex")}>
+    <div role="columnheader" aria-sort={ariaSort} className={cn("flex", align, col.wide && "hidden xl:flex", col.widest && "hidden hd:flex")}>
       <button
         type="button"
         title={col.title}
@@ -336,6 +339,11 @@ function Row({ r, on, onOpen }: { r: ScanRow; on: boolean; onOpen: () => void })
       <Cell at="lg">
         <span className="label text-starlight-dim">{legs}</span>
       </Cell>
+      <Cell at="x2">
+        <span className="label tabular-nums text-starlight-dim">
+          {r.lighter_hr != null && r.binance_hr != null ? `L ${hourlyApr(r.lighter_hr)} · B ${hourlyApr(r.binance_hr)}` : "—"}
+        </span>
+      </Cell>
       <Cell num at="xl">
         <span className="label tabular-nums text-starlight-dim">{pct(r.liq_dist)}</span>
       </Cell>
@@ -347,9 +355,9 @@ function Row({ r, on, onOpen }: { r: ScanRow; on: boolean; onOpen: () => void })
 }
 
 /** `at`: the width from which the cell has its own column (below it, the row's two-line form carries it). */
-function Cell({ children, num, at }: { children: ReactNode; num?: boolean; at?: "lg" | "xl" }) {
+function Cell({ children, num, at }: { children: ReactNode; num?: boolean; at?: "lg" | "xl" | "x2" }) {
   return (
-    <div role="cell" className={cn("whitespace-nowrap", num && "text-right", at === "lg" && "hidden lg:block", at === "xl" && "hidden xl:block")}>
+    <div role="cell" className={cn("whitespace-nowrap", num && "text-right", at === "lg" && "hidden lg:block", at === "xl" && "hidden xl:block", at === "x2" && "hidden hd:block")}>
       {children}
     </div>
   )
