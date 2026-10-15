@@ -1,6 +1,7 @@
 // A second copy beat in a chapter (PLAN §4.3): it takes the place of the chapter's first copy once that
 // has blurred out (ChapterDef.out), in the same left column. The heading resolves from blur, the ruled
 // rows rise in sequence, and the beat blurs out upward at the end. Scroll-locked and reversible.
+import { Greek } from "./greek"
 import { useEffect, useRef, type ReactNode } from "react"
 import { band, smooth } from "@/lib/motion/math"
 import { BODY_BLUR, resolveIn } from "@/lib/motion/choreo"
@@ -98,8 +99,10 @@ export function Beat({ section, beat, letter, stacked, rows, footer, action }: P
         </div>
       )}
       {beat.note && (
-        <p data-row aria-hidden="true" className="label mt-4 mb-0 text-starlight-dim">
-          {beat.note}
+        // Notes are footnote sentences: mono in sentence case (long uppercase lines are hard to read), Greek
+        // letters in their own case and colour.
+        <p data-row aria-hidden="true" className="label mt-4 mb-0 tracking-wide normal-case text-starlight-dim">
+          <Greek>{beat.note}</Greek>
         </p>
       )}
       {action && (

@@ -84,7 +84,7 @@ export const CHAPTERS: ChapterDef[] = [
     kicker: "Canis Major",
     title: "The hound in the sky",
     body: ["Every coin is a star. Brightness is the spread it carries; a steady light is a spread that stays."],
-    note: "Positions J2000 · Bayer letters, after Ptolemy’s Almagest",
+    note: "Positions J2000 · Bayer letters (Uranometria) · figure after Ptolemy’s Almagest",
     length: "300svh",
     enter: "rise",
     layout: "left",
@@ -196,7 +196,7 @@ export const CHAPTERS: ChapterDef[] = [
     title: "The Hedge",
     subtitle: "Where the hour actually disagrees.",
     body: [
-      "Three things to weigh before a spread earns a second look: does it clear the round trip at the hold you expect, did it hold through the last six hours, and has it earned a clean status, with enough samples in the trailing day to trust its average. The chart plots the first two for every coin; orange marks the clean ones. The list below ranks by the first and third, and shows how much each one held, so you can judge the second.",
+      "Three tests before a spread earns a second look. It clears its costs: net of the round trip at the hold you expect. It held: kept its sign and size through the last six hours. It is clean: enough samples in the trailing day to trust its average. The chart puts every coin at its net, across, and how much it held, up; orange marks the clean ones. The list below ranks the clean coins by net and shows how much each one held.",
     ],
     out: [0.52, 0.6],
     // The rows are live (the shortlist), filled in by chapters/05-hedge.tsx.

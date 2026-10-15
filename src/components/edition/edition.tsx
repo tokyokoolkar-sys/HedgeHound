@@ -75,7 +75,8 @@ export function Edition() {
       transition: crawl ?? 0,
       scene: {
         houndAway: reduced ? (h > 0.5 ? 1 : 0) : band(h, 0.12, 1),
-        canisOn: h > 0.5 && c < 0.5 ? 1 : 0,
+        // Reduced motion: Canis Major leaves before the carousel's slot (c 0.3) instead of at the crawl's midpoint.
+        canisOn: h > 0.5 && c < (reduced ? 0.25 : 0.5) ? 1 : 0,
         canisForm: reduced ? 1 : band(a, 0, 0.42),
         canisLines: reduced ? 1 : band(a, 0.22, 0.5),
         canisLabels: reduced ? 1 : band(a, 0.38, 0.5) * (1 - band(a, 0.8, 0.95)),

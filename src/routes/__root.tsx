@@ -24,7 +24,8 @@ export const Route = createRootRoute({
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/__grok/manifest.webmanifest" },
+      // Our own manifest (the template's is named "Grok App"; P4 close).
+      { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
     ],
   }),
@@ -46,8 +47,16 @@ function RootDocument() {
           {/* T12: the one sky canvas; dormant until a page calls useRequestSky(). */}
           <SkyHost />
           <AuthProvider>
+            <a
+              href="#content"
+              className="label fixed top-2 left-2 z-[60] -translate-y-16 bg-void px-3 py-2 text-starlight focus-visible:translate-y-0"
+            >
+              Skip to content
+            </a>
             <SiteNav />
-            <Outlet />
+            <div id="content" tabIndex={-1} className="outline-none">
+              <Outlet />
+            </div>
           </AuthProvider>
         </QueryClientProvider>
         <Scripts />

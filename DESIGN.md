@@ -254,7 +254,7 @@ A chapter may hand its left column to a second beat (β: "What the scanner check
 Copy resolves from a small blur and rises; **body copy never blurs past 3px** (`BODY_BLUR`), because more turns paragraphs into grey fog. A chapter carried out by the next crawl does not fade first (no pop back). Steps are numbered with mono figures (01, 02, 03), never Roman numerals. Every chapter's copy is also in its scroll section as screen-reader text; the fixed visual block is `aria-hidden`.
 
 ### Symbol carousel
-`@spell/logos-carousel` showing the coins the hound is watching, in groups of five, with a staggered rise in and out. Each symbol shows its net APR underneath, orange if alerting. The featured coin is excluded, and one SourceTag covers the carousel.
+The coins the hound is watching, in groups of five, during the α→β crawl. The groups change with the scroll, not a timer (owner, P4 close): each item rises in staggered, holds, and the group leaves before the next arrives, so two groups never share the screen. Each symbol shows its net APR underneath, orange only when clean and paying (the one rule for orange everywhere). The featured coin is excluded, and one SourceTag covers the carousel. Reduced motion: the first five, still, in their own slot of the crawl section (Canis Major leaves before it, the radar arrives after it).
 
 ### Shimmer title
 `@spell/shimmer-text` wrapping the display title. The shimmer contrast is pure white (the component's upstream `dark:` black is removed: this site's `dark` variant always applies), and the base colour is starlight at 0.82. The title's size class also sits on the shimmer wrapper so its em padding leaves room for descenders. Under reduced motion the title is plain starlight, no frozen gradient.
@@ -263,7 +263,7 @@ Copy resolves from a small blur and rises; **body copy never blurs past 3px** (`
 `SKY_COLORS` are THREE.Colors, already linear through three's colour management. Shaders use them as they are and apply the 2.2 curve to the falloff only; applying it to the colour too linearised twice and turned scent orange red (P3 critique). The glass keeps its own tuned curve.
 
 ### Signature: the bite crawl
-The scene-to-scene transition, done as a post effect plus matching DOM masks.
+The scene-to-scene transition, done as a post effect plus matching DOM masks. The crawl's sparse stars are kept out of the nav band and the bottom coordinate line, where they read as dirt on the words.
 - As you scroll, a ragged front rises.
 - Every 4px cell (plus 14px chunks) has its own fixed moment to be bitten.
 - Once bitten, a cell stays gone, so each bit of scroll adds new bite marks.
@@ -279,6 +279,16 @@ The extruded hound mark in a custom glass shader:
 - one highlight that follows the cursor
 
 It never animates by itself. On scroll it recedes exponentially (slow, then faster and smaller) and the constellation's stars burst out where it vanished. The mark itself is draft art that still needs a proper drawing.
+
+### P4 close rules (critique, owner picks)
+- **Orange is one rule:** clean and paying (status ok and net > 0), in every instrument, list and label. A gathering coin stays starlight until it lands.
+- **Phones take turns, also at a chapter's start:** a rising chapter's instrument waits until its copy has settled, then fades in under it.
+- **Featured moments are never empty:** the coins gather as the instrument grows and the labels hold until it goes; on desktop, an instrument has settled before its copy's body is readable.
+- **Reduced motion has slots:** with no crawl to hide a swap, an instrument leaves as soon as its chapter ends and the next arrives in its own slot; nothing double-exposes.
+- **Greek keeps its case and colour inside labels;** footnote notes are mono in sentence case (no uppercase lines past about sixty characters).
+- **Lines never run through words:** the radar's halves are named once above the ring; κ shows only the Greek letters on phones and runs Aludra's name to the left on wide screens; ε's labels point right, away from break-even.
+- **θ is a little louder:** the pull-back settles by 0.28 and the recap labels and caption hold from there; coins slightly larger and brighter than in the instruments.
+- **Chrome holds still:** the nav reserves the scanner status's room from the first paint; dialogs return focus to what opened them; one thin faint scrollbar everywhere, on a dark colour scheme; a skip link; forced-colours fallbacks for the shimmer titles and speck masks.
 
 ## Do's and Don'ts
 

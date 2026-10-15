@@ -6,6 +6,7 @@
 // - the ledger footer below: where the figures come from (with a tag), the phase, the links, a way back
 //   to the overture, ©. It is real, focusable page content (not inside the aria-hidden copy block).
 import { Link } from "@tanstack/react-router"
+import { LINKS } from "../nav/links"
 import { useRef } from "react"
 import { band } from "@/lib/motion/math"
 import { scrollToTarget } from "@/lib/motion/scroll-bus"
@@ -20,12 +21,6 @@ import { useScrollFrame } from "../edition/use-scroll-frame"
 
 type Props = { def: ChapterDef; exitInto?: string; last?: boolean }
 
-const LINKS = [
-  { to: "/", label: "Edition" },
-  { to: "/sky", label: "Sky" },
-  { to: "/den", label: "Den" },
-  { to: "/playbook", label: "Playbook" },
-] as const
 
 export function Ledger({ def, exitInto, last }: Props) {
   const scan = useScan()
@@ -54,7 +49,7 @@ export function Ledger({ def, exitInto, last }: Props) {
         </p>
         <p className="m-0">scanner at {SCANNER_ADDRESS}</p>
         <p className="m-0">Phase 0 · paper only · no order code · no exchange keys</p>
-        <nav aria-label="Pages" className="pointer-events-auto flex flex-wrap items-center justify-center gap-x-6">
+        <nav aria-label="Footer" className="pointer-events-auto flex flex-wrap items-center justify-center gap-x-6">
           {LINKS.map((l) => (
             <Link key={l.to} to={l.to} className="inline-flex min-h-11 items-center text-starlight hover:text-scan focus-visible:text-scan">
               {l.label}

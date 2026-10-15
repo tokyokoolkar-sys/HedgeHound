@@ -66,9 +66,10 @@ export type SampleFigures = Omit<Star, keyof Layout>
  */
 export type EmberList = "zero" | "young" | "thin"
 export const EMBER_REASONS: Record<EmberList, string> = {
-  zero: "Binance printed an exact-zero funding rate. That is no signal — it used to fake four-digit APRs.",
-  young: "Less than 30 days since Binance onboarded it. The risk rule skips new listings.",
-  thin: "Both legs must clear $250k of 24h volume and $50k of open interest. This one does not.",
+  // Short enough that all three fit η's beat at 1440×900 (P4 critique: the third one dropped out).
+  zero: "An exact-zero rate on Binance: no signal, and it once faked four-digit APRs.",
+  young: "Listed on Binance less than 30 days ago. New listings are skipped.",
+  thin: "Under $250k of 24h volume or $50k of open interest on a leg.",
 }
 
 /**

@@ -21,7 +21,7 @@ export function Stardust({ progress, className, style, children }: Props) {
     if (ref.current) applyStardust(ref.current, s.reduced ? (p > 0 ? 1 : 0) : p)
   })
   return (
-    <div ref={ref} className={className} style={{ visibility: "hidden", ...style }}>
+    <div ref={ref} data-stardust className={className} style={{ visibility: "hidden", ...style }}>
       {children}
     </div>
   )

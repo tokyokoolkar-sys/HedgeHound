@@ -28,6 +28,8 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 24 | δ's strips colour by short venue (orange = short on Lighter) while orange means "clean" elsewhere; reads as "ARB alerts". | P3 critique | — | open |
 | 28 | The Grok template's plumbing (`lib/auth`, `lib/app-data`, `lib/db`, `lib/multiplayer`, the preview bridge, pglite in vite.config) is unreachable from the routes but may be wired outside them; removing it is its own decision. | P4 close | — | owner |
 | 29 | `components/text-fx/*` (blur reveal, shimmer, gradient wave, perspective text) is kept as the owner's kit but nothing uses it yet. | P4 close | — | open |
+| 30 | The overture → α stretch is the longest run without words (about four phone screens). Designed; revisit only if it reads as empty. | P4 critique (C12) | — | owner |
+| 31 | The sky redraws every frame even when nothing moves; skip frames when idle. Also measure the production bundle once (`vite build` with a size report). | P4 critique (C13, C14) | P6 | later |
 
 ## Decided, kept for reference
 - ε lists by net and clean status and marks "shaky" (held under half of six hours); no persistence threshold is invented (owner, P3 close).

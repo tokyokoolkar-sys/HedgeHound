@@ -196,8 +196,8 @@ const SECTIONS: Section[] = [
     body: (
       <ol className="m-0 grid list-none p-0">
         {RULES.map((r, i) => (
-          <li key={r} className="grid grid-cols-[2rem_1fr] gap-x-3 border-t border-starlight-faint py-3">
-            <span className="label pt-1.5 tabular-nums text-starlight-dim">{i + 1}</span>
+          <li key={r} className="grid grid-cols-[2.5rem_1fr] items-baseline gap-x-3 border-t border-starlight-faint py-3">
+            <span className="font-mono text-sm tabular-nums text-starlight-dim">{String(i + 1).padStart(2, "0")}</span>
             <span>{r}</span>
           </li>
         ))}
@@ -225,7 +225,7 @@ const SECTIONS: Section[] = [
             </li>
           ))}
         </ul>
-        <p className="label">Open question: the Monte Carlo defaults are my assumptions, not measured data. Phase 0 replaces them with real numbers.</p>
+        <p className="label tracking-wide normal-case">Open question: the Monte Carlo defaults are my assumptions, not measured data. Phase 0 replaces them with real numbers.</p>
       </>
     ),
   },

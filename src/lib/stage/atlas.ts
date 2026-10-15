@@ -25,7 +25,8 @@ export function placeAtlas(rows: AtlasInput[]): AtlasStar[] {
     ok: r.status === "ok",
     x: (symbolHash(r.symbol) * 2 - 1) * SPREAD_X,
     y: (symbolHash(r.symbol + "/atlas") * 2 - 1) * SPREAD_Y + LIFT_Y,
-    size: r.net_apr > 0 ? 6 + Math.min(1, r.net_apr / 60) * 12 : 4,
+    // θ is the act IV opener: coins a little larger than in the instruments (owner, P4 close: "a little louder").
+    size: r.net_apr > 0 ? 7 + Math.min(1, r.net_apr / 60) * 14 : 5,
     shake: Math.min(1, Math.max(0, 1 - r.persistence)),
   }))
 }

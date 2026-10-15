@@ -14,7 +14,7 @@ import { useStage } from "@/lib/stage/store"
 import { SKY_COLORS } from "../stage/star-points"
 
 const starVert = /* glsl */ `
-uniform float uPR, uForm;
+uniform float uPR, uForm; uniform vec3 uTransit;
 attribute vec3 aStart; attribute float aSize; attribute vec3 aColor; attribute float aDelay;
 varying vec3 vColor; varying float vA;
 void main() {
@@ -23,7 +23,9 @@ void main() {
   vec3 p = mix(aStart, position, t);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
   gl_PointSize = aSize * uPR;
-  vColor = aColor;
+  // A coin only takes its colour once it has landed: in transit every coin is the same dim starlight, so orange
+  // never shows left of break-even while the copy says "orange marks the clean ones" (P4 critique).
+  vColor = mix(uTransit, aColor, smoothstep(0.75, 1.0, t));
   vA = 0.35 + 0.65 * t;
 }`
 
@@ -99,7 +101,7 @@ export function FieldChart() {
         transparent: true,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
-        uniforms: { uPR: { value: 1 }, uForm: { value: 0 }, uOpacity: { value: 0 } },
+        uniforms: { uPR: { value: 1 }, uForm: { value: 0 }, uOpacity: { value: 0 }, uTransit: { value: SKY_COLORS.star.clone().multiplyScalar(0.55) } },
       }),
     [],
   )

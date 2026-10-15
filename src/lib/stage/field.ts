@@ -52,7 +52,9 @@ const LABEL_W = 1.9
 const GAP_Y = 0.36
 
 /** Labels run right of their star; near the right edge they turn back (left). */
-export const fieldLabelSide = (k: { x: number }) => (k.x > FIELD_W - 1.5 ? "left" : "right")
+// Labels point right, away from break-even and the crowd beside it; only coins too near the right edge for a
+// label (it may overhang the axis a little, into the instrument's own box) point left (P4 critique).
+export const fieldLabelSide = (k: { x: number }) => (k.x > FIELD_W - 0.9 ? "left" : "right")
 const span = (k: FieldStar): [number, number] => (fieldLabelSide(k) === "right" ? [k.x, k.x + LABEL_W] : [k.x - LABEL_W, k.x])
 
 /** Up to `n` labelled coins: the loudest that clear their costs; no two label boxes overlap (side-aware). */

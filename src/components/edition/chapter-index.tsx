@@ -34,7 +34,7 @@ export function ChapterIndex() {
             e.preventDefault()
             jumpToChapter(c.id)
           }}
-          className="bayer text-starlight-dim transition-[color,translate] duration-500 hover:text-starlight focus-visible:text-scan data-[on]:translate-x-1 data-[on]:text-scan"
+          className="bayer -mx-2 -my-1 px-2 py-1 text-starlight-dim transition-[color,translate] duration-500 hover:text-starlight focus-visible:text-scan data-[on]:translate-x-1 data-[on]:text-scan"
         >
           {c.letter}
         </a>

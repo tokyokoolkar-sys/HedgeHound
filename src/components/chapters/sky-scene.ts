@@ -13,7 +13,7 @@ const FLAT = { atlasFocus: 0, atlasFx: 0, atlasFy: 0, atlasFz: 0, atlasDepth: 0,
 
 /**
  * θ's scene channels. The atlas fills the whole sky on every layout (there is no second beat to take turns
- * with): it fades in close-up, the camera pulls back to the whole field (0.05–0.6), the recap labels
+ * with): it fades in close-up, the camera pulls back to the whole field (0.04–0.28), the recap labels
  * arrive, and it recedes as the chapter ends.
  */
 export function skyScene(s: StageState): AtlasChannels {
@@ -21,15 +21,17 @@ export function skyScene(s: StageState): AtlasChannels {
   const rhythm = RHYTHM
   const defs = EDITION
   const arr = arrival(s.sections, defs, "sky", rhythm)
-  const dep = departure(s.sections, defs, "sky", rhythm)
+  const dep = departure(s.sections, defs, "sky", rhythm, s.reduced)
   const atlasOn = arr.started && dep.until ? 1 : 0
   if (s.reduced) return { ...FLAT, atlasOn, atlasAppear: 1, atlasPull: 1, atlasLabels: atlasOn, atlasAway: 0 }
   return {
     ...FLAT,
     atlasOn,
     atlasAppear: arr.appear,
-    atlasPull: band(p, 0.05, 0.6),
-    atlasLabels: band(p, 0.52, 0.62) * (1 - band(p, 0.86, 0.94)),
+    // The pull-back settles early and the labels follow it, so θ never reads as an empty sky (owner, P4
+    // close: "a little louder") and no label rides the moving field to the edge.
+    atlasPull: band(p, 0.04, 0.28),
+    atlasLabels: band(p, 0.26, 0.34) * (1 - band(p, 0.86, 0.94)),
     atlasAway: dep.away,
   }
 }

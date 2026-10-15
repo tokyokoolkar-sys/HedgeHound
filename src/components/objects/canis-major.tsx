@@ -101,7 +101,17 @@ export function CanisMajor({ labelHost }: { labelHost: HTMLElement }) {
       arr.set([pa[0], pa[1], 0, pa[0] + (pb[0] - pa[0]) * t, pa[1] + (pb[1] - pa[1]) * t, 0], i * 6)
     })
     lineGeo.attributes.position.needsUpdate = true
-    labels.current.forEach((el) => el && (el.style.opacity = String(sc.canisLabels)))
+    // κ draws the hound small: on phones only the Greek letters fit (owner, P4 close), and on wide screens
+    // Aludra's name runs to the left of its star so the Aludra–Wezen line never crosses it.
+    const kappa = sc.canisPlace > 0.5
+    labels.current.forEach((el, i) => {
+      if (!el) return
+      el.style.opacity = String(sc.canisLabels)
+      const name = el.querySelector<HTMLElement>("[data-name]")
+      if (name) name.style.display = kappa && narrow ? "none" : ""
+      el.style.translate = kappa && !narrow && CMA[i].key === "eta" ? "calc(-100% - 0.625rem) -1.25rem" : ""
+      el.style.flexDirection = kappa && !narrow && CMA[i].key === "eta" ? "row-reverse" : ""
+    })
   })
 
   return (
@@ -118,7 +128,11 @@ export function CanisMajor({ labelHost }: { labelHost: HTMLElement }) {
               style={{ opacity: 0 }}
             >
               <span className="bayer">{s.bayer}</span>
-              {s.name && <span className={`label ${s.key === "alpha" ? "text-starlight" : "text-starlight-dim"}`}>{s.name}</span>}
+              {s.name && (
+                <span data-name className={`label ${s.key === "alpha" ? "text-starlight" : "text-starlight-dim"}`}>
+                  {s.name}
+                </span>
+              )}
             </div>
           </Html>
         )

@@ -123,12 +123,22 @@
 }
 
 @layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-starlight-faint) transparent;
+  }
+
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
 
   html {
+    /* Dark UA chrome (form controls, scrollbars) and one thin faint scrollbar everywhere a list scrolls:
+       never the native white or grey bar with arrows on the void (P4 critique). */
+    color-scheme: dark;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-starlight-faint) transparent;
     background: var(--color-void);
     color: var(--color-starlight);
   }
@@ -246,5 +256,20 @@
 @media (prefers-reduced-motion: reduce) {
   .sky-arrive {
     animation: none;
+  }
+}
+
+/* Windows High Contrast (forced colours): the shimmer's clipped background is dropped there, which left the
+   chapter titles almost invisible, and speck masks turned the readings to noise (P4 critique). Plain system
+   text instead. */
+@media (forced-colors: active) {
+  [data-shimmer] {
+    -webkit-text-fill-color: CanvasText !important;
+    background: none !important;
+  }
+  [data-stardust] {
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+    filter: none !important;
   }
 }

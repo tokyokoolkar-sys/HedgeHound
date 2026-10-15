@@ -18,7 +18,8 @@ export function sniffScene(s: StageState): RadarChannels {
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
   if (stacked) {
     // Phones: rings tucked under the steps, then the radar alone with its reading, gone before the rules.
-    const radarOn = c >= 0.5 && b < 0.78 ? 1 : 0
+    // Reduced motion: the radar waits for the carousel's slot to end (c 0.7), so nothing double-exposes.
+    const radarOn = (s.reduced ? c >= 0.75 || b > 0 : c >= 0.5) && b < 0.78 ? 1 : 0
     if (s.reduced) {
       const featured = b >= 0.53 ? 1 : 0
       return { radarOn, radarAppear: 1, radarFocus: featured, radarLabels: radarOn * featured, reading: radarOn * featured, radarAway: 0 }
@@ -34,8 +35,8 @@ export function sniffScene(s: StageState): RadarChannels {
   }
   const rhythm = RHYTHM
   const defs = EDITION
-  const dep = departure(s.sections, defs, "sniff", rhythm)
-  const radarOn = c >= 0.5 && dep.until ? 1 : 0
+  const dep = departure(s.sections, defs, "sniff", rhythm, s.reduced)
+  const radarOn = (s.reduced ? c >= 0.75 || b > 0 : c >= 0.5) && dep.until ? 1 : 0
   if (s.reduced) return { radarOn, radarAppear: 1, radarFocus: 1, radarLabels: radarOn, reading: radarOn, radarAway: 0 }
   return {
     radarOn,

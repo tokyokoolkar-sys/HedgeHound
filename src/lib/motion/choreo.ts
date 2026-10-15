@@ -107,5 +107,19 @@ export function wordLook(q: number, i: number, n: number): Look {
   const step = Math.min(0.08, 0.6 / Math.max(1, n))
   const t = band(q * (1 + n * step) - i * step, 0, 1)
   const k = smooth(t)
-  return { opacity: k, y: (1 - k) * 4, blur: (1 - k) * 14 }
+  // Body copy never blurs past BODY_BLUR, even mid-resolve (DESIGN.md; P4 critique).
+  return { opacity: k, y: (1 - k) * 4, blur: (1 - k) * BODY_BLUR }
+}
+
+/**
+ * A scroll-locked cycle of n groups over u (0..1): item k of group g comes in, holds, and leaves before the
+ * next group arrives (no two groups ever share the screen). The first group starts in, the last never leaves.
+ */
+export function groupItem(u: number, n: number, g: number, k: number): Look {
+  const local = u * n - g
+  const lag = k * 0.04
+  const into = g === 0 ? 1 : band(local, 0.04 + lag, 0.3 + lag)
+  const out = g === n - 1 ? 0 : band(local, 0.7 + lag, 0.9 + lag)
+  const o = smooth(into) * (1 - smooth(out))
+  return { opacity: o, y: (1 - smooth(into)) * 18 - smooth(out) * 12, blur: (1 - o) * BODY_BLUR }
 }

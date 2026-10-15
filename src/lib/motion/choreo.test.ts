@@ -2,7 +2,7 @@ import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 import { CHAPTERS, chapterOf, enterId } from "../../content/edition.ts"
 import { formatCoordinate } from "../stage/coordinates.ts"
-import { BODY_BLUR, copyFrame, crawlFront, resolveIn, swapItem, wordLook } from "./choreo.ts"
+import { BODY_BLUR, copyFrame, crawlFront, groupItem, resolveIn, swapItem, wordLook } from "./choreo.ts"
 
 const vh = 900
 
@@ -52,6 +52,7 @@ describe("copy choreography", () => {
     assert.ok(wordLook(0.3, 0, 10).opacity > wordLook(0.3, 5, 10).opacity)
     for (let i = 0; i < 10; i++) assert.equal(wordLook(1, i, 10).opacity, 1)
     assert.equal(wordLook(0, 0, 10).opacity, 0)
+    for (let q = 0; q <= 1; q += 0.05) for (let i = 0; i < 10; i++) assert.ok(wordLook(q, i, 10).blur <= BODY_BLUR)
   })
 
   it("crawlFront: idle outside the crawl, eats first, rebuilds second", () => {
@@ -149,5 +150,17 @@ describe("hand-offs (T15 critique)", () => {
       assert.ok(f.block.blur <= BODY_BLUR + 1e-9 && f.item(0).blur <= BODY_BLUR + 1e-9)
       assert.ok(swapItem(p, 0, 3).blur <= BODY_BLUR + 1e-9)
     }
+  })
+})
+
+describe("carousel groups", () => {
+  it("never shows two groups at once, and shows one through the window", () => {
+    const n = 4
+    for (let u = 0; u <= 1; u += 0.005) {
+      const on = Array.from({ length: n }, (_, g) => Math.max(...[0, 1, 2, 3, 4].map((k) => groupItem(u, n, g, k).opacity))).filter((o) => o > 0.01)
+      assert.ok(on.length <= 1, `u=${u.toFixed(3)} has ${on.length} groups`)
+    }
+    assert.equal(groupItem(0, n, 0, 0).opacity, 1)
+    assert.equal(groupItem(1, n, n - 1, 4).opacity, 1)
   })
 })

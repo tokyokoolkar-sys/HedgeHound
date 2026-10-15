@@ -57,6 +57,9 @@ export function WhatIfs() {
           />
         ))}
       </div>
+      <p className="label m-0 tracking-wide normal-case text-starlight-dim">
+        Jumpiness: how far the net spread can swing in a day, in APR points. Scare: the chance, per day in a trade, of a sudden 25% hit.
+      </p>
       {v.lev > 2 && <p className="label m-0 text-starlight">above the 2× hard cap: a what-if only, never a setting for the book</p>}
 
       <div>
