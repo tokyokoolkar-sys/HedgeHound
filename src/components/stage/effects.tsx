@@ -16,6 +16,8 @@ export function Effects() {
     u.get("uProgress")!.value = s.reduced ? 0 : s.transition
     u.get("uMode")!.value = s.grain === "pixel" ? 0 : 1
     ;(u.get("uRes")!.value as THREE.Vector2).set(size.width * gl.getPixelRatio(), size.height * gl.getPixelRatio())
+    // The nav band (64 px) and the bottom coordinate line (about 56 px) stay clear of crawl stars.
+    ;(u.get("uChrome")!.value as THREE.Vector2).set(72 / size.height, 56 / size.height)
   })
   return (
     <EffectComposer multisampling={0}>

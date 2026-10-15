@@ -17,7 +17,8 @@ export function carouselRows(rows: ScanRow[], exclude: string | null, max = 30, 
   const list = rows
     .filter((r) => r.symbol !== exclude)
     .slice(0, max)
-    .map((r) => ({ symbol: r.symbol, net: r.net_apr, alert: r.status === "ok" }))
+    // Orange means clean and paying, the same rule as the radar, the search and the scanner (P4 close).
+    .map((r) => ({ symbol: r.symbol, net: r.net_apr, alert: r.status === "ok" && r.net_apr > 0 }))
   return list.slice(0, list.length - (list.length % group))
 }
 

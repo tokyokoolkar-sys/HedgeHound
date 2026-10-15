@@ -62,8 +62,8 @@ export function Atlas() {
     const shake = new Float32Array(n)
     const phase = new Float32Array(n)
     const depth = new Float32Array(n)
-    const dim = SKY_COLORS.star.clone().multiplyScalar(0.75)
-    const loss = SKY_COLORS.star.clone().multiplyScalar(0.4)
+    const dim = SKY_COLORS.star.clone().multiplyScalar(0.85)
+    const loss = SKY_COLORS.star.clone().multiplyScalar(0.48)
     stars.forEach((k, i) => {
       pos.set([k.x, k.y, 0], i * 3)
       const c = k.net <= 0 ? loss : k.ok ? SKY_COLORS.scent : dim

@@ -16,8 +16,8 @@ export function denScene(s: StageState): DenChannels {
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
   const rhythm = RHYTHM
   const defs = EDITION
-  const arr = arrival(s.sections, defs, "den", rhythm)
-  const dep = departure(s.sections, defs, "den", rhythm)
+  const arr = arrival(s.sections, defs, "den", rhythm, stacked)
+  const dep = departure(s.sections, defs, "den", rhythm, s.reduced)
   const denOn = arr.started && (stacked ? p < 0.78 : dep.until) ? 1 : 0
   if (s.reduced) {
     const featured = !stacked || p >= 0.53 ? 1 : 0

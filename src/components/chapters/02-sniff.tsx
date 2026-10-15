@@ -8,7 +8,7 @@ import { useRef } from "react"
 import { cn } from "@/lib/cn"
 import { band } from "@/lib/motion/math"
 import { formatNet } from "@/lib/scan/loudest"
-import { R_OUT, captionsBelow, dockFor, radarToWorld, topCoins } from "@/lib/stage/radar"
+import { R_OUT, dockFor, radarToWorld, topCoins } from "@/lib/stage/radar"
 import type { ChapterDef } from "@/content/edition"
 import { useInstrumentLayout, useRadar } from "../objects/use-radar"
 import { Beat } from "../edition/beat"
@@ -47,7 +47,6 @@ function RadarLabels() {
   const dock = anchor ? dockFor(anchor, layout.dock) : null
   const below = layout.dock === "below"
   const compact = layout.r < 180
-  const capsBelow = captionsBelow(anchor)
   const tag = <SourceTag kind={scan.live ? "live" : "sample"} ts={scan.ts ?? undefined} stale={scan.stale} className="text-starlight" />
 
   useScrollFrame((s) => {
@@ -69,20 +68,13 @@ function RadarLabels() {
             <span className={cn("figure text-xs", k.ok ? "text-scent" : "text-starlight")}>{formatNet(k.net)}</span>
           </ProjectedLabel>
         ))}
-        {/* The halves: which venue carries the short leg (two lines on small rings, so they never meet),
-            on the side of the axis away from the featured star so the leader line never crosses them. */}
-        <ProjectedLabel point={() => radarToWorld(-R_OUT + 0.15, capsBelow ? -0.12 : 0.12)} offset={capsBelow ? "translate(0, 0)" : "translate(0, -100%)"} className="label whitespace-nowrap text-starlight-dim">
-          ◂ short{compact ? <br /> : " "}Binance
-        </ProjectedLabel>
-        <ProjectedLabel
-          point={() => radarToWorld(R_OUT - 0.15, capsBelow ? -0.12 : 0.12)}
-          offset={capsBelow ? "translate(-100%, 0)" : "translate(-100%, -100%)"}
-          className="label text-right whitespace-nowrap text-starlight-dim"
-        >
-          short{compact ? <br /> : " "}Lighter ▸
+        {/* The halves, named once above the ring and centred on its axis: outside the rings, so no stroke or coin
+            ever runs through the words (P4 critique). Left of the axis the short leg is on Binance, right on Lighter. */}
+        <ProjectedLabel point={() => radarToWorld(0, R_OUT + 0.14)} offset="translate(-50%, -100%)" className="label whitespace-nowrap text-starlight-dim">
+          ◂ short Binance · short Lighter ▸
         </ProjectedLabel>
         {/* Caption + key: names the instrument, tags its figures, and says how to read it. */}
-        <ProjectedLabel point={() => radarToWorld(-R_OUT, R_OUT + 0.3)} offset="translate(0, -100%)" className={cn("grid gap-1.5", !compact && "whitespace-nowrap")} style={compact ? { width: Math.max(260, layout.r * 2.1) } : undefined}>
+        <ProjectedLabel point={() => radarToWorld(-R_OUT, R_OUT + 0.62)} offset="translate(0, -100%)" className={cn("grid gap-1.5", !compact && "whitespace-nowrap")} style={compact ? { width: Math.max(260, layout.r * 2.1) } : undefined}>
           <span className="flex items-baseline gap-3">
             <span className="label text-starlight-dim">
               <span className="bayer mr-1">β</span> radar · {placed.length} coins

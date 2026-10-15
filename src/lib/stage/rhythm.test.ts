@@ -43,6 +43,15 @@ describe("handovers", () => {
     assert.deepEqual(d, { until: true, away: 0 })
     assert.equal(departure({ trail: 1, [enterId("hedge")]: 0.6 }, defs, "trail", RHYTHM).until, false)
   })
+  it("under reduced motion an instrument leaves when its chapter ends, not through the crawl", () => {
+    assert.equal(departure({ trail: 1, [enterId("hedge")]: 0.3 }, defs, "trail", RHYTHM, true).until, false)
+    assert.equal(departure({ trail: 0.9 }, defs, "trail", RHYTHM, true).until, true)
+  })
+  it("on phones a rising chapter's instrument waits until its copy has settled", () => {
+    assert.equal(arrival({ spread: 0.1 }, defs, "spread", RHYTHM, true).started, false)
+    assert.equal(arrival({ spread: 0.1 }, defs, "spread", RHYTHM).started, true)
+    assert.ok(arrival({ spread: 0.3 }, defs, "spread", RHYTHM, true).appear > 0.99)
+  })
   it("inside an act, travel/fade hand over in place at the very end; recede into depth earlier", () => {
     assert.equal(departure({ spread: 0.9 }, defs, "spread", RHYTHM).away, 0)
     assert.ok(departure({ spread: 0.9 }, defs, "spread", { ...RHYTHM, handover: "recede" }).away > 0)

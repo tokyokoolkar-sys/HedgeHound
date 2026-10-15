@@ -17,8 +17,8 @@ export function hedgeScene(s: StageState): FieldChannels {
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
   const rhythm = RHYTHM
   const defs = EDITION
-  const arr = arrival(s.sections, defs, "hedge", rhythm)
-  const dep = departure(s.sections, defs, "hedge", rhythm)
+  const arr = arrival(s.sections, defs, "hedge", rhythm, stacked)
+  const dep = departure(s.sections, defs, "hedge", rhythm, s.reduced)
   const fieldOn = arr.started && (stacked ? p < 0.78 : dep.until) ? 1 : 0
   if (s.reduced) {
     const featured = !stacked || p >= 0.53 ? 1 : 0
@@ -29,9 +29,10 @@ export function hedgeScene(s: StageState): FieldChannels {
     return {
       fieldOn,
       fieldAppear: appear,
-      fieldFocus: band(p, 0.53, 0.6),
-      fieldForm: band(p, 0.58, 0.67),
-      fieldLabels: band(p, 0.65, 0.68) * (1 - band(p, 0.7, 0.73)),
+      // The featured moment is never empty: the coins gather as it grows and the labels hold until it goes.
+      fieldFocus: band(p, 0.52, 0.58),
+      fieldForm: band(p, 0.52, 0.62),
+      fieldLabels: band(p, 0.59, 0.63) * (1 - band(p, 0.71, 0.74)),
       fieldAway: band(p, 0.73, 0.78),
     }
   }
@@ -39,8 +40,9 @@ export function hedgeScene(s: StageState): FieldChannels {
     fieldOn,
     fieldAppear: appear,
     fieldFocus: 1,
-    fieldForm: band(p, 0.18, 0.48),
-    fieldLabels: band(p, 0.44, 0.52) * (1 - band(p, 0.86, 0.94)),
+    // Settled before the copy's body is readable (P4 critique), labels right after.
+    fieldForm: band(p, 0.04, 0.26),
+    fieldLabels: band(p, 0.24, 0.32) * (1 - band(p, 0.86, 0.94)),
     fieldAway: dep.away,
   }
 }

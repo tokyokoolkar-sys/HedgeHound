@@ -3,7 +3,7 @@
  *
  * Split (T40):
  *  - LAYOUT: sector, 3D position and blurb per coin, plus LINKS (art direction).
- *  - SAMPLE: static figures. `allRows()`, `boardRows()` and `trailFor()` are derived from the sample
+ *  - SAMPLE: static figures. `allRows()` and `trailFor()` are derived from the sample
  *    and are SAMPLE data. (The sample paper book of trades was deleted in T34: Phase 0 records none.)
  *    `trailFor()` synthesizes its points from a seeded RNG; it never reads a measurement.
  *  - Live data lives in `src/lib/scan`.
@@ -60,34 +60,16 @@ export type Layout = Pick<Star, "sector" | "pos" | "blurb">
 /** Figures half of a Star: static sample numbers. */
 export type SampleFigures = Omit<Star, keyof Layout>
 
-export const SECTORS: Record<Sector, { name: string; line: string }> = {
-  canis: {
-    name: "Canis",
-    line: "The hound. Deep books, small disagreements. The shape of the mark, not usually the trade.",
-  },
-  hedge: {
-    name: "The Hedge",
-    line: "Where the hour actually disagrees, and both legs still have a book.",
-  },
-  kennel: {
-    name: "The Kennel",
-    line: "Memes. Faster funding, worse manners. Persistence has to earn the alert.",
-  },
-  embers: {
-    name: "Cold embers",
-    line: "Walked past on purpose. A zero rate, a young listing, or a thin book.",
-  },
-}
-
 /**
  * Why a coin is a cold ember, by scanner list (`meta.skipped_*`). One string per list,
  * shared by the SAMPLE embers below and by `lib/scan/adapter.ts` for live embers.
  */
 export type EmberList = "zero" | "young" | "thin"
 export const EMBER_REASONS: Record<EmberList, string> = {
-  zero: "Binance printed an exact-zero funding rate. That is no signal — it used to fake four-digit APRs.",
-  young: "Less than 30 days since Binance onboarded it. The risk rule skips new listings.",
-  thin: "Both legs must clear $250k of 24h volume and $50k of open interest. This one does not.",
+  // Short enough that all three fit η's beat at 1440×900 (P4 critique: the third one dropped out).
+  zero: "An exact-zero rate on Binance: no signal, and it once faked four-digit APRs.",
+  young: "Listed on Binance less than 30 days ago. New listings are skipped.",
+  thin: "Under $250k of 24h volume or $50k of open interest on a leg.",
 }
 
 /**
@@ -340,22 +322,6 @@ export function allRows(book: BookSettings = DEFAULT_BOOK): Row[] {
   })
 }
 
-export function boardRows(book: BookSettings = DEFAULT_BOOK) {
-  return allRows(book)
-    .filter((r) => r.status !== "filtered")
-    .filter((r) => r.status === "building history" || r.netApr >= book.minNet)
-    .sort((a, b) => {
-      if (a.alert !== b.alert) return a.alert ? -1 : 1
-      const rank = (r: Row) => (r.status === "ok" ? 0 : 1)
-      if (rank(a) !== rank(b)) return rank(a) - rank(b)
-      return b.netApr - a.netApr
-    })
-}
-
-export function starBySymbol(symbol: string) {
-  return STARS.find((s) => s.symbol === symbol)
-}
-
 function clamp(n: unknown, lo: number, hi: number, fallback: number) {
   const x = typeof n === "number" ? n : Number(n)
   if (!Number.isFinite(x)) return fallback
@@ -388,9 +354,3 @@ export function money(n: number, digits = 2) {
   return `${sign}$${Math.abs(n).toFixed(digits)}`
 }
 
-export function usdCompact(n: number) {
-  if (n >= 1e9) return `$${(n / 1e9).toFixed(1)}B`
-  if (n >= 1e6) return `$${(n / 1e6).toFixed(1)}M`
-  if (n >= 1e3) return `$${(n / 1e3).toFixed(0)}k`
-  return `$${n.toFixed(0)}`
-}

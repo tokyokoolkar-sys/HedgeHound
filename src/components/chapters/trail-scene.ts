@@ -17,8 +17,8 @@ export function trailScene(s: StageState): TrailChannels {
   const stacked = isStacked(document.documentElement.clientWidth, window.innerHeight)
   const rhythm = RHYTHM
   const defs = EDITION
-  const arr = arrival(s.sections, defs, "trail", rhythm)
-  const dep = departure(s.sections, defs, "trail", rhythm)
+  const arr = arrival(s.sections, defs, "trail", rhythm, stacked)
+  const dep = departure(s.sections, defs, "trail", rhythm, s.reduced)
   const trailOn = arr.started && (stacked ? p < 0.78 : dep.until) ? 1 : 0
   if (s.reduced) {
     const featured = !stacked || p >= 0.53 ? 1 : 0

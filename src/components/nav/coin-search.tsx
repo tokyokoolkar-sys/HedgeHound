@@ -2,13 +2,14 @@
 // (not the shadcn skin): a hairline frame on the void, mono rows, no glass, no blur. Every figure in the list
 // is tagged (one SourceTag for the group). Opens with ⌘K / Ctrl+K, or "/" when not typing elsewhere.
 import { useNavigate, useRouterState } from "@tanstack/react-router"
-import { Command } from "cmdk"
+import { Command, useCommandState } from "cmdk"
 import { Dialog } from "radix-ui"
 import { useEffect } from "react"
 import { cn } from "@/lib/cn"
 import { formatNet } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"
 import { SourceTag } from "../edition/source-tag"
+import { useOpener } from "./use-opener"
 
 /** Where a coin opens: the sky, with the coin in focus (T33). */
 export const SKY_ROUTE = "/sky" as const
@@ -18,6 +19,8 @@ type Props = { open: boolean; onOpenChange: (open: boolean) => void }
 export function CoinSearch({ open, onOpenChange }: Props) {
   const scan = useScan()
   const navigate = useNavigate()
+  // Keyboard focus goes back to whatever opened the search (a button, or the page for ⌘K / "/").
+  const returnFocus = useOpener()
   // On /scanner a coin is pointed out in the table instead of leaving the page.
   const onScanner = useRouterState({ select: (s) => s.location.pathname }) === "/scanner"
 
@@ -44,6 +47,7 @@ export function CoinSearch({ open, onOpenChange }: Props) {
         <Dialog.Overlay className="fixed inset-0 z-50 bg-void/85" />
         <Dialog.Content
           aria-describedby={undefined}
+          onCloseAutoFocus={returnFocus}
           className="fixed top-[16svh] left-1/2 z-50 w-[min(560px,calc(100%-32px))] -translate-x-1/2 border border-starlight-faint bg-void text-starlight outline-none"
         >
           <Dialog.Title className="sr-only">Search a coin</Dialog.Title>
@@ -63,7 +67,9 @@ export function CoinSearch({ open, onOpenChange }: Props) {
               <Command.Group
                 heading={
                   <span className="flex items-baseline justify-between gap-3 px-2 pb-1">
-                    <span>{rows.length} coins · net after costs</span>
+                    <span>
+                      <MatchCount total={rows.length} /> coins<span className="max-sm:hidden"> · net after costs</span>
+                    </span>
                     <SourceTag kind={scan.live ? "live" : "sample"} ts={scan.ts ?? undefined} stale={scan.stale} className="text-starlight" />
                   </span>
                 }
@@ -96,4 +102,11 @@ export function CoinSearch({ open, onOpenChange }: Props) {
       </Dialog.Portal>
     </Dialog.Root>
   )
+}
+
+/** "20" while nothing is typed, "1 of 20" while a search narrows the list. */
+function MatchCount({ total }: { total: number }) {
+  const shown = useCommandState((s) => s.filtered.count)
+  const typed = useCommandState((s) => s.search.length > 0)
+  return <span className="tabular-nums">{typed ? `${shown} of ${total}` : total}</span>
 }

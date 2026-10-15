@@ -9,6 +9,7 @@ const fragment = /* glsl */ `
 uniform float uProgress;
 uniform float uMode;   // 0 pixel, 1 dither (default)
 uniform vec2 uRes;
+uniform vec2 uChrome;  // CSS-px bands kept free of crawl stars: the nav (top) and the coordinate line (bottom), as uv fractions
 
 // Hoskins hash12: no diagonal banding on integer cell coordinates.
 float hash(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
@@ -52,7 +53,9 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
   float star = step(0.993, hash(sc * 1.37 + 11.0));
   float bright = step(0.9985, hash(floor(px / 3.0) * 2.11 + 5.0));
   float tw = pow(0.5 + 0.5 * sin(hash(sc + 4.0) * 6.2831 + s * (6.0 + hash(sc) * 10.0)), 2.0);
-  col.rgb += vec3(0.70, 0.78, 1.0) * (star * 0.55 + bright * 1.1) * (0.25 + 0.75 * tw) * eaten;
+  // No stars behind the nav or the coordinate line: there they read as dirt on the words (P4 critique).
+  float chrome = smoothstep(1.0 - uChrome.x - 0.02, 1.0 - uChrome.x, uv.y) + (1.0 - smoothstep(uChrome.y, uChrome.y + 0.02, uv.y));
+  col.rgb += vec3(0.70, 0.78, 1.0) * (star * 0.55 + bright * 1.1) * (0.25 + 0.75 * tw) * eaten * (1.0 - min(1.0, chrome));
 
   outputColor = vec4(col.rgb, inputColor.a);
 }
@@ -66,6 +69,7 @@ export class CrawlEffect extends Effect {
         ["uProgress", new Uniform(0)],
         ["uMode", new Uniform(1)],
         ["uRes", new Uniform(new Vector2(1, 1))],
+        ["uChrome", new Uniform(new Vector2(0, 0))],
       ]),
     })
   }

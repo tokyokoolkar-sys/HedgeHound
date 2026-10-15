@@ -58,29 +58,6 @@
   --text-bayer: 0.8125rem; /* 13px Greek letters: legible as α, not a */
   --tracking-tag: 0.14em;
 
-  /* v1 palette, kept as-is until the legacy pages are rebuilt (T10 decision 1b). Remove in T51.
-     v1 `muted` is renamed `v1-muted`: `muted` belongs to shadcn's surface token. */
-  --color-bg: #090705;
-  --color-surface: #16110c;
-  --color-fg: #f6f0e6;
-  --color-v1-muted: #b3a498;
-  --color-faint: #7a6d60;
-  --color-line: #3a2e24;
-  --color-brand: #ff6a1a;
-  --color-ember: #ffb15a;
-  --color-scorch: #c2410c;
-  --color-clay: #e07a64;
-  --color-cream: #f3ead7;
-  --color-cream-2: #e6d9c4;
-  --color-ink: #1c140e;
-  --color-ink-soft: #5c4a3a;
-  --text-mega: clamp(2.7rem, 11vw, 8.5rem);
-  --text-mega--line-height: 0.84;
-  --text-mega--letter-spacing: -0.045em;
-  --text-huge: clamp(2.4rem, 6vw, 5.25rem);
-  --text-huge--line-height: 0.9;
-  --text-huge--letter-spacing: -0.04em;
-  --radius-card: 1.25rem;
 }
 
 /* Overture intro (owner decision, T14): the one entrance not tied to the scroll. Plays once on first
@@ -146,12 +123,22 @@
 }
 
 @layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-starlight-faint) transparent;
+  }
+
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
 
   html {
+    /* Dark UA chrome (form controls, scrollbars) and one thin faint scrollbar everywhere a list scrolls:
+       never the native white or grey bar with arrows on the void (P4 critique). */
+    color-scheme: dark;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-starlight-faint) transparent;
     background: var(--color-void);
     color: var(--color-starlight);
   }
@@ -164,8 +151,8 @@
   }
 
   ::selection {
-    background: var(--color-brand);
-    color: var(--color-bg);
+    background: color-mix(in srgb, var(--color-scan) 30%, transparent);
+    color: var(--color-starlight);
   }
 
   a:focus-visible,
@@ -177,96 +164,6 @@
   }
 }
 
-.night {
-  background-color: var(--color-bg);
-  background-image:
-    radial-gradient(ellipse at 50% 18%, #4a1c0a 0%, transparent 52%),
-    radial-gradient(ellipse at 88% 80%, #2a1208 0%, transparent 42%),
-    radial-gradient(ellipse at 8% 70%, #1a0d08 0%, transparent 36%);
-}
-
-.paper {
-  background-color: var(--color-cream);
-  color: var(--color-ink);
-  background-image:
-    radial-gradient(ellipse at 12% 0%, #fffaf2 0%, transparent 46%),
-    radial-gradient(ellipse at 100% 100%, #e4d0b0 0%, transparent 42%);
-}
-
-.dropcap::first-letter {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 500;
-  float: left;
-  font-size: 3.3em;
-  line-height: 0.76;
-  padding: 0.04em 0.08em 0 0;
-  color: var(--color-scorch);
-}
-
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee 46s linear infinite;
-}
-
-.marquee-rev {
-  animation-direction: reverse;
-  animation-duration: 58s;
-}
-
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
-}
-
-@keyframes drift {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(6px, -12px, 0);
-  }
-  100% {
-    transform: translate3d(-5px, 8px, 0);
-  }
-}
-
-.float-chip {
-  animation: drift 9s ease-in-out infinite;
-}
-
-@keyframes scent {
-  0%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.45;
-  }
-  50% {
-    transform: translateY(6px);
-    opacity: 1;
-  }
-}
-
-.scroll-hint {
-  animation: scent 2.2s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track,
-  .float-chip,
-  .scroll-hint {
-    animation: none;
-  }
-}
 
 @theme inline {
   --font-heading: var(--font-display);
@@ -308,48 +205,6 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  --animate-marquee: marquee var(--duration) infinite linear;
-  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
-  --animate-orbit: orbit calc(var(--duration)*1s) linear infinite;
-  --animate-ripple: ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite;
-  --animate-meteor: meteor 5s linear infinite;
-  @keyframes marquee-vertical {
-  from {
-    transform: translateY(0);
-    }
-  to {
-    transform: translateY(calc(-100% - var(--gap)));
-    }
-  }
-  @keyframes orbit {
-  0% {
-    transform: rotate(calc(var(--angle) * 1deg)) translateY(calc(var(--radius) * 1px)) rotate(calc(var(--angle) * -1deg));
-    }
-  100% {
-    transform: rotate(calc(var(--angle) * 1deg + 360deg)) translateY(calc(var(--radius) * 1px)) rotate(calc((var(--angle) * -1deg) - 360deg));
-    }
-  }
-  @keyframes ripple {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(1);
-    }
-  50% {
-    transform: translate(-50%, -50%) scale(0.9);
-    }
-  }
-  @keyframes meteor {
-  0% {
-    transform: rotate(var(--angle)) translateX(0);
-    opacity: 1;
-    }
-  70% {
-    opacity: 1;
-    }
-  100% {
-    transform: rotate(var(--angle)) translateX(-500px);
-    opacity: 0;
-    }
-  }
 }
 
 :root {
@@ -401,5 +256,20 @@
 @media (prefers-reduced-motion: reduce) {
   .sky-arrive {
     animation: none;
+  }
+}
+
+/* Windows High Contrast (forced colours): the shimmer's clipped background is dropped there, which left the
+   chapter titles almost invisible, and speck masks turned the readings to noise (P4 critique). Plain system
+   text instead. */
+@media (forced-colors: active) {
+  [data-shimmer] {
+    -webkit-text-fill-color: CanvasText !important;
+    background: none !important;
+  }
+  [data-stardust] {
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+    filter: none !important;
   }
 }

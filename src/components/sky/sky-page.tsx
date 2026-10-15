@@ -10,7 +10,7 @@ import { cn } from "@/lib/cn"
 import { band } from "@/lib/motion/math"
 import { formatNet } from "@/lib/scan/loudest"
 import { OK_SAMPLES, formatFlip, pct } from "@/lib/scan/table"
-import type { ScanRow } from "@/lib/scan/types"
+import { DEFAULT_SCAN_PARAMS, type ScanRow } from "@/lib/scan/types"
 import { useScan } from "@/lib/scan/use-scan"
 import { atlasScreen, atlasWorld, depthOf, placeAtlas, type AtlasStar } from "@/lib/stage/atlas"
 import { SHAKY_BELOW } from "@/lib/stage/field"
@@ -180,10 +180,18 @@ export function SkyPage({ star }: { star?: string }) {
   })
 
   const lit = new Set(recapFor(rows).map((r) => r.symbol))
-  const loud = [...stars]
-    .filter((k) => k.net > 0 && !lit.has(k.symbol))
-    .sort((a, b) => b.net - a.net)
-    .slice(0, docked ? 3 : 5)
+  // The loudest coins get a name, but never one that would run into a recap label or another name
+  // (P4 critique: on phones SUI read as part of ARB's recap). Distances in rough screen px.
+  const vw = typeof window === "undefined" ? 1440 : window.innerWidth
+  const vh = typeof window === "undefined" ? 900 : window.innerHeight
+  const near = (a: AtlasStar, b: AtlasStar) => Math.abs(a.x - b.x) * (vw / 2) < 130 && Math.abs(a.y - b.y) * (vh / 2) < 44
+  const taken = stars.filter((k) => lit.has(k.symbol))
+  const loud: AtlasStar[] = []
+  for (const k of [...stars].filter((k) => k.net > 0 && !lit.has(k.symbol)).sort((a, b) => b.net - a.net)) {
+    if (loud.length >= (docked ? 3 : 5)) break
+    if (taken.some((t) => near(t, k)) || loud.some((t) => near(t, k))) continue
+    loud.push(k)
+  }
   const hovered = hover && hover !== star ? stars.find((k) => k.symbol === hover) : undefined
   // Coins already named on the field get only the ring on hover, never a second label.
   const named = !!hovered && (lit.has(hovered.symbol) || loud.some((k) => k.symbol === hovered.symbol))
@@ -222,6 +230,22 @@ export function SkyPage({ star }: { star?: string }) {
         </div>
       )}
 
+      {/* The list: every coin by name, for keyboards and for finding one. A column on wide screens, a sheet on phones. */}
+      <aside
+        className="sky-arrive fixed top-16 bottom-6 left-[max(16px,7vw)] hidden w-60 flex-col lg:flex"
+        aria-label="Every coin"
+        onPointerMove={(e) => e.stopPropagation()}
+      >
+        <SkyHead count={stars.length} tag={tag} />
+        <div data-lenis-prevent className="mt-5 min-h-0 flex-1 overflow-y-auto pr-3 [scrollbar-color:var(--color-starlight-faint)_transparent] [scrollbar-width:thin]">
+          <CoinList rows={rows} on={star} onHover={setHover} onPick={focus} />
+        </div>
+      </aside>
+      <div className="sky-arrive fixed top-16 inset-x-0 flex items-start justify-between gap-4 px-[max(16px,7vw)] pt-2 lg:hidden">
+        <SkyHead count={stars.length} tag={tag} />
+        <PhoneList rows={rows} on={star} onPick={focus} />
+      </div>
+
       {/* The focused coin: a cyan ring closes on it, then the reading. */}
       {focused && target && (
         <>
@@ -246,22 +270,6 @@ export function SkyPage({ star }: { star?: string }) {
       <p className="sr-only" aria-live="polite">
         {focused ? `${focused.symbol}: ${formatNet(focused.net_apr)} net APR after costs, ${focused.status === "ok" ? "clean" : "building history"}` : ""}
       </p>
-
-      {/* The list: every coin by name, for keyboards and for finding one. A column on wide screens, a sheet on phones. */}
-      <aside
-        className="sky-arrive fixed top-16 bottom-6 left-[max(16px,7vw)] hidden w-60 flex-col lg:flex"
-        aria-label="Every coin"
-        onPointerMove={(e) => e.stopPropagation()}
-      >
-        <SkyHead count={stars.length} tag={tag} />
-        <div data-lenis-prevent className="mt-5 min-h-0 flex-1 overflow-y-auto pr-3 [scrollbar-color:var(--color-starlight-faint)_transparent] [scrollbar-width:thin]">
-          <CoinList rows={rows} on={star} onHover={setHover} onPick={focus} />
-        </div>
-      </aside>
-      <div className="sky-arrive fixed top-16 inset-x-0 flex items-start justify-between gap-4 px-[max(16px,7vw)] pt-2 lg:hidden">
-        <SkyHead count={stars.length} tag={tag} />
-        <PhoneList rows={rows} on={star} onPick={focus} />
-      </div>
 
     </main>
   )
@@ -315,7 +323,8 @@ function Reading({ r, tag, onBack }: { r: ScanRow; tag: ReactNode; onBack: () =>
         <span className="text-scan">↑</span> {r.long} <span className="text-scent">↓</span> {r.short}
       </span>,
     ],
-    ["liq dist", pct(r.liq_dist)],
+    // Liquidation distance comes from the leverage, not the coin (P4 critique), so it says which.
+    [`liq dist at ${DEFAULT_SCAN_PARAMS.lev}×`, pct(r.liq_dist)],
   ]
   return (
     <div className="pointer-events-auto w-max max-w-[min(26rem,calc(100vw-32px))]">
@@ -341,7 +350,7 @@ function Reading({ r, tag, onBack }: { r: ScanRow; tag: ReactNode; onBack: () =>
           Open in scanner →
         </Link>
         <button type="button" onClick={onBack} className="inline-flex min-h-11 items-center text-starlight-dim hover:text-starlight focus-visible:text-scan">
-          pull back · esc
+          pull back<span className="pointer-coarse:hidden"> · esc</span>
         </button>
       </p>
     </div>

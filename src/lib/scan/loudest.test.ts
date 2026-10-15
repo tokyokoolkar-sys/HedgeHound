@@ -26,8 +26,10 @@ describe("carousel rows", () => {
     assert.equal(out.length, 10)
     assert.ok(!out.some((r) => r.symbol === "S3"))
   })
-  it("marks alerting coins", () => {
+  it("marks alerting coins: clean and paying only", () => {
     assert.equal(carouselRows(rows, null).find((r) => r.symbol === "S1")?.alert, true)
+    const losing = carouselRows([row("L", -1.5, "ok"), ...rows], null).find((r) => r.symbol === "L")
+    assert.equal(losing?.alert, false)
   })
 })
 

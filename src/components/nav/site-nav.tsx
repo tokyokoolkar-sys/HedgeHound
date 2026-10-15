@@ -10,17 +10,11 @@ import { chapterOf } from "@/content/edition"
 import { EDITION } from "@/lib/stage/rhythm"
 import { useStage } from "@/lib/stage/store"
 import { jumpToChapter } from "../edition/jump"
-import { CoinSearch, SKY_ROUTE } from "./coin-search"
+import { CoinSearch } from "./coin-search"
+import { LINKS } from "./links"
 import { PollStatus } from "./poll-status"
+import { useOpener } from "./use-opener"
 
-/** Pages in the nav. Each P4 ticket adds its own when the page exists. */
-const LINKS = [
-  { to: "/", label: "Edition" },
-  { to: "/scanner", label: "Scanner" },
-  { to: SKY_ROUTE, label: "Sky" },
-  { to: "/den", label: "Den" },
-  { to: "/playbook", label: "Playbook" },
-] as const
 
 export function SiteNav() {
   const path = useRouterState({ select: (s) => s.location.pathname })
@@ -41,7 +35,7 @@ export function SiteNav() {
               <NavLink key={l.to} to={l.to} label={l.label} on={path === l.to} />
             ))}
           </nav>
-          <PollStatus wordsClassName="max-lg:sr-only" />
+          <PollStatus wordsClassName="max-lg:sr-only" reserve="min-w-[7.5rem] lg:min-w-[16.75rem]" />
           <button
             type="button"
             onClick={() => setSearch(true)}
@@ -58,6 +52,7 @@ export function SiteNav() {
           onClick={() => setMenu(true)}
           className="label pointer-events-auto inline-flex min-h-11 items-center text-starlight md:hidden"
           aria-haspopup="dialog"
+          aria-expanded={menu}
         >
           menu
         </button>
@@ -86,13 +81,18 @@ function NavLink({ to, label, on, big }: { to: string; label: string; on: boolea
 }
 
 function PhoneMenu({ open, onOpenChange, path, onSearch }: { open: boolean; onOpenChange: (o: boolean) => void; path: string; onSearch: () => void }) {
+  const returnFocus = useOpener()
   const lettered = EDITION.filter((c) => c.letter)
   // Where the reader is, read once per render (the menu re-renders on open): that chapter's label is lit.
   const here = chapterOf(useStage.getState().active)
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Content aria-describedby={undefined} className="pointer-events-auto fixed inset-0 z-50 overflow-y-auto bg-void px-[max(16px,7vw)] pb-10 outline-none">
+        <Dialog.Content
+          aria-describedby={undefined}
+          // Focus goes back to the "menu" button when the menu closes.
+          onCloseAutoFocus={returnFocus}
+          className="pointer-events-auto fixed inset-0 z-50 overflow-y-auto bg-void px-[max(16px,7vw)] pb-10 outline-none">
           <Dialog.Title className="sr-only">Menu</Dialog.Title>
           <div className="flex h-16 items-center justify-between">
             <span className="text-subtitle font-light-display text-starlight">HedgeHound</span>

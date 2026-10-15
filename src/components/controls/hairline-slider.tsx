@@ -37,6 +37,7 @@ export function HairlineSlider({ label, value, min, max, step, text, onChange, c
       >
         <Slider.Track className="relative h-px grow bg-starlight-faint" />
         <Slider.Thumb
+          aria-labelledby={id}
           aria-valuetext={text}
           className="block size-3 rounded-full border border-starlight bg-void outline-none focus-visible:border-scan focus-visible:ring-1 focus-visible:ring-scan"
         />

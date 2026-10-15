@@ -103,7 +103,10 @@ export function ScannerPage({ search }: { search: ScannerSearch }) {
         <p className="label mt-3 mb-0 flex flex-wrap items-baseline gap-x-3 gap-y-2 text-starlight-dim md:mt-4">
           <span>
             net after a {DEFAULT_SCAN_PARAMS.cost.toFixed(2)}% round trip
-            <span className="max-md:hidden"> at a {DEFAULT_SCAN_PARAMS.hold} h hold</span>
+            <span className="max-md:hidden">
+              {" "}
+              at a {DEFAULT_SCAN_PARAMS.hold} h hold · liq dist at {DEFAULT_SCAN_PARAMS.lev}× leverage
+            </span>
             <span className="md:hidden">, {DEFAULT_SCAN_PARAMS.hold} h</span>
           </span>
           <SourceTag kind="paper" className="text-starlight" />

@@ -46,9 +46,15 @@ const indexOf = (defs: ChapterDef[], id: ChapterId) => defs.findIndex((d) => d.i
  * under the bites), half grown, and settles over the start of its own section. Otherwise: from depth
  * (recede) or in place, quickly (fade / travel).
  */
-export function arrival(sections: Sections, defs: ChapterDef[], id: ChapterId, r: Rhythm): { started: boolean; appear: number } {
+export function arrival(sections: Sections, defs: ChapterDef[], id: ChapterId, r: Rhythm, stacked = false): { started: boolean; appear: number } {
   const p = sections[id] ?? 0
   const def = defs[indexOf(defs, id)]
+  // Stacked layouts (phones): a rising chapter's copy passes through the instrument's spot on its way up, so
+  // the instrument waits until the copy has settled, then fades in under it (P4 critique: rings over titles).
+  if (stacked && def?.enter === "rise") {
+    const settled = def.rise?.[1] ?? 0.16
+    return { started: p > settled, appear: smooth(band(p, settled, settled + 0.08)) }
+  }
   if (def?.enter === "crawl") {
     const c = sections[enterId(id)] ?? 0
     return { started: c >= 0.5 || p > 0, appear: smooth(band(c, 0.5, 1)) * 0.6 + smooth(band(p, 0, 0.2)) * 0.4 }
@@ -61,12 +67,13 @@ export function arrival(sections: Sections, defs: ChapterDef[], id: ChapterId, r
  * How an instrument leaves (wide layouts; stacked ones leave before their second beat on their own).
  * Into a crawl: it holds still until the crawl's midpoint and is eaten by the bites. Otherwise: into
  * depth over the last 14% (recede), or a short fade in place at the very end (fade / travel), so the next
- * instrument arrives without an empty sky between them.
+ * instrument arrives without an empty sky between them. Under reduced motion there is no crawl to hide the
+ * swap, so an instrument leaves as soon as its chapter ends rather than waiting through the crawl section.
  */
-export function departure(sections: Sections, defs: ChapterDef[], id: ChapterId, r: Rhythm): { until: boolean; away: number } {
+export function departure(sections: Sections, defs: ChapterDef[], id: ChapterId, r: Rhythm, reduced = false): { until: boolean; away: number } {
   const p = sections[id] ?? 0
   const next = defs[indexOf(defs, id) + 1]
-  if (next?.enter === "crawl") return { until: p < 1 || (sections[enterId(next.id)] ?? 0) < 0.5, away: 0 }
+  if (next?.enter === "crawl") return { until: p < 1 || (!reduced && (sections[enterId(next.id)] ?? 0) < 0.5), away: 0 }
   if (r.handover === "recede") return { until: p < 1, away: band(p, 0.86, 1) }
   return { until: p < 1, away: band(p, 0.94, 1) }
 }
