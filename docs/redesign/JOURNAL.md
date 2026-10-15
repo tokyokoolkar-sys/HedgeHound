@@ -25,7 +25,6 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 18 | SAMPLE has only three skipped coins, so η looks sparse offline; checked with a long-list mock (`T24-shots/mock-long-lists.png`). Re-check with LIVE. | T24 | — | open |
 | 20 | With SAMPLE's twenty coins the atlas is a quiet field; it fills out with LIVE. | T25 | — | open |
 | 22 | Paper results: Phase 0 records no paper trades, so ι shows settings and a live count only. Revisit if a paper book of trades is ever built. | T26 | — | owner |
-| 24 | δ's strips colour by short venue (orange = short on Lighter) while orange means "clean" elsewhere; reads as "ARB alerts". | P3 critique | — | open |
 | 28 | The Grok template's plumbing (`lib/auth`, `lib/app-data`, `lib/db`, `lib/multiplayer`, the preview bridge, pglite in vite.config) is unreachable from the routes but may be wired outside them; removing it is its own decision. | P4 close | — | owner |
 | 29 | `components/text-fx/*` (blur reveal, shimmer, gradient wave, perspective text) is kept as the owner's kit but nothing uses it yet. | P4 close | — | open |
 | 30 | The overture → α stretch is the longest run without words (about four phone screens). Designed; revisit only if it reads as empty. | P4 critique (C12) | — | owner |
@@ -42,6 +41,7 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 
 | Item | Closed by |
 |---|---|
+| #24 δ's strips coloured by short venue read as "alerts" | T43 (strips are starlight; the measured line shows the sign) |
 | #2 `/den` dollar columns and figures in tabular digits | T34 |
 | #21 "Open the den" under ι's book | T34 |
 | #27 `/den` asks for the quiet sky | T34 |

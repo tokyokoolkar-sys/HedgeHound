@@ -57,6 +57,8 @@
   --text-figure--letter-spacing: 0.06em;
   --text-bayer: 0.8125rem; /* 13px Greek letters: legible as α, not a */
   --tracking-tag: 0.14em;
+  /* `hd:` (1440 px): the scanner's per-venue funding column (T43). */
+  --breakpoint-hd: 90rem;
 
 }
 

@@ -4,6 +4,7 @@
 // - instrument: objects/hedge-astrolabe.tsx, channels in spread-scene.ts;
 // - labels pinned to the astrolabe as <ProjectedLabel>s: each leg's venue, the spread hairline, the
 //   swing caption, and a caption that tags the live venue names.
+import { hourlyApr } from "@/lib/scan/history"
 import { heldKnown } from "@/lib/scan/table"
 import { useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
@@ -24,6 +25,13 @@ import { useScrollFrame } from "../edition/use-scroll-frame"
 
 type Props = { def: ChapterDef; exitInto?: string; last?: boolean }
 
+/** A venue's latest hourly funding as APR, when the scanner reports it (T41); nothing otherwise. */
+function venueRate(r: ScanRow, venue: string): ReactNode {
+  const hr = venue === "Lighter" ? r.lighter_hr : venue === "Binance" ? r.binance_hr : null
+  if (hr == null) return null
+  return <span className="label ml-2 tabular-nums text-starlight-dim">funding {hourlyApr(hr)} APR</span>
+}
+
 /** The live legs of one row, as label / value pairs. */
 function hedgeRows(r: ScanRow): Array<[string, ReactNode]> {
   return [
@@ -32,12 +40,14 @@ function hedgeRows(r: ScanRow): Array<[string, ReactNode]> {
       "Long",
       <>
         <span className="text-scan">●</span> {r.long}
+        {venueRate(r, r.long)}
       </>,
     ],
     [
       "Short",
       <>
         <span className="text-scent">●</span> {r.short}
+        {venueRate(r, r.short)}
       </>,
     ],
     [
@@ -45,7 +55,7 @@ function hedgeRows(r: ScanRow): Array<[string, ReactNode]> {
       <span className={cn("figure", r.status === "ok" ? "text-scent" : "text-starlight")}>{formatNet(r.net_apr)} after costs</span>,
     ],
     ["Steady", heldKnown(r) ? `${Math.round(r.persistence * 100)}% of the last 6 h held its sign and size` : `too new to say: ${r.samples} of the last 6 h's samples so far`],
-    ["Since flip", `${r.hours_since_flip.toFixed(1)} h since the sign last flipped`],
+    ["Since flip", r.window_h < 1 ? "under an hour of history so far" : `${r.hours_since_flip.toFixed(1)} h since the sign last flipped`],
     ["History", r.status === "ok" ? `${r.n24} samples today · clean` : `building history · ${r.n24} of 144 samples`],
   ]
 }

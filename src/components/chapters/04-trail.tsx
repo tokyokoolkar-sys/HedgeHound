@@ -10,7 +10,8 @@ import { useRef, type ReactNode } from "react"
 import { pickLoudest } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"
 import type { ScanRow } from "@/lib/scan/types"
-import { ARC_RISE, ARC_W, ARC_Y0, DAY_H, directionRole, flipped, segments, steadiestRows, stripLabel, trailToWorld } from "@/lib/stage/comet"
+import { ARC_RISE, ARC_W, ARC_Y0, DAY_H, flipped, historyPath, segments, steadiestRows, stripLabel, trailToWorld } from "@/lib/stage/comet"
+import { useHistory } from "@/lib/scan/use-history"
 import { INSTRUMENT_EXTENT } from "@/lib/stage/layout"
 import type { ChapterDef } from "@/content/edition"
 import { Beat } from "../edition/beat"
@@ -24,16 +25,32 @@ type Props = { def: ChapterDef; exitInto?: string; last?: boolean }
 
 const STRIP_W = 240
 
-/** One coin's day as a strip: 24 h ago on the left, now on the right, drawn like the trail. */
+/**
+ * One coin's day as a strip: 24 h ago on the left, now on the right. With the scanner's history (T41) it is the
+ * measured spread about a zero line; without it, the schematic drawn from the scan's own fields (held since the
+ * flip, dotted before). Starlight either way: orange stays for alerts (journal #24).
+ */
+function DayStrip({ row, live }: { row: ScanRow; live: boolean }) {
+  const points = useHistory(row.symbol, live)
+  const d = points ? historyPath(points, Date.now(), STRIP_W, 16) : null
+  if (!d) return <Strip row={row} />
+  return (
+    <svg viewBox={`0 0 ${STRIP_W} 16`} className="block h-4 w-full max-w-[240px] overflow-visible" aria-hidden="true">
+      <line x1={0} y1={8} x2={STRIP_W} y2={8} stroke="currentColor" strokeWidth={1} className="text-starlight-faint" opacity={0.5} vectorEffect="non-scaling-stroke" />
+      <path d={d} fill="none" stroke="currentColor" strokeWidth={1.25} className="text-starlight" vectorEffect="non-scaling-stroke" />
+    </svg>
+  )
+}
+
+/** The schematic strip, from the scan's own fields. */
 function Strip({ row }: { row: ScanRow }) {
   const x = (hoursAgo: number) => (1 - Math.min(DAY_H, hoursAgo) / DAY_H) * STRIP_W
-  const role = directionRole(row.short)
   return (
     <svg viewBox={`0 0 ${STRIP_W} 12`} className="block h-3 w-full max-w-[240px]" aria-hidden="true">
       <line x1={0} y1={6} x2={STRIP_W} y2={6} stroke="currentColor" strokeWidth={1} className="text-starlight-faint" opacity={0.5} />
       {segments(row).map((sg) =>
         sg.kind === "held" ? (
-          <line key="held" x1={x(sg.to)} y1={6} x2={x(sg.from)} y2={6} stroke="currentColor" strokeWidth={2} className={role === "scan" ? "text-scan" : "text-scent"} />
+          <line key="held" x1={x(sg.to)} y1={6} x2={x(sg.from)} y2={6} stroke="currentColor" strokeWidth={2} className="text-starlight" />
         ) : (
           <line key="before" x1={x(sg.to)} y1={6} x2={x(sg.from)} y2={6} stroke="currentColor" strokeWidth={1.5} strokeDasharray="2 3" className="text-starlight-faint" />
         ),
@@ -44,11 +61,11 @@ function Strip({ row }: { row: ScanRow }) {
 }
 
 /** The steadiest six as beat rows: symbol / strip + shorthand. */
-function steadiest(rows: ScanRow[]): Array<[string, ReactNode]> {
+function steadiest(rows: ScanRow[], live: boolean): Array<[string, ReactNode]> {
   return steadiestRows(rows).map((r) => [
       r.symbol,
       <span key={r.symbol} className="grid gap-1.5 pt-1">
-        <Strip row={r} />
+        <DayStrip row={r} live={live} />
         <span className="label text-starlight-dim">{stripLabel(r)}</span>
       </span>,
     ])
@@ -59,7 +76,7 @@ export function Trail({ def, exitInto, last }: Props) {
   const loudest = pickLoudest(scan.rows)
   const row = scan.rows.find((r) => r.symbol === loudest?.symbol) ?? null
   const tag = <SourceTag kind={scan.live ? "live" : "sample"} ts={scan.ts ?? undefined} stale={scan.stale} className="text-starlight" />
-  const six = steadiest(scan.rows)
+  const six = steadiest(scan.rows, scan.live)
 
   return (
     <>
@@ -71,7 +88,12 @@ export function Trail({ def, exitInto, last }: Props) {
           letter={def.letter ?? ""}
           stacked={def.stacked && { in: def.stacked.beatIn, out: def.stacked.beatOut }}
           rows={six}
-          footer={tag}
+          footer={
+            <span className="flex flex-wrap items-baseline gap-3">
+              {tag}
+              {scan.live && <span className="label tracking-wide normal-case text-starlight-dim">the line is the measured spread; the middle is zero</span>}
+            </span>
+          }
         />
       )}
       {/* The live strips as text for screen readers (the beat above is visual only). */}

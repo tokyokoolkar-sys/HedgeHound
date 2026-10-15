@@ -255,6 +255,9 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T34 | O | done | /den: the book (PAPER, live-saving), clearing your bar (LIVE), what-ifs (simulated, thin-line charts), ι's orb beside the desk gliding in from ι; sample trades deleted; ι "Open the den" (journal #2, #21, #27); 443 tests; branch T34-den (notes/T34.md) |
 | T32 | O | done | /playbook: the playbook in the source's order and words, scroll-locked headings, contents rail, Phase 0 "you are here", sources as links, Monte Carlo → den; Playbook in the nav and κ; 443 tests; branch T32-playbook (notes/T32.md) |
 | T35 | — | skipped | owner |
+| T42 | O | done | live run: scanner in launch.json, every page walked with LIVE data; useScan hydration-safe; "too new" instead of "held 100%"; why nothing clears; θ field beside its title; notes/T42.md |
+| T41 | O | done | server.py (owner OK): per-venue hourly rates + liquidity on scan rows, GET /api/history; ScanRow fields, history client, live fixtures; notes/T41.md |
+| T43 | O | done | δ strips draw the measured spread (starlight, journal #24), γ legs show each venue's funding, /sky reading gains funding-now and the measured line, /scanner funding column from 1440 (`hd:`); hidden or "—" without data; notes/T43.md |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |
 | T41 | S | blocked: owner OK | |

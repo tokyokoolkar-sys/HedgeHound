@@ -96,3 +96,22 @@ export const trailFrame = makeFrame()
 
 /** A trail-local point in world space, or null while it is hidden. */
 export const trailToWorld = (x: number, y: number): Point3 | null => frameToWorld(trailFrame, x, y)
+
+/** Where a measured line starts: 24 h ago, or the first poll if the scanner has run for less than a day. */
+export const historyStart = (points: Array<{ ts: number }>, nowMs: number) => Math.max(nowMs - DAY_H * 3600_000, points[0]?.ts ?? nowMs)
+
+/**
+ * T43: a coin's measured spread as an SVG path, from `historyStart` on the left to now on the right (so a young
+ * run fills the strip instead of a sliver), the signed spread scaled to its own largest swing about a zero line
+ * at mid-height. Null with fewer than two points.
+ */
+export function historyPath(points: Array<{ ts: number; spreadApr: number }>, nowMs: number, w: number, h: number): string | null {
+  const t0 = historyStart(points, nowMs)
+  const day = points.filter((p) => p.ts >= t0)
+  if (day.length < 2) return null
+  const max = Math.max(1e-9, ...day.map((p) => Math.abs(p.spreadApr)))
+  const span = Math.max(1, nowMs - t0)
+  const x = (ts: number) => ((ts - t0) / span) * w
+  const y = (v: number) => h / 2 - (v / max) * (h / 2 - 1)
+  return day.map((p, i) => `${i ? "L" : "M"}${x(p.ts).toFixed(1)} ${y(p.spreadApr).toFixed(1)}`).join(" ")
+}
