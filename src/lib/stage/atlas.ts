@@ -13,9 +13,9 @@ export type AtlasStar = { symbol: string; net: number; ok: boolean; x: number; y
 
 /** Spots fill this share of the view (half-width / half-height fractions), clear of the very edges. */
 const SPREAD_X = 0.86
-const SPREAD_Y = 0.6
-/** The field sits a little high, clear of the caption under it. */
-const LIFT_Y = 0.08
+const SPREAD_Y = 0.5
+/** The field sits a little low, clear of θ's title above it (T42: live labels ran into it) and the caption under it. */
+const LIFT_Y = -0.08
 
 /** Every coin at its own stable spot, in units of the view's half-size (−1…1 on both axes). */
 export function placeAtlas(rows: AtlasInput[]): AtlasStar[] {
@@ -150,6 +150,12 @@ export function focusTarget(w: number, h: number): [number, number] {
 
 /** Where a world point lands on the z = 0 plane as seen from the resting camera (for tests and hit-testing maths). */
 export const onPlane = (p: [number, number, number]): [number, number] => [(p[0] * CAM_Z) / (CAM_Z - p[2]), (p[1] * CAM_Z) / (CAM_Z - p[2])]
+
+/**
+ * The share of the view's width on the left kept for words beside the field: θ's title and /sky's list column
+ * (from 1024 px; the same value in both, so entering /sky from θ never shifts the field).
+ */
+export const skyInset = (w: number) => (w < 1024 ? 0 : (Math.max(16, w * 0.07) + 240 + 48) / w)
 
 /** Every atlas coin's world point and screen point (px), published by objects/atlas.tsx each frame for /sky. */
 export const atlasWorld = new Map<string, Point3>()

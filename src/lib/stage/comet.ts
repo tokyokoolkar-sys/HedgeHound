@@ -81,6 +81,8 @@ export function headAt(draw: number, r: TrailInput) {
 
 /** Mono summary used under each strip, e.g. "persist 0.97 · flip 28.4h · window 23.8h". */
 export function stripLabel(r: TrailInput) {
+  // A fresh scanner has no history to read yet: say so rather than "persist 1.00 · window 0.0h" (T42).
+  if (r.window_h < 1) return "under an hour of history so far"
   return `persist ${r.persistence.toFixed(2)} · ${flipped(r) ? `flip ${r.hours_since_flip.toFixed(1)}h` : "no flip"} · window ${r.window_h.toFixed(1)}h`
 }
 

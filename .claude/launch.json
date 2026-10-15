@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "scanner",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["E:/ataspace/WhaleHunterAlt/scanner/server.py"],
+      "port": 8000
+    },
+    {
+      "name": "app",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 8080
+    }
+  ]
+}

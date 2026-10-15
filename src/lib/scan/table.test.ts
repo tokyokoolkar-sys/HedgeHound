@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
-import { formatFlip, nextSort, parseScannerSearch, pct, tableRows } from "./table.ts"
+import { formatFlip, formatHeld, nextSort, parseScannerSearch, pct, tableRows } from "./table.ts"
 import type { ScanRow } from "./types.ts"
 
 const row = (symbol: string, net: number, ok: boolean, extra: Partial<ScanRow> = {}): ScanRow => ({
@@ -53,5 +53,10 @@ describe("scanner table", () => {
     assert.equal(pct(-5.04), "−5.0%")
     assert.equal(formatFlip({ hours_since_flip: 23.9, window_h: 23.9 }), "≥ 24 h")
     assert.equal(formatFlip({ hours_since_flip: 7.46, window_h: 23.9 }), "7.5 h")
+    assert.equal(formatFlip({ hours_since_flip: 0, window_h: 0 }), "—")
+  })
+  it("says a coin is too new before it has an hour of samples", () => {
+    assert.equal(formatHeld({ samples: 1, persistence: 1 }), "too new")
+    assert.equal(formatHeld({ samples: 48, persistence: 0.42 }), "42%")
   })
 })

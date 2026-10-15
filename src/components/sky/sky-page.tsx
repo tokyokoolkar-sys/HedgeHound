@@ -9,10 +9,10 @@ import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as
 import { cn } from "@/lib/cn"
 import { band } from "@/lib/motion/math"
 import { formatNet } from "@/lib/scan/loudest"
-import { OK_SAMPLES, formatFlip, pct } from "@/lib/scan/table"
+import { pct, formatFlip, formatHeld, heldKnown, OK_SAMPLES } from "@/lib/scan/table"
 import { DEFAULT_SCAN_PARAMS, type ScanRow } from "@/lib/scan/types"
 import { useScan } from "@/lib/scan/use-scan"
-import { atlasScreen, atlasWorld, depthOf, placeAtlas, type AtlasStar } from "@/lib/stage/atlas"
+import { atlasScreen, atlasWorld, depthOf, placeAtlas, skyInset, type AtlasStar } from "@/lib/stage/atlas"
 import { SHAKY_BELOW } from "@/lib/stage/field"
 import { useRequestSky } from "@/lib/stage/request-sky"
 import { QUIET_SCENE, useStage } from "@/lib/stage/store"
@@ -43,10 +43,7 @@ const lerp = (a: Vals, b: Vals, e: number): Vals => {
 }
 
 /** The list column's share of the width (it shows from 1024 px): its right edge plus a gutter. */
-function listInset() {
-  if (innerWidth < 1024) return 0
-  return (Math.max(16, innerWidth * 0.07) + 240 + 48) / innerWidth
-}
+const listInset = () => skyInset(innerWidth)
 
 /** Wide screens put the reading beside the focused coin; phones and portrait tablets dock it at the bottom. */
 function useDocked() {
@@ -306,13 +303,14 @@ function StarLabel({ k, bright }: { k: AtlasStar; bright?: boolean }) {
 
 function Reading({ r, tag, onBack }: { r: ScanRow; tag: ReactNode; onBack: () => void }) {
   const ok = r.status === "ok"
-  const shaky = r.persistence < SHAKY_BELOW
+  const shaky = heldKnown(r) && r.persistence < SHAKY_BELOW
   const rows: Array<[string, ReactNode]> = [
     ["gross", pct(r.gross_apr)],
     [
       "held 6 h",
       <>
-        {Math.round(r.persistence * 100)}%{shaky && <span className="text-starlight"> shaky</span>}
+        {formatHeld(r)}
+        {shaky && <span className="text-starlight"> shaky</span>}
       </>,
     ],
     ["samples", `${r.n24}/${OK_SAMPLES}`],

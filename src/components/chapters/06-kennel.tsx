@@ -5,6 +5,7 @@
 //   a live second beat: the kennel against everyone else (medians), a verdict on today's data, the
 //   kennel coins as rows, one SourceTag, and what the 1000 prefix means;
 // - instrument: objects/kennel.tsx, channels in kennel-scene.ts; labels pinned to it.
+import { heldKnown } from "@/lib/scan/table"
 import { band } from "@/lib/motion/math"
 import { useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
@@ -48,7 +49,7 @@ function coinValue(r: ScanRow): ReactNode {
         <span className="label text-starlight-dim">{ok ? "clean" : "building history"}</span>
       </span>
       <span className="label text-starlight-dim">
-        held {pct(r.persistence)} · last flip {r.hours_since_flip.toFixed(1)} h ago
+        held {heldKnown(r) ? pct(r.persistence) : "too new"} · last flip {r.window_h < 1 ? "—" : `${r.hours_since_flip.toFixed(1)} h ago`}
       </span>
     </span>
   )

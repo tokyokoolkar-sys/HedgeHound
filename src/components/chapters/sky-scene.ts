@@ -1,5 +1,6 @@
 // θ's scene channels (kept apart from the chapter's components so fast refresh keeps working).
 import { band } from "@/lib/motion/math"
+import { skyInset } from "@/lib/stage/atlas"
 import { arrival, departure, EDITION, RHYTHM } from "@/lib/stage/rhythm"
 import type { Scene, StageState } from "@/lib/stage/store"
 
@@ -9,7 +10,7 @@ type AtlasChannels = Pick<
 >
 
 /** In the Edition the field is flat and never takes a focus (that is /sky's, T33). */
-const FLAT = { atlasFocus: 0, atlasFx: 0, atlasFy: 0, atlasFz: 0, atlasDepth: 0, atlasFly: 0, atlasInset: 0 }
+const FLAT = { atlasFocus: 0, atlasFx: 0, atlasFy: 0, atlasFz: 0, atlasDepth: 0, atlasFly: 0 }
 
 /**
  * θ's scene channels. The atlas fills the whole sky on every layout (there is no second beat to take turns
@@ -23,9 +24,12 @@ export function skyScene(s: StageState): AtlasChannels {
   const arr = arrival(s.sections, defs, "sky", rhythm)
   const dep = departure(s.sections, defs, "sky", rhythm, s.reduced)
   const atlasOn = arr.started && dep.until ? 1 : 0
-  if (s.reduced) return { ...FLAT, atlasOn, atlasAppear: 1, atlasPull: 1, atlasLabels: atlasOn, atlasAway: 0 }
+  // On wide screens the field sits beside θ's title, exactly where /sky puts it beside its list.
+  const atlasInset = skyInset(document.documentElement.clientWidth)
+  if (s.reduced) return { ...FLAT, atlasInset, atlasOn, atlasAppear: 1, atlasPull: 1, atlasLabels: atlasOn, atlasAway: 0 }
   return {
     ...FLAT,
+    atlasInset,
     atlasOn,
     atlasAppear: arr.appear,
     // The pull-back settles early and the labels follow it, so θ never reads as an empty sky (owner, P4

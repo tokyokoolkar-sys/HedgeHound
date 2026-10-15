@@ -3,6 +3,7 @@
 // - copy: <Chapter> (what makes a spread worth taking), then a live second beat: the shortlist as ruled
 //   text rows on the sky, one SourceTag;
 // - instrument: objects/field-chart.tsx, channels in hedge-scene.ts; labels pinned to it.
+import { formatHeld, heldKnown } from "@/lib/scan/table"
 import { band } from "@/lib/motion/math"
 import { Link } from "@tanstack/react-router"
 import { useRef, type ReactNode } from "react"
@@ -31,10 +32,10 @@ function rowValue(r: ScanRow): ReactNode {
       <span className="flex items-baseline gap-3">
         <span className={cn("figure", ok ? "text-scent" : "text-starlight")}>{formatNet(r.net_apr)}</span>
         <span className="label text-starlight-dim">{ok ? "clean" : "building history"}</span>
-        {r.persistence < SHAKY_BELOW && <span className="label text-starlight">shaky</span>}
+        {heldKnown(r) && r.persistence < SHAKY_BELOW && <span className="label text-starlight">shaky</span>}
       </span>
       <span className="label text-starlight-dim">
-        long {r.long} · short {r.short} · held {Math.round(r.persistence * 100)}%
+        long {r.long} · short {r.short} · held {formatHeld(r)}
       </span>
     </span>
   )
@@ -78,7 +79,7 @@ export function Hedge({ def, exitInto, last }: Props) {
             {list.map((r) => (
               <li key={r.symbol}>
                 {r.symbol}: {formatNet(r.net_apr)} net APR after costs, {r.status === "ok" ? "clean" : "building history"}, long {r.long}, short{" "}
-                {r.short}, held {Math.round(r.persistence * 100)}% of the last 6 hours
+                {r.short}, held {heldKnown(r) ? `${Math.round(r.persistence * 100)}% of the last 6 hours` : "too new to say"}
               </li>
             ))}
           </ul>

@@ -74,6 +74,15 @@ export function nextSort(s: ScannerSearch, k: SortKey): Pick<ScannerSearch, "sor
 /** Percent with one decimal and a true minus. */
 export const pct = (v: number) => `${v < 0 ? "−" : ""}${Math.abs(v).toFixed(1)}%`
 
-/** Hours since the spread last changed sign; when it never did inside the window, "≥ window". */
+/** Hours since the spread last changed sign; when it never did inside the window, "≥ window"; "—" under an hour of history. */
 export const formatFlip = (r: Pick<ScanRow, "hours_since_flip" | "window_h">) =>
-  r.hours_since_flip >= r.window_h - 0.05 ? `≥ ${Math.round(r.window_h)} h` : `${r.hours_since_flip.toFixed(1)} h`
+  r.window_h < 1 ? "—" : r.hours_since_flip >= r.window_h - 0.05 ? `≥ ${Math.round(r.window_h)} h` : `${r.hours_since_flip.toFixed(1)} h`
+
+/**
+ * Below an hour of five-minute samples (12) in the last six hours, the scanner's "held" share is arithmetic on
+ * almost nothing (one sample reads as 100%), so the UI says "too new" instead (T42: a fresh scanner showed
+ * "held 100%" everywhere).
+ */
+export const MIN_HELD_SAMPLES = 12
+export const heldKnown = (r: Pick<ScanRow, "samples">) => r.samples >= MIN_HELD_SAMPLES
+export const formatHeld = (r: Pick<ScanRow, "samples" | "persistence">) => (heldKnown(r) ? `${Math.round(r.persistence * 100)}%` : "too new")

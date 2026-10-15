@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 import { DEFAULT_BOOK } from "../scent.ts"
-import { ORB_R, POCKET_R, clearsBar, isDefaultBook, netForBook, pocketSpot } from "./den.ts"
+import { ORB_R, POCKET_R, clearsBar, emptyReason, isDefaultBook, netForBook, pocketSpot } from "./den.ts"
 
 const row = (symbol: string, gross_apr: number, status = "ok") => ({ symbol, gross_apr, status })
 
@@ -35,5 +35,13 @@ describe("den: pocket sky", () => {
     assert.deepEqual(a, pocketSpot("1000PEPE"))
     assert.ok(Math.hypot(...a) <= POCKET_R + 1e-9)
     assert.ok(POCKET_R < ORB_R)
+  })
+})
+
+describe("why nothing clears", () => {
+  it("says no coin is clean yet before saying the bar is too high", () => {
+    assert.equal(emptyReason([{ symbol: "A", gross_apr: 40, status: "building history" }], 0), "none-clean")
+    assert.equal(emptyReason([{ symbol: "A", gross_apr: 40, status: "ok" }], 0), "bar")
+    assert.equal(emptyReason([{ symbol: "A", gross_apr: 40, status: "ok" }], 1), null)
   })
 })
