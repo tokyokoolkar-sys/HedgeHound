@@ -172,7 +172,7 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 - Rescoped in P4 (owner-approved a–e): no glass sheet, no chips. Files: `routes/scanner.tsx`, `components/scanner/scanner-page.tsx`, `lib/scan/table.ts` (URL state, filter, sort; pure + tested). Sortable columns (coin, net, gross, held 6 h, samples, last flip, legs, liq dist, status), status words, a hairline net-floor slider, `?status&min&sort&dir&sym` in the URL, row → the coin on the sky. Quiet sky mode. Nav link; ε "Open scanner".
 
 ### T32 [H] /playbook (port)
-- Files: `routes/playbook.tsx`. Port `pages/Playbook.tsx` content into parchment Sheets with SwashHeading + FeatureTable. Pure content; no new animation beyond the primitives.
+- Rescoped in P4 (owner-approved a–d, access paragraph verbatim): the full playbook (`docs/funding-spread-playbook.html`, not the four-card sketch) as a reading page on the quiet sky, no parchment sheets. Files: `routes/playbook.tsx`, `components/playbook/playbook-page.tsx`.
 
 ### T33 [S] /sky on SkyStage
 - Rescoped in P4 (owner-approved a–e, focus "fly" picked from a prototype): θ's atlas on SkyStage with real scan rows, a list column, focus that flies into a depth field with a β-style reading, θ's "Enter the sky" with no cut, `/universe` → `/sky` redirect. The legacy view (SAMPLE blurbs, sectors, seeded sparklines, watchlist) is deleted, not restyled. Files: `routes/sky.tsx`, `components/sky/*`, `lib/stage/atlas.ts`, `objects/atlas.tsx`.
@@ -252,7 +252,8 @@ Common inputs: `content/edition.ts` entry (copy), waypoint id (already exists), 
 | T31 | O | done | /scanner: operator table on a quiet sky, filters + sort + `?sym=` in the URL, two-line rows under 1024, row → sky; quiet sky mode; Scanner in the nav; ε "Open scanner" (journal #15); `/#chapter-<id>` lands on settled copy; 417 tests; branch T31-scanner (notes/T31.md) |
 | T33 | O | done | /sky: θ's atlas explorable on the one canvas, list column, focus flies (owner pick over "reading"), β-style reading, θ "Enter the sky" without a cut (journal #19), /universe redirect, legacy universe view deleted; 443 tests; branch T33-sky (notes/T33.md) |
 | T34 | O | done | /den: the book (PAPER, live-saving), clearing your bar (LIVE), what-ifs (simulated, thin-line charts), ι's orb beside the desk gliding in from ι; sample trades deleted; ι "Open the den" (journal #2, #21, #27); 443 tests; branch T34-den (notes/T34.md) |
-| T32 | H | todo | T35 skipped (owner) |
+| T32 | O | done | /playbook: the playbook in the source's order and words, scroll-locked headings, contents rail, Phase 0 "you are here", sources as links, Monte Carlo → den; Playbook in the nav and κ; 443 tests; branch T32-playbook (notes/T32.md) |
+| T35 | — | skipped | owner |
 | T40b | S | done | cost in query+key (0.30); copy fixes (ARB card from sample row, den H1, hub line, CSV name); 30 s/2 min/5 min offline backoff; useScan().stale (no LIVE tag exists yet to receive it); 289 tests; branch T40b (notes/T40b.md) |
 | T40 | S | done | scan layer (types/api/use-scan/adapter/sample), scent.ts split, QueryClientProvider, adapter test (+21), SAMPLE tags on den/home/sky; branch T40 (notes/T40.md) |
 | T41 | S | blocked: owner OK | |
