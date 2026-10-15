@@ -31,6 +31,12 @@ function normalizeRow(raw: unknown): ScanRow | null {
     window_h: num(r.window_h) ? r.window_h : 0,
     n24: num(r.n24) ? r.n24 : 0,
     status,
+    lighter_hr: num(r.lighter_hr) ? r.lighter_hr : null,
+    binance_hr: num(r.binance_hr) ? r.binance_hr : null,
+    lighter_vol24_usd: num(r.lighter_vol24_usd) ? r.lighter_vol24_usd : null,
+    lighter_oi_usd: num(r.lighter_oi_usd) ? r.lighter_oi_usd : null,
+    binance_vol24_usd: num(r.binance_vol24_usd) ? r.binance_vol24_usd : null,
+    binance_oi_usd: num(r.binance_oi_usd) ? r.binance_oi_usd : null,
   }
 }
 

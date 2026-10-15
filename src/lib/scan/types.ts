@@ -31,6 +31,16 @@ export type ScanRow = {
   /** Samples in the trailing 24 h; 144 earns `ok`. */
   n24: number
   status: ScanStatus
+  /**
+   * T41: the latest HOURLY funding rate on each venue (Lighter already /8, Binance /interval), and each venue's
+   * 24 h volume and open interest in USD. Null from an older scanner, for SAMPLE, or while unknown.
+   */
+  lighter_hr: number | null
+  binance_hr: number | null
+  lighter_vol24_usd: number | null
+  lighter_oi_usd: number | null
+  binance_vol24_usd: number | null
+  binance_oi_usd: number | null
 }
 
 export type ScanMeta = {

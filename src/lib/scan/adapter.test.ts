@@ -41,6 +41,12 @@ const row = (over: Partial<ScanRow>): ScanRow => ({
   window_h: 1,
   n24: 10,
   status: "building history",
+  lighter_hr: null,
+  binance_hr: null,
+  lighter_vol24_usd: null,
+  lighter_oi_usd: null,
+  binance_vol24_usd: null,
+  binance_oi_usd: null,
   ...over,
 });
 const one = (r: ScanRow) => toStars({ rows: [r], meta: {}, live: true }).stars[0];
