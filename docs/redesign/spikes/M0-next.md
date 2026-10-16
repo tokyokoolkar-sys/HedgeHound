@@ -50,17 +50,51 @@ Date: 2026-10-16 · Branch: `M0-next` (from `main` @ f12556a) · Plan: [NEXTJS-M
   - Deferring the sky mount to idle after hydration (`AfterHydration` in providers) recovered part of the gap: desktop went from 74–83 to 80–90.
 - **Tried, no gain (reverted):** `next build --webpack` and `optimizePackageImports`.
 
+## Sky boot work (follow-up, same day)
+What changed:
+- **Postprocessing split out.** `Effects` (postprocessing + crawl) is `React.lazy` and mounts after the first frame. It is now its own 78 KB chunk, and the first sky chunk went from 1051 KB to 883 KB.
+- **Staged mount.** `Staged` mounts the 14 scene objects one per animation frame, in the original order, so useFrame order still ends with the Projector.
+- **Async compile.** `Precompile` runs `renderer.compileAsync(object, camera, scene)` once per object per frame. Hidden subtrees are made visible for their compile and then restored. The `Driver` starts drawing only after that.
+- **Hound geometry in a worker.** User-timing marks showed one object, the glass hound, took about 350 ms to mount. Its `ExtrudeGeometry` (72 curve / 24 bevel segments plus normals) is now built in `objects/hound.worker.ts`:
+  - The main thread parses the SVG into shapes. SVGLoader needs DOMParser, which workers lack.
+  - The worker extrudes the shapes and transfers the vertex arrays back.
+  - If the worker can't start, the same code runs on the main thread.
+
+After the change:
+- Shader compile is 11–25 ms per object.
+- The first frame is about 90 ms.
+- No mount step is over 20 ms.
+- Desktop `/` went from 72 to 85–90.
+
+Visuals were checked in the dev browser: the hero hound, γ's radar, `/sky` and `/den` match the earlier screenshots.
+
+| Page | TanStack `main` desktop | Next before | Next after (2 runs) | Next mobile after (2 runs) |
+|---|---|---|---|---|
+| / | 90 | 87 | 85 / 90 | 54 / 48 |
+| /scanner | 94 | 83 | 99 / 89 | 63 / 65 |
+| /sky | 93 | 80 | 79 / 78 | 70 / 69 |
+| /den | 97 | 90 | 98 / 99 | 72 / 70 |
+| /playbook | 96 | 87 | 96 / 99 | 71 / 71 |
+
+Desktop now meets >85 on 4 of 5 pages and is at parity with `main` except on `/sky`. Mobile is unchanged.
+
+The mobile trace shows where the remaining blocking time goes. None of it is sky boot any more, and the first two exist on `main` too:
+- **React hydration:** 1.0–1.6 s of scripting.
+- **The scroll engine's per-frame GSAP ticker:** 0.7–1.1 s across the trace. It writes the stage store every frame, which re-renders its subscribers.
+- **three.js evaluation:** about 0.5 s for its chunk.
+
+On `/sky` desktop, the remaining task is a single 363 ms React task as the atlas page mounts.
+
 ## Verdict
 **Go on correctness, conditional on performance.**
 - Correctness: the persistent canvas, soft navigation, query state, hash landing and the redirect all work, and the port is mechanical.
 - Performance: Next is about 5–10 points behind `main` on desktop. Hitting >85 everywhere needs work on the sky's boot cost. That work would help either framework.
 
 ## Open items (owner decisions)
-1. **Sky boot cost**, which gets >85 on both frameworks. Options, from least to most visual impact:
-   - Split postprocessing out of the first sky chunk.
-   - Compile shaders asynchronously (`renderer.compileAsync`).
-   - Build the scene over several frames.
-   - Start the sky on first interaction, with a timeout. This is the cheapest option, but the page shows the void until then.
+1. **Remaining performance work.** The sky boot is done (see above). What's left:
+   - `/sky` atlas mount (363 ms).
+   - The per-frame store writes from the scroll ticker. Only write on change, or move subscribers to transient reads.
+   - Hydration size, the main mobile cost.
 2. **Is a mobile score >85 required?** `main` doesn't meet it today either.
 3. **Scanner location:** confirm where it lives so the Lighthouse runs can use LIVE data.
 4. **Next phases:** M1–M4 per the plan if we go ahead. The `hrefFor`/nav shim already covers M2's router migration.
