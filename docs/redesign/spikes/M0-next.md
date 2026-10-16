@@ -85,6 +85,33 @@ The mobile trace shows where the remaining blocking time goes. None of it is sky
 
 On `/sky` desktop, the remaining task is a single 363 ms React task as the atlas page mounts.
 
+## /sky and mobile pass (2026-10-17)
+What I found:
+- **The variance has a cause.** A page scored well when the sky boot finished after Lighthouse stopped measuring, and badly when it landed inside the window. On `/sky` desktop that was 78 one run and 98 the next, with the same build. So the goal became: no boot step over 50 ms.
+- **The ticker isn't the problem.** Per-frame rendering is cheap (about 1.5 ms a frame unthrottled). Store writes don't re-render React: the only reactive subscribers select primitives.
+
+Changes kept:
+- **Post stack precompiled before the first frame.** `Effects` mounts during boot and compiles each pass's fullscreen shader with `compileAsync`, one per frame, then reports `onReady`. The `Driver` waits for that, with a 3 s fallback.
+- Previously the first frame through the composer compiled the merged effect shader, a second long task.
+
+Tried and reverted:
+- **A scissored 1 px warm-up draw per object**, to pre-upload buffers. On Lighthouse's software GPU every vertex still runs and the main thread blocks. Mobile TBT on `/` went to about 4.2 s.
+
+| Page | Desktop run 1 / 2 | Mobile run 1 / 2 | Mobile before this pass |
+|---|---|---|---|
+| / | 97 / 87 | 49 / 51 | 54 / 48 |
+| /scanner | 99 / 96 | 70 / 70 | 63 / 65 |
+| /sky | 96 / 97 | 81 / 79 | 70 / 69 |
+| /den | 100 / 100 | 67 / 72 | 72 / 70 |
+| /playbook | 95 / 100 | 80 / 79 | 71 / 71 |
+
+**Desktop: every page is ≥85 in both runs**, at or above `main`. **Mobile is not**:
+- **`/`:** the Edition does a single 500 ms React render (throttled) when the scan data arrives, and three.js evaluates for about 460 ms.
+- **Simulated LCP of about 3 s on every page:** Lighthouse's mobile model counts Next's high-priority script chunks as render-critical. The unthrottled LCP is 0.19 s, the same as first paint, so nothing on the page is hidden.
+- **Remaining sky compile steps:** 55–150 ms each under 4× throttling with no parallel shader compile.
+
+**Visual changes:** none to the design. On first load the sky appears about 0.1–0.3 s later than before, because it now waits for the post stack to compile. In exchange, the first frame shows with grain from the start instead of popping in a frame later. Checked in the dev browser against the earlier screenshots: hero hound, γ radar, `/sky`, `/den`.
+
 ## Verdict
 **Go on correctness, conditional on performance.**
 - Correctness: the persistent canvas, soft navigation, query state, hash landing and the redirect all work, and the port is mechanical.

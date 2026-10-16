@@ -55,6 +55,8 @@ const nextFrame = () => new Promise<void>((r) => requestAnimationFrame(() => r()
  * three only compiles what is visible, and most objects hide outside their chapter, so each subtree is
  * made visible for its compile and put back. KHR_parallel_shader_compile (where present) keeps it off
  * the main thread; elsewhere each object's compile is at least its own short task.
+ * (Tried and dropped: a scissored 1 px warm-up draw per object to pre-upload buffers. On a software GPU,
+ * as in Lighthouse, it still runs every vertex and blocked the main thread far longer; M0 note.)
  */
 function Precompile({ onDone }: { onDone: () => void }) {
   const gl = useThree((s) => s.gl)
@@ -76,8 +78,9 @@ function Precompile({ onDone }: { onDone: () => void }) {
           await gl.compileAsync(child, camera, scene)
         } catch {
           // A failed precompile only costs the old behaviour: that object compiles on its first draw.
+        } finally {
+          for (const o of hidden) o.visible = false
         }
-        for (const o of hidden) o.visible = false
         await nextFrame()
       }
       if (!cancelled) onDone()
@@ -101,14 +104,21 @@ function Staged({ layers, onMounted }: { layers: ReactNode[]; onMounted: () => v
   return <>{layers.slice(0, count)}</>
 }
 
-type Boot = "mounting" | "compiling" | "live"
+type Boot = "mounting" | "compiling" | "effects" | "live"
 
 export default function SkyStage() {
   const quality = useStage((s) => s.quality)
   const [labelHost, setLabelHost] = useState<HTMLDivElement | null>(null)
   const [boot, setBoot] = useState<Boot>("mounting")
   const [onMounted] = useState(() => () => setBoot("compiling"))
-  const [onCompiled] = useState(() => () => setBoot("live"))
+  const [onCompiled] = useState(() => () => setBoot("effects"))
+  const [onEffects] = useState(() => () => setBoot("live"))
+  // If the post stack never reports ready (a failed chunk, a driver quirk), draw without waiting on it.
+  useEffect(() => {
+    if (boot !== "effects") return
+    const id = window.setTimeout(onEffects, 3000)
+    return () => window.clearTimeout(id)
+  }, [boot, onEffects])
 
   const layers = [
     <Starfield key="starfield" quality={quality} />,
@@ -142,9 +152,9 @@ export default function SkyStage() {
           <PerformanceMonitor onDecline={() => useStage.getState().set({ quality: DOWN[useStage.getState().quality] })} />
           <Staged layers={layers} onMounted={onMounted} />
           {boot === "compiling" && <Precompile onDone={onCompiled} />}
-          {boot === "live" && (
+          {(boot === "effects" || boot === "live") && (
             <Suspense fallback={null}>
-              <Effects />
+              <Effects onReady={onEffects} />
             </Suspense>
           )}
         </Canvas>
