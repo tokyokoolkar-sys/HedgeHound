@@ -4,7 +4,7 @@ A front end for a local funding-rate spread scanner (Lighter × Binance Futures)
 Being redesigned as "The Can✶s Edition": a funding-spread observatory in a real night sky, long-scroll. **Before any UI work read `DESIGN.md` (start with "The owner's taste": the site follows the owner's taste) and `docs/redesign/PLAN.md`.** Tickets: `docs/redesign/TICKETS.md`. Prototype of record: `/_almagest` on branch `D1-almagest`.
 
 ## Run
-- App: `npm run dev` → http://localhost:8080 (TanStack Start, SSR).
+- App: `npm run dev` → http://localhost:8080 (Next.js 16 App Router, branch M0-next; `main` is still TanStack Start). Production: `npm run build && npm start`.
 - Scanner backend: `python E:\ataspace\WhaleHunterAlt\scanner\server.py` → http://localhost:8000/api/scan (proxied as `/api` in dev).
 - Checks: `npm run typecheck`, `npm run lint`.
 

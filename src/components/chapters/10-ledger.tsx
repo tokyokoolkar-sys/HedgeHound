@@ -5,7 +5,7 @@
 // - Canis Major re-forms above it around Sirius (objects/canis-major.tsx, placed by ledger-scene.ts);
 // - the ledger footer below: where the figures come from (with a tag), the phase, the links, a way back
 //   to the overture, ©. It is real, focusable page content (not inside the aria-hidden copy block).
-import { Link } from "@tanstack/react-router"
+import { Link } from "@/lib/nav"
 import { LINKS } from "../nav/links"
 import { useRef } from "react"
 import { band } from "@/lib/motion/math"

@@ -4,7 +4,7 @@
 // - copy: <Chapter> (a paper desk; no order code in Phase 0), then "Your book": the settings (PAPER, or the
 //   defaults, said as such) and the coins clearing the bar now (LIVE/SAMPLE);
 // - instrument: objects/desk-orb.tsx, channels in den-scene.ts; one caption pinned beside it.
-import { Link } from "@tanstack/react-router"
+import { Link } from "@/lib/nav"
 import { useRef, type ReactNode } from "react"
 import { CAPITAL } from "@/lib/scent"
 import { formatNet } from "@/lib/scan/loudest"

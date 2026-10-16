@@ -15,7 +15,8 @@ export default tseslint.config(
       ".nitro/**",
       ".claude/**",
       "node_modules/**",
-      "src/routeTree.gen.ts",
+      ".next/**",
+      "next-env.d.ts",
     ],
   },
   js.configs.recommended,
@@ -45,7 +46,7 @@ export default tseslint.config(
   },
   // shadcn/magicui generated primitives export variants alongside components.
   {
-    files: ["src/components/ui/**", "src/components/magicui/**"],
+    files: ["src/components/ui/**", "src/components/magicui/**", "src/app/**", "src/lib/nav.tsx"],
     rules: {
       "react-refresh/only-export-components": "off",
     },

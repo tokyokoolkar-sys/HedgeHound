@@ -1,10 +1,11 @@
+"use client"
 // /den (T34): the paper desk. A working page on the quiet sky: the book's settings (PAPER, saved in this
 // browser), what clears that bar right now (LIVE, re-amortised at the book's hold and cost, ι's rule), and a
 // year of what-ifs (simulated, never a forecast). ι's glass orb sits beside the desk holding exactly the coins
 // that clear; on phones it sits under the header and scrolls with the page. No trades exist in Phase 0, so
 // none are shown (owner, T34: the old sample book is deleted).
 import { formatHeld, heldKnown } from "@/lib/scan/table"
-import { Link } from "@tanstack/react-router"
+import { Link } from "@/lib/nav"
 import { useEffect, useRef, useState } from "react"
 import { formatNet } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"

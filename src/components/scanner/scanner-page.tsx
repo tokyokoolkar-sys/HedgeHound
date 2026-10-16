@@ -1,9 +1,10 @@
+"use client"
 // /scanner (T31): the operator's table. A working page, so no scroll choreography: a quiet sky, the
 // title, filters that live in the URL, and every coin of the last poll as mono rows straight on the sky.
 // The column header sits outside the scrolling rows, so rows clip crisply at its hairline instead of
 // sliding under it (no band, no fade). Rows open the coin on the sky.
 import { hourlyApr } from "@/lib/scan/history"
-import { Link, useNavigate } from "@tanstack/react-router"
+import { Link, useNavigate } from "@/lib/nav"
 import { useEffect, useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
 import { useRequestSky } from "@/lib/stage/request-sky"

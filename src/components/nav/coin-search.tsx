@@ -1,7 +1,7 @@
 // ⌘K coin search (T30): type a symbol, jump to it on the sky. Built on cmdk + the radix dialog directly
 // (not the shadcn skin): a hairline frame on the void, mono rows, no glass, no blur. Every figure in the list
 // is tagged (one SourceTag for the group). Opens with ⌘K / Ctrl+K, or "/" when not typing elsewhere.
-import { useNavigate, useRouterState } from "@tanstack/react-router"
+import { useNavigate, usePath } from "@/lib/nav"
 import { Command, useCommandState } from "cmdk"
 import { Dialog } from "radix-ui"
 import { useEffect } from "react"
@@ -22,7 +22,7 @@ export function CoinSearch({ open, onOpenChange }: Props) {
   // Keyboard focus goes back to whatever opened the search (a button, or the page for ⌘K / "/").
   const returnFocus = useOpener()
   // On /scanner a coin is pointed out in the table instead of leaving the page.
-  const onScanner = useRouterState({ select: (s) => s.location.pathname }) === "/scanner"
+  const onScanner = usePath() === "/scanner"
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

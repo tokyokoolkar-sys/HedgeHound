@@ -1,8 +1,9 @@
+"use client"
 // Site nav (T30, every page): the wordmark and mono links straight on the sky, no bar and no glass.
 // Desktop: pages, the scanner's poll status and ⌘K coin search. Phones: the wordmark and a "menu" that
 // opens as text on the void: the pages, the status, search, and on the Edition the chapters α–κ to jump
 // to (the phone's position cue). "Scanner" joined the links with /scanner (T31).
-import { Link, useRouterState } from "@tanstack/react-router"
+import { Link, usePath } from "@/lib/nav"
 import { Dialog } from "radix-ui"
 import { useState } from "react"
 import { cn } from "@/lib/cn"
@@ -17,7 +18,7 @@ import { useOpener } from "./use-opener"
 
 
 export function SiteNav() {
-  const path = useRouterState({ select: (s) => s.location.pathname })
+  const path = usePath()
   const [search, setSearch] = useState(false)
   const [menu, setMenu] = useState(false)
 

@@ -1,3 +1,4 @@
+"use client"
 // /sky (T33): θ's atlas made explorable on the one canvas. Every coin of the last poll at the same spot as in
 // θ; the recap rings and letters stay; the loudest are labelled; hover names a star, a click (or ?star=)
 // takes it into focus and its reading grows out of a leader line, as in β. A working page: the only motion is
@@ -6,7 +7,7 @@
 import { hourlyApr } from "@/lib/scan/history"
 import { useHistory } from "@/lib/scan/use-history"
 import { historyPath, historyStart } from "@/lib/stage/comet"
-import { Link, useNavigate } from "@tanstack/react-router"
+import { Link, useNavigate } from "@/lib/nav"
 import { Dialog } from "radix-ui"
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
