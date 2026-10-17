@@ -16,6 +16,8 @@ import { lazy, Suspense, useEffect, useState, type ReactNode } from "react"
 import type * as THREE from "three"
 import { afterScroll } from "@/lib/motion/scroll-bus"
 import { palette } from "@/lib/palette"
+import { EDITION } from "@/lib/stage/rhythm"
+import { neededObjects, SKY_OBJECTS, type SkyObject } from "@/lib/stage/sky-needs"
 import { useStage, type Quality } from "@/lib/stage/store"
 import { Atlas } from "../objects/atlas"
 import { CanisMajor } from "../objects/canis-major"
@@ -51,14 +53,16 @@ function Driver() {
 const nextFrame = () => new Promise<void>((r) => requestAnimationFrame(() => r()))
 
 /**
- * Compiles every material in the scene before the first draw, one top-level object per frame.
+ * Compiles every material in the scene before it is drawn, one top-level object per frame: all of them
+ * before the first draw, then (mid/low tier) each object mounted later as the reader nears its chapter.
  * three only compiles what is visible, and most objects hide outside their chapter, so each subtree is
  * made visible for its compile and put back. KHR_parallel_shader_compile (where present) keeps it off
  * the main thread; elsewhere each object's compile is at least its own short task.
  * (Tried and dropped: a scissored 1 px warm-up draw per object to pre-upload buffers. On a software GPU,
  * as in Lighthouse, it still runs every vertex and blocked the main thread far longer; M0 note.)
  */
-function Precompile({ onDone }: { onDone: () => void }) {
+const compiled = new WeakSet<THREE.Object3D>()
+function Precompile({ onDone, version }: { onDone: () => void; version: string }) {
   const gl = useThree((s) => s.gl)
   const scene = useThree((s) => s.scene)
   const camera = useThree((s) => s.camera)
@@ -67,6 +71,8 @@ function Precompile({ onDone }: { onDone: () => void }) {
     void (async () => {
       for (const child of [...scene.children]) {
         if (cancelled) return
+        if (compiled.has(child)) continue
+        compiled.add(child)
         const hidden: THREE.Object3D[] = []
         child.traverse((o) => {
           if (!o.visible) {
@@ -86,32 +92,84 @@ function Precompile({ onDone }: { onDone: () => void }) {
       if (!cancelled) onDone()
     })()
     return () => void (cancelled = true)
-  }, [gl, scene, camera, onDone])
+  }, [gl, scene, camera, onDone, version])
   return null
 }
 
-/** Mounts `layers` one per frame, in order (useFrame order is mount order, so the Projector stays last). */
-function Staged({ layers, onMounted }: { layers: ReactNode[]; onMounted: () => void }) {
-  const [count, setCount] = useState(0)
+type Layer = { key: string; node: ReactNode }
+
+/**
+ * Mounts `layers` one per frame, in their order, as they appear in the list (more arrive later on mid/low
+ * tiers). `tail` (the camera rig and the Projector) is re-keyed whenever a layer mounts, so it always
+ * mounts after every object: useFrame order is mount order, and projected labels must see this frame's
+ * transforms. `onMounted` fires once, when the first set is in; `onVersion` reports every change to what
+ * is mounted (Precompile picks up the newcomers).
+ */
+function Staged({
+  layers,
+  tail,
+  onMounted,
+  onVersion,
+}: {
+  layers: Layer[]
+  tail: (version: string) => ReactNode
+  onMounted: () => void
+  onVersion: (version: string) => void
+}) {
+  const [mounted, setMounted] = useState<ReadonlySet<string>>(() => new Set())
+  const [first, setFirst] = useState(true)
+  const next = layers.find((l) => !mounted.has(l.key))?.key
   useEffect(() => {
-    if (count >= layers.length) {
-      onMounted()
+    if (!next) {
+      if (first) {
+        setFirst(false)
+        onMounted()
+      }
       return
     }
-    const id = requestAnimationFrame(() => setCount((c) => c + 1))
+    const id = requestAnimationFrame(() => setMounted((m) => new Set(m).add(next)))
     return () => cancelAnimationFrame(id)
-  }, [count, layers.length, onMounted])
-  return <>{layers.slice(0, count)}</>
+  }, [next, first, onMounted])
+  const shown = layers.filter((l) => mounted.has(l.key))
+  const version = shown.map((l) => l.key).join(",")
+  useEffect(() => onVersion(version), [version, onVersion])
+  return (
+    <>
+      {shown.map((l) => l.node)}
+      {tail(version)}
+    </>
+  )
+}
+
+const ORDER = EDITION.map((c) => c.id)
+
+/**
+ * The objects to mount. High tier: all of them up front (as before). Mid/low (phones, weak devices): those
+ * the reader is within a chapter of, or the page is built around (lib/stage/sky-needs.ts); once mounted an
+ * object stays, so scrolling back never remounts it.
+ */
+function useSkyObjects(quality: Quality): ReadonlySet<SkyObject> {
+  const lazy = quality !== "high"
+  // A string, so the store's every-frame writes only re-render here when the answer changes.
+  const needed = useStage((s) => (lazy ? [...neededObjects(s.mode, s.active, ORDER)].sort().join(",") : SKY_OBJECTS.join(",")))
+  const [kept, setKept] = useState<ReadonlySet<SkyObject>>(() => new Set(needed.split(",").filter(Boolean) as SkyObject[]))
+  useEffect(() => {
+    const want = needed.split(",").filter(Boolean) as SkyObject[]
+    setKept((k) => (want.every((o) => k.has(o)) ? k : new Set([...k, ...want])))
+  }, [needed])
+  return kept
 }
 
 type Boot = "mounting" | "compiling" | "effects" | "live"
 
 export default function SkyStage() {
   const quality = useStage((s) => s.quality)
+  const objects = useSkyObjects(quality)
   const [labelHost, setLabelHost] = useState<HTMLDivElement | null>(null)
   const [boot, setBoot] = useState<Boot>("mounting")
   const [onMounted] = useState(() => () => setBoot("compiling"))
-  const [onCompiled] = useState(() => () => setBoot("effects"))
+  // Precompile reports again for every later newcomer; only the first report moves the boot on.
+  const [onCompiled] = useState(() => () => setBoot((b) => (b === "compiling" ? "effects" : b)))
   const [onEffects] = useState(() => () => setBoot("live"))
   // If the post stack never reports ready (a failed chunk, a driver quirk), draw without waiting on it.
   useEffect(() => {
@@ -120,22 +178,26 @@ export default function SkyStage() {
     return () => window.clearTimeout(id)
   }, [boot, onEffects])
 
-  const layers = [
-    <Starfield key="starfield" quality={quality} />,
-    <GlassHound key="hound" quality={quality} />,
-    labelHost ? <CanisMajor key="canis" labelHost={labelHost} /> : null,
-    <Radar key="radar" />,
-    <HedgeAstrolabe key="astrolabe" />,
-    <CometTrail key="comet" />,
-    <FieldChart key="field" />,
-    <Kennel key="kennel" />,
-    <EmberField key="embers" />,
-    <Atlas key="atlas" />,
-    <DeskOrb key="orb" />,
-    <Travelers key="travelers" />,
-    <CameraRig key="rig" />,
-    <Projector key="projector" />,
+  // The original mount order; objects not wanted yet are simply absent.
+  const all: Array<[SkyObject | "starfield", ReactNode]> = [
+    ["starfield", <Starfield key="starfield" quality={quality} />],
+    ["hound", <GlassHound key="hound" quality={quality} />],
+    ["canis", labelHost ? <CanisMajor key="canis" labelHost={labelHost} /> : null],
+    ["radar", <Radar key="radar" />],
+    ["astrolabe", <HedgeAstrolabe key="astrolabe" />],
+    ["comet", <CometTrail key="comet" />],
+    ["field", <FieldChart key="field" />],
+    ["kennel", <Kennel key="kennel" />],
+    ["embers", <EmberField key="embers" />],
+    ["atlas", <Atlas key="atlas" />],
+    ["orb", <DeskOrb key="orb" />],
+    ["travelers", <Travelers key="travelers" />],
   ]
+  const layers: Layer[] = all
+    .filter(([k, node]) => node !== null && (k === "starfield" || objects.has(k)))
+    .map(([key, node]) => ({ key, node }))
+  const [tail] = useState(() => (version: string) => [<CameraRig key={`rig:${version}`} />, <Projector key={`projector:${version}`} />])
+  const [version, setVersion] = useState("")
 
   return (
     <>
@@ -150,8 +212,8 @@ export default function SkyStage() {
         >
           {boot === "live" && <Driver />}
           <PerformanceMonitor onDecline={() => useStage.getState().set({ quality: DOWN[useStage.getState().quality] })} />
-          <Staged layers={layers} onMounted={onMounted} />
-          {boot === "compiling" && <Precompile onDone={onCompiled} />}
+          <Staged layers={layers} tail={tail} onMounted={onMounted} onVersion={setVersion} />
+          {boot !== "mounting" && <Precompile onDone={onCompiled} version={version} />}
           {(boot === "effects" || boot === "live") && (
             <Suspense fallback={null}>
               <Effects onReady={onEffects} />

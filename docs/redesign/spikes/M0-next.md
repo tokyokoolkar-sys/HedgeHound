@@ -112,6 +112,34 @@ Tried and reverted:
 
 **Visual changes:** none to the design. On first load the sky appears about 0.1–0.3 s later than before, because it now waits for the post stack to compile. In exchange, the first frame shows with grain from the start instead of popping in a frame later. Checked in the dev browser against the earlier screenshots: hero hound, γ radar, `/sky`, `/den`.
 
+## Phone tier: mount objects near their chapter (2026-10-17, owner approved steps 1–2)
+- **Which devices:** mid/low tier, meaning phones, touch or narrow screens, and weak CPUs (`detectTier`). Lighthouse's mobile run is "mid". These devices now mount a sky object only when the reader is within one chapter of where it plays, or on the page built around it (`/sky` → atlas, `/den` → orb). This lives in `lib/stage/sky-needs.ts`, with tests. Once mounted, an object stays.
+- **High tier** mounts everything up front, as before.
+- **Late-mounted objects:**
+  - Each is precompiled on arrival, one chapter ahead, so it compiles off-screen.
+  - The camera rig and Projector are re-keyed after each arrival, so they still run last each frame.
+- **Visuals unchanged:** at 375 px, α hound, Canis Major, β radar, δ trail, ζ, η, θ, ι and κ all render. ζ, η and ι matched screenshots taken with lazy mounting switched off.
+
+| Page | Mobile before | Mobile after (2 runs) | Desktop after |
+|---|---|---|---|
+| / | 49 / 51 | 60 / 59 | 94 |
+| /scanner | 70 / 70 | 75 / 70 | 97 |
+| /sky | 81 / 79 | 75 / 74 | 97 |
+| /den | 67 / 72 | 81 / 82 | 99 |
+| /playbook | 80 / 79 | 83 / 79 | 97 |
+
+**Step 2 (fewer stars, less detail) was not done.**
+- Generating the mid-tier stars (about 3,300 points) costs a few ms, and drawing them happens off the main thread.
+- So thinning them would visibly change the phone sky without moving Lighthouse.
+- The hound's mid-tier detail is already lower and is extruded in a worker.
+
+**Mobile `/sky` is the same within noise.** It needs its atlas from the first frame.
+
+What still holds mobile under 85:
+- **`/`:** the LCP element is the hero "HedgeHound" title, which resolves in with an intro animation once JavaScript runs (1.3 s unthrottled, about 6.5 s simulated). Changing it is a design call.
+- **Every page:** Lighthouse's simulated mobile LCP of about 3 s, from Next's high-priority script chunks.
+- **The per-frame GSAP tick:** its first frames on `/sky` are about 100 ms each unthrottled.
+
 ## Verdict
 **Go on correctness, conditional on performance.**
 - Correctness: the persistent canvas, soft navigation, query state, hash landing and the redirect all work, and the port is mechanical.
