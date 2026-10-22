@@ -1,6 +1,6 @@
 # Dokumen Teknis Modul 4: Next.js App Router
 
-Nama/NIM   : __________________________
+Nama/NIM   : Ataqah Ramadhan Widiyana Putra / 105224022
 Repositori : https://github.com/tokyokoolkar-sys/HedgeHound
 Versi Next.js dan mode Cache Components (aktif/tidak) : Next.js 16.4.2 (Turbopack), Cache Components tidak aktif (tidak dikonfigurasi di next.config.ts)
 
