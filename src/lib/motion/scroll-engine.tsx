@@ -1,3 +1,4 @@
+"use client"
 // The scroll engine (T11). Mounted once in __root.tsx, client-only.
 // - Lenis smooths mouse-wheel scrolling (lerp 0.075, as in the D1 prototype); touch keeps native scroll.
 // - One gsap.ticker loop: advance Lenis, write section progress + smoothed pointer to the stage store,

@@ -3,45 +3,58 @@
 // the cursor. It never animates by itself. `scene.houndAway` (0..1) sends it into depth exponentially.
 // The silhouette is still the draft mark from S4 and needs proper art.
 import { useFrame, useThree } from "@react-three/fiber"
-import { useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
-import { SVGLoader } from "three-stdlib"
 import { band, recedeDepth } from "@/lib/motion/math"
 import { useStage, type Quality } from "@/lib/stage/store"
 import { glassMaterial } from "../stage/glass"
+import { extrudeHound, houndGeometry, houndShapesJSON, type HoundArrays } from "./hound-geometry"
 
-const HOUND_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M10 60C11 50 14 41 18.5 35.5 20.8 32.6 20.2 29.6 19.2 26.4 18.2 21.5 19.4 15.4 22.6 8.6 23.2 7.2 24.2 6.8 25 7.6 28.6 11.2 30.8 16.2 31.6 21.4 32 24 33.4 25.4 35.8 26.2 38.4 27 40.4 28.4 43.4 29.2L54 31.6C57.4 32.4 59.4 33.8 59.4 36 59.4 38.4 57.4 39.6 54.6 39.8L48.6 40.2C45.4 40.6 43.4 42 42.6 44.4 41.8 47.4 42 51 42.6 54.2 43.2 57 44.2 59 45.8 60Z"/></svg>`
-
-// PLAN §7: curve segments per tier.
-const SEGMENTS: Record<Quality, { curve: number; bevel: number }> = {
-  high: { curve: 72, bevel: 24 },
-  mid: { curve: 40, bevel: 14 },
-  low: { curve: 24, bevel: 8 },
+let worker: Worker | null | undefined
+let nextId = 0
+function houndWorker(): Worker | null {
+  if (worker === undefined) {
+    try {
+      worker = new Worker(new URL("./hound.worker.ts", import.meta.url), { type: "module" })
+    } catch {
+      worker = null
+    }
+  }
+  return worker
 }
 
+/** The hound's geometry for this tier, extruded in a worker; null until it arrives. */
 function useHoundGeometry(quality: Quality) {
-  const geo = useMemo(() => {
-    const data = new SVGLoader().parse(HOUND_SVG)
-    const shapes = data.paths.flatMap((p) => SVGLoader.createShapes(p as unknown as Parameters<typeof SVGLoader.createShapes>[0]))
-    // Deep, soft bevel so every edge reads as rounded glass rather than a cut-out.
-    const g = new THREE.ExtrudeGeometry(shapes, {
-      depth: 4,
-      bevelEnabled: true,
-      bevelThickness: 4.2,
-      bevelSize: 2.6,
-      bevelSegments: SEGMENTS[quality].bevel,
-      curveSegments: SEGMENTS[quality].curve,
-    })
-    g.center()
-    // Flip y for SVG coordinates, and z too: one negative axis would reverse the winding (we would see the
-    // inside faces with inverted normals, which drew a hard white line along the base; T15 critique).
-    g.scale(0.062, -0.062, -0.062)
-    g.computeVertexNormals()
-    return g
+  const [geo, setGeo] = useState<THREE.BufferGeometry | null>(null)
+  useEffect(() => {
+    let live = true
+    const shapes = houndShapesJSON()
+    const done = (arrays: HoundArrays) => {
+      if (!live) return
+      setGeo(houndGeometry(arrays))
+    }
+    const w = houndWorker()
+    if (!w) {
+      done(extrudeHound(shapes, quality))
+      return () => void (live = false)
+    }
+    const id = ++nextId
+    const onMessage = (e: MessageEvent<HoundArrays & { id: number }>) => {
+      if (e.data.id === id) done(e.data)
+    }
+    const onError = () => done(extrudeHound(shapes, quality))
+    w.addEventListener("message", onMessage)
+    w.addEventListener("error", onError, { once: true })
+    w.postMessage({ id, shapes, quality })
+    return () => {
+      live = false
+      w.removeEventListener("message", onMessage)
+      w.removeEventListener("error", onError)
+    }
   }, [quality])
+  useEffect(() => () => geo?.dispose(), [geo])
   return geo
 }
-
 
 
 export function GlassHound({ quality }: { quality: Quality }) {
@@ -74,9 +87,11 @@ export function GlassHound({ quality }: { quality: Quality }) {
 
   return (
     <group ref={ref}>
-      <mesh geometry={geo}>
-        <primitive object={glass} attach="material" />
-      </mesh>
+      {geo && (
+        <mesh geometry={geo}>
+          <primitive object={glass} attach="material" />
+        </mesh>
+      )}
     </group>
   )
 }

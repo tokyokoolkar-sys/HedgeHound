@@ -5,17 +5,17 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-/** Flat ESLint config for the TanStack Start app-builder template. */
+/** Flat ESLint config. */
 export default tseslint.config(
   {
     ignores: [
       "dist/**",
       ".output/**",
       ".vercel/**",
-      ".nitro/**",
       ".claude/**",
       "node_modules/**",
-      "src/routeTree.gen.ts",
+      ".next/**",
+      "next-env.d.ts",
     ],
   },
   js.configs.recommended,
@@ -45,7 +45,7 @@ export default tseslint.config(
   },
   // shadcn/magicui generated primitives export variants alongside components.
   {
-    files: ["src/components/ui/**", "src/components/magicui/**"],
+    files: ["src/components/ui/**", "src/components/magicui/**", "src/app/**", "src/lib/nav.tsx"],
     rules: {
       "react-refresh/only-export-components": "off",
     },

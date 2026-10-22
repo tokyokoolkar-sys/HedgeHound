@@ -5,7 +5,7 @@
 // - instrument: objects/atlas.tsx (every coin, filling the sky), channels in sky-scene.ts;
 // - labels: each earlier chapter's key coin, picked by those chapters' own rules (lib/stage/atlas.ts), and a
 //   caption that counts the field and η's skipped coins, with one SourceTag.
-import { Link } from "@tanstack/react-router"
+import { Link } from "@/lib/nav"
 import { useRef } from "react"
 import { useScan } from "@/lib/scan/use-scan"
 import { placeAtlas } from "@/lib/stage/atlas"

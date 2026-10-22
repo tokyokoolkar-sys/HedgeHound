@@ -1,12 +1,13 @@
 // ⌘K coin search (T30): type a symbol, jump to it on the sky. Built on cmdk + the radix dialog directly
 // (not the shadcn skin): a hairline frame on the void, mono rows, no glass, no blur. Every figure in the list
 // is tagged (one SourceTag for the group). Opens with ⌘K / Ctrl+K, or "/" when not typing elsewhere.
-import { useNavigate, useRouterState } from "@tanstack/react-router"
+import { useNavigate, usePath } from "@/lib/nav"
 import { Command, useCommandState } from "cmdk"
 import { Dialog } from "radix-ui"
 import { useEffect } from "react"
 import { cn } from "@/lib/cn"
 import { formatNet } from "@/lib/scan/loudest"
+import { skyPath } from "@/lib/sky-path"
 import { useScan } from "@/lib/scan/use-scan"
 import { SourceTag } from "../edition/source-tag"
 import { useOpener } from "./use-opener"
@@ -22,7 +23,7 @@ export function CoinSearch({ open, onOpenChange }: Props) {
   // Keyboard focus goes back to whatever opened the search (a button, or the page for ⌘K / "/").
   const returnFocus = useOpener()
   // On /scanner a coin is pointed out in the table instead of leaving the page.
-  const onScanner = useRouterState({ select: (s) => s.location.pathname }) === "/scanner"
+  const onScanner = usePath() === "/scanner"
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -84,7 +85,7 @@ export function CoinSearch({ open, onOpenChange }: Props) {
                       onSelect={() => {
                         onOpenChange(false)
                         if (onScanner) void navigate({ to: "/scanner", search: (prev: Record<string, unknown>) => ({ ...prev, sym: r.symbol }), replace: true })
-                        else void navigate({ to: SKY_ROUTE, search: { star: r.symbol } })
+                        else void navigate({ to: skyPath(r.symbol) })
                       }}
                       className="grid min-h-10 cursor-pointer grid-cols-[1fr_auto_auto] items-baseline gap-4 px-2 py-1.5 text-starlight-dim data-[selected=true]:bg-starlight/[0.06] data-[selected=true]:text-starlight"
                     >

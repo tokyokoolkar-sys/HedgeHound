@@ -1,9 +1,10 @@
+"use client"
 // /playbook (T32): the strategy as written, ported from WhaleHunterAlt's docs/funding-spread-playbook.html
 // (with docs/01-strategy.md and 03-risk-rules.md), in the source's order and words; the access paragraph is
 // verbatim (owner, T32). A reading page on the quiet sky: one column, headings that sharpen with the scroll,
 // a contents rail on wide screens. Its figures are rules and plans, not readings, so they carry no SourceTag;
 // the one outside claim stays marked unverified. The source's Monte Carlo lives in the den.
-import { Link } from "@tanstack/react-router"
+import { Link } from "@/lib/nav"
 import { useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
 import { band } from "@/lib/motion/math"

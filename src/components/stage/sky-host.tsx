@@ -1,3 +1,4 @@
+"use client"
 // Mounted once in __root.tsx. Keeps SkyStage dormant (no WebGL, no 3D code loaded) until a page calls
 // useRequestSky(); from then on it stays alive across navigation (T12 decision a). If WebGL fails, the
 // page simply stays on the void background and the copy keeps working.

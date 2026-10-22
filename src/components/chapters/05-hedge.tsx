@@ -5,7 +5,7 @@
 // - instrument: objects/field-chart.tsx, channels in hedge-scene.ts; labels pinned to it.
 import { formatHeld, heldKnown } from "@/lib/scan/table"
 import { band } from "@/lib/motion/math"
-import { Link } from "@tanstack/react-router"
+import { Link } from "@/lib/nav"
 import { useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
 import { formatNet } from "@/lib/scan/loudest"

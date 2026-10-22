@@ -1,9 +1,10 @@
+"use client"
 // /scanner (T31): the operator's table. A working page, so no scroll choreography: a quiet sky, the
 // title, filters that live in the URL, and every coin of the last poll as mono rows straight on the sky.
 // The column header sits outside the scrolling rows, so rows clip crisply at its hairline instead of
 // sliding under it (no band, no fade). Rows open the coin on the sky.
 import { hourlyApr } from "@/lib/scan/history"
-import { Link, useNavigate } from "@tanstack/react-router"
+import { Link, useNavigate } from "@/lib/nav"
 import { useEffect, useRef, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
 import { useRequestSky } from "@/lib/stage/request-sky"
@@ -27,7 +28,7 @@ import {
 } from "@/lib/scan/table"
 import { HairlineSlider } from "../controls/hairline-slider"
 import { SourceTag } from "../edition/source-tag"
-import { SKY_ROUTE } from "../nav/coin-search"
+import { skyPath } from "@/lib/sky-path"
 
 const GUTTER = "px-[max(16px,7vw)]"
 /**
@@ -100,7 +101,7 @@ export function ScannerPage({ search }: { search: ScannerSearch }) {
       replace: true,
       resetScroll: false,
     })
-  const open = (symbol: string) => void navigate({ to: SKY_ROUTE, search: { star: symbol } })
+  const open = (symbol: string) => void navigate({ to: skyPath(symbol) })
 
   // A pointed-out coin scrolls into view inside the table (not the page).
   useEffect(() => {
@@ -300,8 +301,7 @@ function Row({ r, on, onOpen }: { r: ScanRow; on: boolean; onOpen: () => void })
         <Cell>
           <span className="inline-flex items-baseline gap-3">
             <Link
-              to={SKY_ROUTE}
-              search={{ star: r.symbol }}
+              to={skyPath(r.symbol)}
               onClick={(e) => e.stopPropagation()}
               className={cn(
                 "inline-flex min-h-11 items-center font-mono text-sm tracking-wide lg:min-h-8",

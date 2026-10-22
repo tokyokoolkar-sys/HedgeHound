@@ -1,7 +1,8 @@
 node_modules
-.tanstack
 dist
-.output
 .vercel
 screenshots/*.png
 *.log
+.next
+next-env.d.ts
+*.tsbuildinfo

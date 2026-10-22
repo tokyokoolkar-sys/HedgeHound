@@ -73,7 +73,7 @@ Then run `npm run dev` and open http://localhost:8080/_almagest. It has switches
 
 ## Stack
 
-TanStack Start (React 19, SSR) · Vite · Tailwind v4 · three.js + React Three Fiber (one persistent canvas) · custom GLSL (stars, glass, the "bite" transition) · Lenis + GSAP ticker for smooth scroll · TanStack Query for the scanner feed · shadcn/ui, magicui and two `@spell` components (shimmer text, logos carousel).
+Next.js 16 App Router (React 19, Turbopack) · Tailwind v4 · three.js + React Three Fiber (one persistent canvas) · custom GLSL (stars, glass, the "bite" transition) · Lenis + GSAP ticker for smooth scroll · TanStack Query for the scanner feed · shadcn/ui, magicui and two `@spell` components (shimmer text, logos carousel).
 
 ## Project docs
 

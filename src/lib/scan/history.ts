@@ -35,7 +35,7 @@ export const hourlyApr = (hr: number) => {
   return `${v < 0 ? "−" : ""}${Math.abs(v).toFixed(1)}%`
 }
 
-const BASE = (import.meta.env?.VITE_API_BASE as string | undefined) ?? ""
+const BASE = process.env.NEXT_PUBLIC_API_BASE ?? ""
 
 /** Fetch a coin's history; null on any failure (no fallback: history is never sampled). */
 export async function fetchHistory(sym: string, hours = 24, signal?: AbortSignal): Promise<HistoryPoint[] | null> {

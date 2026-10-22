@@ -1,3 +1,4 @@
+"use client"
 // /sky (T33): θ's atlas made explorable on the one canvas. Every coin of the last poll at the same spot as in
 // θ; the recap rings and letters stay; the loudest are labelled; hover names a star, a click (or ?star=)
 // takes it into focus and its reading grows out of a leader line, as in β. A working page: the only motion is
@@ -6,7 +7,8 @@
 import { hourlyApr } from "@/lib/scan/history"
 import { useHistory } from "@/lib/scan/use-history"
 import { historyPath, historyStart } from "@/lib/stage/comet"
-import { Link, useNavigate } from "@tanstack/react-router"
+import { Link, useNavigate } from "@/lib/nav"
+import { skyPath } from "@/lib/sky-path"
 import { Dialog } from "radix-ui"
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react"
 import { cn } from "@/lib/cn"
@@ -73,7 +75,7 @@ export function SkyPage({ star }: { star?: string }) {
   const tag = <SourceTag kind={scan.live ? "live" : "sample"} ts={scan.ts ?? undefined} stale={scan.stale} className="text-starlight" />
 
   const focus = (symbol: string | undefined) =>
-    void navigate({ to: "/sky", search: { star: symbol }, replace: true })
+    void navigate({ to: skyPath(symbol), replace: true, shallow: true })
 
   // ── The tween: arrival (from θ's field, or from nothing) and focus, written to the scene every tick. ──
   const tween = useRef<Tween | null>(null)

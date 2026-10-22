@@ -1,8 +1,9 @@
+"use client"
 // Site nav (T30, every page): the wordmark and mono links straight on the sky, no bar and no glass.
 // Desktop: pages, the scanner's poll status and ⌘K coin search. Phones: the wordmark and a "menu" that
 // opens as text on the void: the pages, the status, search, and on the Edition the chapters α–κ to jump
 // to (the phone's position cue). "Scanner" joined the links with /scanner (T31).
-import { Link, useRouterState } from "@tanstack/react-router"
+import { Link, usePath } from "@/lib/nav"
 import { Dialog } from "radix-ui"
 import { useState } from "react"
 import { cn } from "@/lib/cn"
@@ -17,7 +18,7 @@ import { useOpener } from "./use-opener"
 
 
 export function SiteNav() {
-  const path = useRouterState({ select: (s) => s.location.pathname })
+  const path = usePath()
   const [search, setSearch] = useState(false)
   const [menu, setMenu] = useState(false)
 
@@ -32,7 +33,7 @@ export function SiteNav() {
         <div className="pointer-events-auto hidden items-center gap-5 md:flex lg:gap-7">
           <nav className="flex items-center gap-5 lg:gap-7" aria-label="Pages">
             {LINKS.map((l) => (
-              <NavLink key={l.to} to={l.to} label={l.label} on={path === l.to} />
+              <NavLink key={l.to} to={l.to} label={l.label} on={isOn(path, l.to)} />
             ))}
           </nav>
           <PollStatus wordsClassName="max-lg:sr-only" reserve="min-w-[7.5rem] lg:min-w-[16.75rem]" />
@@ -100,7 +101,7 @@ function PhoneMenu({ open, onOpenChange, path, onSearch }: { open: boolean; onOp
           </div>
           <nav aria-label="Pages" className="mt-8 grid justify-items-start gap-1" onClick={() => onOpenChange(false)}>
             {LINKS.map((l) => (
-              <NavLink key={l.to} to={l.to} label={l.label} on={path === l.to} big />
+              <NavLink key={l.to} to={l.to} label={l.label} on={isOn(path, l.to)} big />
             ))}
           </nav>
           <div className="mt-6 grid justify-items-start gap-3">
@@ -141,3 +142,6 @@ function PhoneMenu({ open, onOpenChange, path, onSearch }: { open: boolean; onOp
     </Dialog.Root>
   )
 }
+
+/** A nav entry is lit on its page and on the pages under it (/sky/BTC lights Sky). */
+const isOn = (path: string, to: string) => path === to || (to !== "/" && path.startsWith(`${to}/`))

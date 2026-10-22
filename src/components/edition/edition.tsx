@@ -1,3 +1,4 @@
+"use client"
 // The Edition (`/`): overture + α–κ on the fixed stage above the one sky (PLAN §3).
 // Every chapter's copy, the HUD, the index, and the scene mapping: the one place where scroll progress
 // becomes scene channels for the sky (overture → hound, α → Canis Major, β → radar). Chapters with their
