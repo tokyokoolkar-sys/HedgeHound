@@ -186,6 +186,6 @@ Keluaran perintah:
 
 ## 7. Catatan Pemanfaatan AI
 
-Tidak menggunakan AI.
+Semua menggunakan AI kecuali verifikasi manual.
 
 (Alat, perintah utama, bagian yang digunakan, dan cara memverifikasinya: tidak ada; seluruh pengerjaan dan verifikasi dilakukan secara manual dengan `npm run build`, `npx tsc --noEmit`, `npm run lint`, dan pengujian curl/browser.)
