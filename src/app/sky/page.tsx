@@ -1,13 +1,4 @@
-import type { Metadata } from "next"
-import { Suspense } from "react"
-import { SkyRoute } from "./sky-route"
-
-export const metadata: Metadata = { title: "The Sky" }
-
+/** /sky with no coin in focus. The page itself is rendered by the layout. */
 export default function Page() {
-  return (
-    <Suspense>
-      <SkyRoute />
-    </Suspense>
-  )
+  return null
 }

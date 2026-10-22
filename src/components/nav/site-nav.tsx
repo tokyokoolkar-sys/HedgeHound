@@ -33,7 +33,7 @@ export function SiteNav() {
         <div className="pointer-events-auto hidden items-center gap-5 md:flex lg:gap-7">
           <nav className="flex items-center gap-5 lg:gap-7" aria-label="Pages">
             {LINKS.map((l) => (
-              <NavLink key={l.to} to={l.to} label={l.label} on={path === l.to} />
+              <NavLink key={l.to} to={l.to} label={l.label} on={isOn(path, l.to)} />
             ))}
           </nav>
           <PollStatus wordsClassName="max-lg:sr-only" reserve="min-w-[7.5rem] lg:min-w-[16.75rem]" />
@@ -101,7 +101,7 @@ function PhoneMenu({ open, onOpenChange, path, onSearch }: { open: boolean; onOp
           </div>
           <nav aria-label="Pages" className="mt-8 grid justify-items-start gap-1" onClick={() => onOpenChange(false)}>
             {LINKS.map((l) => (
-              <NavLink key={l.to} to={l.to} label={l.label} on={path === l.to} big />
+              <NavLink key={l.to} to={l.to} label={l.label} on={isOn(path, l.to)} big />
             ))}
           </nav>
           <div className="mt-6 grid justify-items-start gap-3">
@@ -142,3 +142,6 @@ function PhoneMenu({ open, onOpenChange, path, onSearch }: { open: boolean; onOp
     </Dialog.Root>
   )
 }
+
+/** A nav entry is lit on its page and on the pages under it (/sky/BTC lights Sky). */
+const isOn = (path: string, to: string) => path === to || (to !== "/" && path.startsWith(`${to}/`))

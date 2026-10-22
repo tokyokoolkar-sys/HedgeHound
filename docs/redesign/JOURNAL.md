@@ -15,7 +15,6 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 7 | The carousel cycles every 2.2 s but is only on screen for ~820 px of scroll, so the owner sees 1–2 of 6 groups. Owner-chosen ambient cycle. | T15 critique | — | owner |
 | 8 | PRODUCT.md "Brand Commitments" still describes the retired parchment / Bricolage direction (Impeccable reports it as drift). | T15 critique | T51 or on request | later |
 | 9 | Legacy cleanup: `text-faint` (4.2:1) in `/_kitchen`, hex literals in `.night` / `.paper`, the `/v1` route and its components (hero-film, tear, old scenes), throwaway check routes `/_kitchen`, `/_motion`, `/_stage`. | T10, T13 | T51, T52 | later |
-| 10 | Pre-existing lint error: empty block in `src/lib/app-data/client.server.ts:281`. | T00 | T51 | later |
 | 11 | γ reuses the β layout box, which keeps room on the right for a reading γ doesn't have; the astrolabe could be larger on wide screens. | T20 | — | open |
 | 12 | Under reduced motion there is no price swing, only its caption, so "price cancels" is told rather than shown. | T20 | — | owner |
 | 13 | δ's trail shows only what live fields allow (window, last flip, 6 h persistence); the real shape of the day needs `/api/history`. | T21 | T41 (needs owner OK) | owner |
@@ -25,7 +24,6 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 18 | SAMPLE has only three skipped coins, so η looks sparse offline; checked with a long-list mock (`T24-shots/mock-long-lists.png`). Re-check with LIVE. | T24 | — | open |
 | 20 | With SAMPLE's twenty coins the atlas is a quiet field; it fills out with LIVE. | T25 | — | open |
 | 22 | Paper results: Phase 0 records no paper trades, so ι shows settings and a live count only. Revisit if a paper book of trades is ever built. | T26 | — | owner |
-| 28 | The Grok template's plumbing (`lib/auth`, `lib/app-data`, `lib/db`, `lib/multiplayer`, the preview bridge, pglite in vite.config) is unreachable from the routes but may be wired outside them; removing it is its own decision. | P4 close | — | owner |
 | 29 | `components/text-fx/*` (blur reveal, shimmer, gradient wave, perspective text) is kept as the owner's kit but nothing uses it yet. | P4 close | — | open |
 | 30 | The overture → α stretch is the longest run without words (about four phone screens). Designed; revisit only if it reads as empty. | P4 critique (C12) | — | owner |
 | 31 | The sky redraws every frame even when nothing moves; skip frames when idle. Also measure the production bundle once (`vite build` with a size report). | P4 critique (C13, C14) | P6 | later |
@@ -41,6 +39,7 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 
 | Item | Closed by |
 |---|---|
+| Grok template plumbing (#28: auth, app-data, db, multiplayer, preview bridge) and its lint error (#10) | M0 + M1 (removed with the Next.js migration; `.grok/`, its scripts and `vercel.json` too) |
 | #24 δ's strips coloured by short venue read as "alerts" | T43 (strips are starlight; the measured line shows the sign) |
 | #2 `/den` dollar columns and figures in tabular digits | T34 |
 | #21 "Open the den" under ι's book | T34 |

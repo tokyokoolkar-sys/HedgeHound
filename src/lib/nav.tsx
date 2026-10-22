@@ -37,18 +37,21 @@ type NavigateOpts<S extends Search> = {
   replace?: boolean
   /** false: keep the scroll position (filters, focus changes). */
   resetScroll?: boolean
+  /** Rewrite the address in place (History API) even when the path changes, e.g. /sky/BTC → /sky/ETH:
+   *  the page stays mounted and nothing is fetched. Only for moves inside one page. */
+  shallow?: boolean
 }
 
 export function useNavigate() {
   const router = useRouter()
   return useCallback(
-    <S extends Search>({ to, search, hash, replace, resetScroll = true }: NavigateOpts<S>) => {
+    <S extends Search>({ to, search, hash, replace, resetScroll = true, shallow }: NavigateOpts<S>) => {
       const prev = Object.fromEntries(new URLSearchParams(window.location.search).entries()) as S
       const next = typeof search === "function" ? search(prev) : search
       const href = hrefFor(to, next, hash)
-      // Same page, new query (filters, focus): the History API, which Next syncs into useSearchParams
-      // without a server round trip or a scroll.
-      if (to === window.location.pathname) {
+      // Same page, new query (filters) or a shallow move (sky focus): the History API, which Next syncs into
+      // usePathname/useSearchParams without a server round trip or a scroll.
+      if (shallow || to === window.location.pathname) {
         if (replace) window.history.replaceState(null, "", href)
         else window.history.pushState(null, "", href)
         if (resetScroll) window.scrollTo(0, 0)

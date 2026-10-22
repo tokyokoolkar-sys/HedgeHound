@@ -1,7 +1,5 @@
 node_modules
-.tanstack
 dist
-.output
 .vercel
 screenshots/*.png
 *.log

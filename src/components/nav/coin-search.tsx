@@ -7,6 +7,7 @@ import { Dialog } from "radix-ui"
 import { useEffect } from "react"
 import { cn } from "@/lib/cn"
 import { formatNet } from "@/lib/scan/loudest"
+import { skyPath } from "@/lib/sky-path"
 import { useScan } from "@/lib/scan/use-scan"
 import { SourceTag } from "../edition/source-tag"
 import { useOpener } from "./use-opener"
@@ -84,7 +85,7 @@ export function CoinSearch({ open, onOpenChange }: Props) {
                       onSelect={() => {
                         onOpenChange(false)
                         if (onScanner) void navigate({ to: "/scanner", search: (prev: Record<string, unknown>) => ({ ...prev, sym: r.symbol }), replace: true })
-                        else void navigate({ to: SKY_ROUTE, search: { star: r.symbol } })
+                        else void navigate({ to: skyPath(r.symbol) })
                       }}
                       className="grid min-h-10 cursor-pointer grid-cols-[1fr_auto_auto] items-baseline gap-4 px-2 py-1.5 text-starlight-dim data-[selected=true]:bg-starlight/[0.06] data-[selected=true]:text-starlight"
                     >

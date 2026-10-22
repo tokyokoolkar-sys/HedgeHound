@@ -4,7 +4,7 @@ import { scanQueryString } from "./query.ts"
 import type { ScanParams, ScanResult } from "./types.ts"
 import { DEFAULT_SCAN_PARAMS } from "./types.ts"
 
-/** Empty in dev: the Vite proxy forwards `/api` to the scanner on 127.0.0.1:8000. */
+/** Empty by default: next.config rewrites `/api` to the scanner on 127.0.0.1:8000. */
 const BASE = process.env.NEXT_PUBLIC_API_BASE ?? ""
 
 const TIMEOUT_MS = 10_000

@@ -6,6 +6,7 @@
 // none are shown (owner, T34: the old sample book is deleted).
 import { formatHeld, heldKnown } from "@/lib/scan/table"
 import { Link } from "@/lib/nav"
+import { skyPath } from "@/lib/sky-path"
 import { useEffect, useRef, useState } from "react"
 import { formatNet } from "@/lib/scan/loudest"
 import { useScan } from "@/lib/scan/use-scan"
@@ -171,7 +172,7 @@ export function DenPage() {
               <ul className="m-0 list-none p-0">
                 {clearing.map((r) => (
                   <li key={r.symbol} className="grid grid-cols-[minmax(6.5rem,1fr)_auto] items-baseline gap-x-4 border-b border-starlight-faint/40 py-2">
-                    <Link to="/sky" search={{ star: r.symbol }} className="inline-flex min-h-8 items-center font-mono text-sm tracking-wide text-starlight hover:text-scan focus-visible:text-scan">
+                    <Link to={skyPath(r.symbol)} className="inline-flex min-h-8 items-center font-mono text-sm tracking-wide text-starlight hover:text-scan focus-visible:text-scan">
                       {r.symbol}
                     </Link>
                     <span className="figure text-right tabular-nums text-scent">{formatNet(r.net)}</span>

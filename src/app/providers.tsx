@@ -3,7 +3,7 @@
 // navigation, so the one sky canvas (SkyHost) and the scroll engine live across every page (hard rule 2).
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { usePathname } from "next/navigation"
-import { Suspense, useEffect, useState, type ReactNode } from "react"
+import { Suspense, useEffect, useRef, useState, type ReactNode } from "react"
 import { SiteNav } from "@/components/nav/site-nav"
 import { SkyHost } from "@/components/stage/sky-host"
 import { ScrollEngine } from "@/lib/motion/scroll-engine"
@@ -58,11 +58,16 @@ function AfterHydration({ children }: { children: ReactNode }) {
 
 /**
  * Client navigation: Next scrolls the window, but Lenis keeps its own target and the old page's sections.
- * On a new path: re-measure, then land at the top (or at the #hash) without a smooth glide.
+ * On a new path: re-measure, then land at the top (or at the #hash) without a smooth glide. A move inside one
+ * page (/sky/BTC → /sky/ETH) is not a new page: it keeps its place.
  */
 function RouteScroll() {
   const path = usePathname()
+  const prev = useRef(path)
   useEffect(() => {
+    const was = prev.current
+    prev.current = path
+    if (was !== path && section(was) === section(path)) return
     const id = requestAnimationFrame(() => {
       measureSections()
       const hash = decodeURIComponent(window.location.hash.slice(1))
@@ -73,3 +78,6 @@ function RouteScroll() {
   }, [path])
   return null
 }
+
+/** `/sky/BTC` → `sky`: the page a path belongs to. */
+const section = (path: string) => path.split("/")[1] ?? ""
