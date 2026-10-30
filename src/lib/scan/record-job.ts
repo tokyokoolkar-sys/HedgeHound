@@ -6,7 +6,6 @@ import type { ScanRecord } from "./record.ts"
 import { DEFAULT_SCAN_PARAMS } from "./types.ts"
 
 declare global {
-  // eslint-disable-next-line no-var
   var __hedgehoundRecordTimer: ReturnType<typeof setInterval> | undefined
 }
 
