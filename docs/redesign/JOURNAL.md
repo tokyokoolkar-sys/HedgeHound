@@ -27,6 +27,7 @@ Status: **open** (needs work), **owner** (waiting on an owner decision), **later
 | 29 | `components/text-fx/*` (blur reveal, shimmer, gradient wave, perspective text) is kept as the owner's kit but nothing uses it yet. | P4 close | — | open |
 | 30 | The overture → α stretch is the longest run without words (about four phone screens). Designed; revisit only if it reads as empty. | P4 critique (C12) | — | owner |
 | 31 | The sky redraws every frame even when nothing moves; skip frames when idle. Also measure the production bundle once (`vite build` with a size report). | P4 critique (C13, C14) | P6 | later |
+| 32 | PaperOutcome result fields (realizedFundingUsd, realizedPnlUsd) computed from real recorded data — no code yet. | db-scan-history | — | open |
 
 ## Decided, kept for reference
 - ε lists by net and clean status and marks "shaky" (held under half of six hours); no persistence threshold is invented (owner, P3 close).
