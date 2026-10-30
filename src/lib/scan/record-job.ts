@@ -49,7 +49,8 @@ async function save(record: ScanRecord): Promise<void> {
   } catch (e) {
     const code = (e as { code?: string })?.code
     if (code === "P2002") return
-    // scanner off / db issues: stay silent-ish
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error(msg)
   }
 }
 

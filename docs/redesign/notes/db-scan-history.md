@@ -15,5 +15,4 @@ Added Prisma models for recording every coin of every live scan, plus a watchlis
 - Duplicate scannerTs treated as no-op (P2002).
 
 ## Open items
-- Phase 2 migration to be created offline.
 - PaperOutcome result fields computed later from real recorded data (no code yet).

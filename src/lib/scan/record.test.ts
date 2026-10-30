@@ -41,3 +41,26 @@ test("pollAndRecord: scanner failing -> no throw, no save", async () => {
   })
   assert.equal(saved, false)
 })
+
+test("pollAndRecord: live body saves once with scannerTs in ms", async () => {
+  const body = JSON.parse(readFileSync(join(__dirname, "__fixtures__/scan.json"), "utf8"))
+  const saves: any[] = []
+  await pollAndRecord({
+    fetchJson: async () => body,
+    save: async (r) => { saves.push(r) },
+  })
+  assert.equal(saves.length, 1)
+  assert.equal(saves[0].scannerTs.getTime(), Math.round(body.ts * 1000))
+})
+
+test("toScanRecord maps building history status", () => {
+  const body = JSON.parse(readFileSync(join(__dirname, "__fixtures__/scan.json"), "utf8"))
+  const scan = normalizeScan(body)
+  assert.ok(scan && scan.live)
+  const row = scan!.rows.find((r) => r.status === "building history")
+  if (row) {
+    const r = toScanRecord(scan!, { ...DEFAULT_SCAN_PARAMS, min: 0 })
+    const coin = r!.coins.find((c) => c.symbol === row.symbol)
+    assert.equal(coin?.status, "building_history")
+  }
+})
