@@ -10,11 +10,15 @@
     "test": "node --experimental-strip-types --test src/lib/scan/adapter.test.ts src/lib/palette.test.ts src/lib/motion/motion.test.ts src/lib/motion/choreo.test.ts src/lib/scan/loudest.test.ts src/lib/stage/radar.test.ts src/lib/stage/layout.test.ts src/lib/stage/astrolabe.test.ts src/lib/stage/comet.test.ts src/lib/stage/field.test.ts src/lib/stage/kennel.test.ts src/lib/stage/embers.test.ts src/lib/stage/atlas.test.ts src/lib/stage/den.test.ts src/lib/scan/source.test.ts src/lib/stage/rhythm.test.ts src/lib/stage/travel.test.ts src/lib/scan/table.test.ts src/lib/scan/history.test.ts src/lib/stage/sky-needs.test.ts src/lib/sky-path.test.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "start": "next start -p 8080"
+    "start": "next start -p 8080",
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/noto-serif-display": "^5.3.0",
+    "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.1",
@@ -30,11 +34,13 @@
     "lucide-react": "^0.510.0",
     "motion": "^14.1.0",
     "next": "^16.4.2",
+    "pg": "^8.23.1",
     "postcss": "^8.5.30",
     "postprocessing": "^6.39.5",
     "radix-ui": "^1.8.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "server-only": "^0.0.1",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.3.0",
     "three": "^0.186.1",
@@ -47,7 +53,7 @@
   "devDependencies": {
     "@eslint/js": "^9.20.0",
     "@types/node": "^22.16.5",
-    "@types/pg": "^8.11.10",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "eslint": "^9.20.0",
@@ -58,7 +64,7 @@
     "globals": "^15.15.0",
     "playwright": "^1.62.0",
     "prettier": "^3.4.0",
-    "prisma": "^8.0.0-rc.28",
+    "prisma": "^7.10.1",
     "shadcn": "4.21.4",
     "typescript-eslint": "^8.56.1"
   }

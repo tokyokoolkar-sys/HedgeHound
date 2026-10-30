@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model PaperTicket {
+  id          String    @id @default(cuid())
+  symbol      String
+  side        PaperSide
+  notionalUsd Float
+  leverage    Float
+  holdHours   Int
+  note        String?
+  createdAt   DateTime  @default(now())
+}
+
+enum PaperSide {
+  long
+  short
+}

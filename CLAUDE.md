@@ -8,6 +8,7 @@ Being redesigned as "The Can✶s Edition": a funding-spread observatory in a rea
 - Routes: `/`, `/scanner` (filters in the query), `/den`, `/playbook`, `/sky` and `/sky/[STAR]` (the coin in focus; build links with `skyPath()` from `lib/sky-path.ts`). `src/proxy.ts` redirects the old `/sky?star=` and `/universe` addresses.
 - Scanner backend: `python E:\ataspace\WhaleHunterAlt\scanner\server.py` → http://localhost:8000/api/scan (`/api` is rewritten to `SCANNER_URL`, default `127.0.0.1:8000`).
 - Checks: `npm run typecheck`, `npm run lint`, `npm test`.
+- DB (Phase 0 paper only): `npm run db:generate`, `npm run db:migrate`. Prisma + Postgres via DATABASE_URL (see .env.example).
 
 ## Hard rules
 1. **Data honesty** (from PRODUCT.md): never invent APRs, yields or performance claims. Every on-screen number shows a `<SourceTag>` (LIVE / PAPER / SAMPLE).
