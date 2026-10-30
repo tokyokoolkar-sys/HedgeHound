@@ -13,6 +13,7 @@ export default tseslint.config(
       ".output/**",
       ".vercel/**",
       ".claude/**",
+      ".relay/**",
       "node_modules/**",
       ".next/**",
       "next-env.d.ts",
