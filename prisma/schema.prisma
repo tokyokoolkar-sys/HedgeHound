@@ -7,17 +7,89 @@ datasource db {
 }
 
 model PaperTicket {
-  id          String    @id @default(cuid())
+  id          String       @id @default(cuid())
   symbol      String
   side        PaperSide
   notionalUsd Float
   leverage    Float
   holdHours   Int
   note        String?
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime     @default(now())
+  outcome     PaperOutcome?
 }
 
 enum PaperSide {
   long
   short
+}
+
+model Scan {
+  id         String    @id @default(cuid())
+  scannerTs  DateTime  @unique
+  recordedAt DateTime  @default(now())
+  minApr     Float
+  holdHours  Int
+  costPct    Float
+  leverage   Float
+  meta       Json
+  coins      ScanCoin[]
+}
+
+model ScanCoin {
+  id                  String          @id @default(cuid())
+  scanId              String
+  scan                Scan            @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  symbol              String
+  grossApr            Float
+  netApr              Float
+  persistence         Float
+  samples             Int
+  long                String
+  short               String
+  liqDist             Float
+  stale               Boolean
+  avgSpreadHr         Float?
+  avgAprSigned        Float?
+  hoursSinceFlip      Float
+  windowH             Float
+  n24                 Int
+  status              ScanCoinStatus
+  lighterHr           Float?
+  binanceHr           Float?
+  lighterVol24Usd     Float?
+  lighterOiUsd        Float?
+  binanceVol24Usd     Float?
+  binanceOiUsd        Float?
+
+  @@unique([scanId, symbol])
+  @@index([symbol])
+}
+
+enum ScanCoinStatus {
+  ok
+  building_history @map("building history")
+}
+
+model WatchlistItem {
+  id        String   @id @default(cuid())
+  symbol    String   @unique
+  note      String?
+  createdAt DateTime @default(now())
+}
+
+model PaperOutcome {
+  id                String             @id @default(cuid())
+  ticketId          String             @unique
+  ticket            PaperTicket        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  status            PaperOutcomeStatus
+  openedAt          DateTime
+  closedAt          DateTime?
+  realizedFundingUsd Float?
+  realizedPnlUsd    Float?
+  updatedAt         DateTime           @updatedAt
+}
+
+enum PaperOutcomeStatus {
+  open
+  closed
 }
