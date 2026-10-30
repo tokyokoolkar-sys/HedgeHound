@@ -6,3 +6,7 @@ screenshots/*.png
 .next
 next-env.d.ts
 *.tsbuildinfo
+.env
+.env.local
+prisma/dev.db
+src/generated/prisma

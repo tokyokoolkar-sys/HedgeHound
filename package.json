@@ -10,7 +10,9 @@
     "test": "node --experimental-strip-types --test src/lib/scan/adapter.test.ts src/lib/palette.test.ts src/lib/motion/motion.test.ts src/lib/motion/choreo.test.ts src/lib/scan/loudest.test.ts src/lib/stage/radar.test.ts src/lib/stage/layout.test.ts src/lib/stage/astrolabe.test.ts src/lib/stage/comet.test.ts src/lib/stage/field.test.ts src/lib/stage/kennel.test.ts src/lib/stage/embers.test.ts src/lib/stage/atlas.test.ts src/lib/stage/den.test.ts src/lib/scan/source.test.ts src/lib/stage/rhythm.test.ts src/lib/stage/travel.test.ts src/lib/scan/table.test.ts src/lib/scan/history.test.ts src/lib/stage/sky-needs.test.ts src/lib/sky-path.test.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "start": "next start -p 8080"
+    "start": "next start -p 8080",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
