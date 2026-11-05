@@ -80,7 +80,7 @@ model WatchlistItem {
 model PaperOutcome {
   id                String             @id @default(cuid())
   ticketId          String             @unique
-  ticket            PaperTicket        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticket            PaperTicket        @relation(fields: [ticketId], references: [id], onDelete: Restrict)
   status            PaperOutcomeStatus
   openedAt          DateTime
   closedAt          DateTime?
