@@ -59,13 +59,17 @@ export async function hapusTiket(
 ): Promise<TicketFormState> {
   try {
     await prisma.paperTicket.delete({ where: { id } });
-    revalidatePath("/den/paper");
-    redirect("/den/paper");
-  } catch {
-    console.log("Gagal menghapus");
+  } catch (error) {
+    if (isForeignKeyViolation(error)) {
+      return {
+        message: "Tiket ini punya catatan hasil. Hapus catatannya dulu.",
+      };
+    }
+    throw error;
   }
 
-  return {};
+  revalidatePath("/den/paper");
+  redirect("/den/paper");
 }
 
 export async function tambahCatatan(
