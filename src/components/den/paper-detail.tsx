@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useState } from "react"
+import { useActionState, useEffect, useState } from "react"
 import {
   hapusTiket,
   tambahCatatan,
@@ -50,6 +50,11 @@ export function PaperDetail({ ticket, outcome }: { ticket: Ticket; outcome: Outc
   )
 
   const [note, setNote] = useState(ticket.note ?? "")
+  const [noteCount, setNoteCount] = useState(note.length)
+
+  useEffect(() => {
+    setNoteCount(note.length)
+  }, [note])
 
   return (
     <div className="mt-10 flex flex-col gap-12">
@@ -134,15 +139,18 @@ export function PaperDetail({ ticket, outcome }: { ticket: Ticket; outcome: Outc
               onChange={(event) => setNote(event.target.value)}
               className={field}
             />
-            <p className="label m-0 mt-1 text-starlight-dim">{note.length}/140</p>
+            <p className="label m-0 mt-1 text-starlight-dim">{noteCount}/140</p>
             <Error message={ubahState.errors?.note?.[0]} />
           </div>
 
           <div>
-            <label className="label flex min-h-11 items-center gap-3 text-starlight-dim">
-              <input type="checkbox" name="confirmPaper" defaultChecked />
-              This stays paper only
+            <label htmlFor="confirmPaper" className={label}>
+              Paper only
             </label>
+            <select id="confirmPaper" name="confirmPaper" defaultValue="true" className={field}>
+              <option value="true">Yes, paper only</option>
+              <option value="false">No</option>
+            </select>
             <Error message={ubahState.errors?.confirmPaper?.[0]} />
           </div>
 

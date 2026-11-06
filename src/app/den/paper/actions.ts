@@ -11,14 +11,6 @@ export type TicketFormState = {
   errors?: Record<string, string[] | undefined>;
 };
 
-function isForeignKeyViolation(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    (error as { code?: string }).code === "P2003"
-  );
-}
-
 function readTicket(formData: FormData) {
   return {
     symbol: String(formData.get("symbol") ?? ""),
@@ -27,7 +19,7 @@ function readTicket(formData: FormData) {
     leverage: Number(formData.get("leverage")),
     holdHours: Number(formData.get("holdHours")),
     note: String(formData.get("note") ?? ""),
-    confirmPaper: formData.get("confirmPaper") === "on",
+    confirmPaper: formData.get("confirmPaper"),
   };
 }
 
@@ -36,31 +28,28 @@ export async function ubahTiket(
   _state: TicketFormState,
   formData: FormData,
 ): Promise<TicketFormState> {
-  const parsed = paperTicketSchema.safeParse(readTicket(formData));
-  if (!parsed.success) {
-    return {
-      message: "Periksa kembali isian.",
-      errors: z.flattenError(parsed.error).fieldErrors,
-    };
-  }
-
-  const { confirmPaper: _confirm, note, ...fields } = parsed.data;
-
   try {
+    const parsed = paperTicketSchema.safeParse(readTicket(formData));
+    if (!parsed.success) {
+      return {
+        message: "Periksa kembali isian.",
+        errors: z.flattenError(parsed.error).fieldErrors,
+      };
+    }
+
+    const { confirmPaper: _confirm, note, ...fields } = parsed.data;
+
     await prisma.paperTicket.update({
       where: { id },
       data: { ...fields, note: note ? note : null },
     });
-  } catch (error) {
-    if (isForeignKeyViolation(error)) {
-      return { message: "Tiket ini sudah dirujuk catatan hasil." };
-    }
-    throw error;
-  }
 
-  revalidatePath("/den/paper");
-  revalidatePath(`/den/paper/${id}`);
-  return { message: "Perubahan disimpan." };
+    revalidatePath("/den/paper");
+    revalidatePath(`/den/paper/${id}`);
+    return { message: "Perubahan disimpan." };
+  } catch {
+    return { message: "Gagal menyimpan." };
+  }
 }
 
 export async function hapusTiket(
@@ -70,17 +59,13 @@ export async function hapusTiket(
 ): Promise<TicketFormState> {
   try {
     await prisma.paperTicket.delete({ where: { id } });
-  } catch (error) {
-    if (isForeignKeyViolation(error)) {
-      return {
-        message: "Tiket ini punya catatan hasil. Hapus catatannya dulu.",
-      };
-    }
-    throw error;
+    revalidatePath("/den/paper");
+    redirect("/den/paper");
+  } catch {
+    console.log("Gagal menghapus");
   }
 
-  revalidatePath("/den/paper");
-  redirect("/den/paper");
+  return {};
 }
 
 export async function tambahCatatan(

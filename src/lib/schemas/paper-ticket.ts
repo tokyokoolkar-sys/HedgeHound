@@ -45,10 +45,8 @@ export const paperTicketSchema = z.object({
     .optional()
     .or(z.literal("")),
 
-  // Checkbox: must be explicitly ticked to acknowledge paper-only.
-  confirmPaper: z
-    .boolean({ message: "You must confirm this is a paper trade." })
-    .refine((v) => v === true, "You must confirm this is a paper trade (Phase 0 — no real orders)."),
+  // Select: "true" / "false".
+  confirmPaper: z.coerce.boolean(),
 });
 
 export type PaperTicket = z.infer<typeof paperTicketSchema>;
