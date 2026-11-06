@@ -54,7 +54,8 @@ export function PaperDetail({ ticket, outcome }: { ticket: Ticket; outcome: Outc
 
   useEffect(() => {
     setNoteCount(note.length)
-  }, [note])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="mt-10 flex flex-col gap-12">
