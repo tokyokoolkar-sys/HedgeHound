@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useEffect, useState } from "react"
+import { useActionState, useState } from "react"
 import {
   hapusTiket,
   tambahCatatan,
@@ -50,12 +50,6 @@ export function PaperDetail({ ticket, outcome }: { ticket: Ticket; outcome: Outc
   )
 
   const [note, setNote] = useState(ticket.note ?? "")
-  const [noteCount, setNoteCount] = useState(note.length)
-
-  useEffect(() => {
-    setNoteCount(note.length)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   return (
     <div className="mt-10 flex flex-col gap-12">
@@ -140,7 +134,7 @@ export function PaperDetail({ ticket, outcome }: { ticket: Ticket; outcome: Outc
               onChange={(event) => setNote(event.target.value)}
               className={field}
             />
-            <p className="label m-0 mt-1 text-starlight-dim">{noteCount}/140</p>
+            <p className="label m-0 mt-1 text-starlight-dim">{note.length}/140</p>
             <Error message={ubahState.errors?.note?.[0]} />
           </div>
 
