@@ -2,38 +2,38 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Next.js: server",
-      "type": "node",
+      "name": "Next.js: debug server-side",
+      "type": "node-terminal",
       "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "command": "npm run dev -- --inspect",
       "env": {
-        "NODE_OPTIONS": "--inspect",
         "PRISMA_LOG": "1"
-      },
-      "console": "integratedTerminal",
-      "skipFiles": ["<node_internals>/**", "${workspaceFolder}/.next/**"],
-      "serverReadyAction": {
-        "pattern": "Local:\\s+(https?://\\S+)",
-        "uriFormat": "%s",
-        "action": "debugWithChrome"
       }
     },
     {
-      "name": "Next.js: attach to server",
-      "type": "node",
-      "request": "attach",
-      "port": 9229,
-      "restart": true,
-      "skipFiles": ["<node_internals>/**", "${workspaceFolder}/.next/**"]
-    },
-    {
-      "name": "Next.js: client",
+      "name": "Next.js: debug client-side",
       "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:8080",
-      "webRoot": "${workspaceFolder}",
-      "sourceMaps": true
+      "url": "http://localhost:8080"
+    },
+    {
+      "name": "Next.js: debug full stack",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/next/dist/bin/next",
+      "args": ["dev", "-p", "8080"],
+      "runtimeArgs": ["--inspect"],
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "PRISMA_LOG": "1"
+      },
+      "serverReadyAction": {
+        "action": "debugWithChrome",
+        "killOnServerStop": true,
+        "pattern": "- Local:.+(https?://.+)",
+        "uriFormat": "%s",
+        "webRoot": "${workspaceFolder}"
+      }
     }
   ]
 }
