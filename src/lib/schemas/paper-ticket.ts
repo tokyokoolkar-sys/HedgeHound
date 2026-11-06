@@ -45,8 +45,10 @@ export const paperTicketSchema = z.object({
     .optional()
     .or(z.literal("")),
 
-  // Select: "true" / "false".
-  confirmPaper: z.coerce.boolean(),
+  // "true" -> true, "false" -> false; nilai lain menjadi galat validasi.
+  confirmPaper: z
+    .stringbool()
+    .refine((v) => v === true, "You must confirm this is a paper trade (Phase 0 — no real orders)."),
 });
 
 export type PaperTicket = z.infer<typeof paperTicketSchema>;
