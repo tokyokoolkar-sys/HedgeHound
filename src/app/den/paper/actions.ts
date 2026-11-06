@@ -28,28 +28,24 @@ export async function ubahTiket(
   _state: TicketFormState,
   formData: FormData,
 ): Promise<TicketFormState> {
-  try {
-    const parsed = paperTicketSchema.safeParse(readTicket(formData));
-    if (!parsed.success) {
-      return {
-        message: "Periksa kembali isian.",
-        errors: z.flattenError(parsed.error).fieldErrors,
-      };
-    }
-
-    const { confirmPaper: _confirm, note, ...fields } = parsed.data;
-
-    await prisma.paperTicket.update({
-      where: { id },
-      data: { ...fields, note: note ? note : null },
-    });
-
-    revalidatePath("/den/paper");
-    revalidatePath(`/den/paper/${id}`);
-    return { message: "Perubahan disimpan." };
-  } catch {
-    return { message: "Gagal menyimpan." };
+  const parsed = paperTicketSchema.safeParse(readTicket(formData));
+  if (!parsed.success) {
+    return {
+      message: "Periksa kembali isian.",
+      errors: z.flattenError(parsed.error).fieldErrors,
+    };
   }
+
+  const { confirmPaper: _confirm, note, ...fields } = parsed.data;
+
+  await prisma.paperTicket.update({
+    where: { id },
+    data: { ...fields, note: note ? note : null },
+  });
+
+  revalidatePath("/den/paper");
+  revalidatePath(`/den/paper/${id}`);
+  return { message: "Perubahan disimpan." };
 }
 
 export async function hapusTiket(
