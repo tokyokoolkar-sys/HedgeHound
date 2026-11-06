@@ -138,12 +138,42 @@ async function main() {
     })
   }
 
-  const [scansCount, coinsCount, watchCount] = await Promise.all([
+  const tickets = [
+    { id: "seed-ticket-btc", symbol: "BTC", side: "long" as const, notionalUsd: 2000, leverage: 2, holdHours: 72, note: "funding flip watch" },
+    { id: "seed-ticket-eth", symbol: "ETH", side: "short" as const, notionalUsd: 1500, leverage: 1.5, holdHours: 24, note: "calmer spread" },
+    { id: "seed-ticket-sol", symbol: "SOL", side: "long" as const, notionalUsd: 800, leverage: 1, holdHours: 48, note: "history still building" },
+    { id: "seed-ticket-wif", symbol: "WIF", side: "short" as const, notionalUsd: 500, leverage: 1, holdHours: 16, note: null },
+  ]
+
+  for (const ticket of tickets) {
+    await prisma.paperTicket.upsert({
+      where: { id: ticket.id },
+      update: ticket,
+      create: ticket,
+    })
+  }
+
+  await prisma.paperOutcome.upsert({
+    where: { ticketId: "seed-ticket-btc" },
+    update: { note: "Opened before the flip; funding stayed positive." },
+    create: {
+      ticketId: "seed-ticket-btc",
+      status: "open",
+      note: "Opened before the flip; funding stayed positive.",
+      openedAt: new Date("2026-01-02T00:00:00.000Z"),
+    },
+  })
+
+  const [scansCount, coinsCount, watchCount, ticketCount, outcomeCount] = await Promise.all([
     prisma.scan.count(),
     prisma.scanCoin.count(),
     prisma.watchlistItem.count(),
+    prisma.paperTicket.count(),
+    prisma.paperOutcome.count(),
   ])
-  console.log(`seed ok: ${scansCount} scans, ${coinsCount} scan coins, ${watchCount} watchlist items`)
+  console.log(
+    `seed ok: ${scansCount} scans, ${coinsCount} scan coins, ${watchCount} watchlist items, ${ticketCount} paper tickets, ${outcomeCount} outcomes`,
+  )
 }
 
 main()

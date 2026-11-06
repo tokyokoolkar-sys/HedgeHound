@@ -82,6 +82,7 @@ model PaperOutcome {
   ticketId          String             @unique
   ticket            PaperTicket        @relation(fields: [ticketId], references: [id], onDelete: Restrict)
   status            PaperOutcomeStatus
+  note              String?
   openedAt          DateTime
   closedAt          DateTime?
   realizedFundingUsd Float?
