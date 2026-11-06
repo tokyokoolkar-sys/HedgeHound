@@ -71,6 +71,29 @@ git checkout D1-almagest
 
 Then run `npm run dev` and open http://localhost:8080/_almagest. It has switches for the typeface and the transition grain.
 
+## Server and Client Components
+
+Every route is a **Server Component** shell with an interactive **Client Component** body one level below it.
+
+| File | Kind | Why |
+|---|---|---|
+| `src/app/layout.tsx` | server | Exports `metadata` and `viewport`, so `<title>` and the theme colour exist before hydration |
+| `src/app/page.tsx`, `scanner/page.tsx`, `den/page.tsx`, `playbook/page.tsx` | server | Thin shells that export route `metadata` and render a client body |
+| `src/app/sky/layout.tsx` | server | Owns the page body so changing star focus does not remount the camera |
+| `src/app/sky/[star]/page.tsx` | server | Dynamic segment; the star is read from the pathname on the client so focus changes stay a shallow `history.replaceState` |
+| `src/app/providers.tsx` | client | Holds `QueryClientProvider`, the Lenis/GSAP `ScrollEngine`, the skip link and the single WebGL `SkyHost` canvas |
+| `src/app/loading.tsx` | server | Route-level fallback while a segment streams in |
+| `src/app/not-found.tsx` | server | Static 404, no state |
+| `src/app/error.tsx` | client | Must be a client component: it receives `reset` and re-renders after a thrown error |
+| `src/instrumentation.ts` | server-only | The only path holding a `PrismaClient`; records scan history when `DATABASE_URL` is set |
+
+What follows from that split:
+
+- **The 3D tree never reaches the server bundle.** `three`, R3F and the GLSL shaders are client-only and loaded through `React.lazy` behind a boundary, so the server render is plain text and the canvas mounts after hydration.
+- **Routing stays static.** The scanner feed is fetched client-side by TanStack Query against the `/api` rewrite, so the server render does not depend on the scanner being up and SAMPLE data can swap to LIVE without a reload.
+- **One canvas for the whole site.** `SkyHost` lives in the root `Providers`, above the router, so client-side navigation does not tear down the WebGL context.
+- **Navigation is centralised.** Pages import `Link`/`useNavigate` from `src/lib/nav.tsx`, never `next/link`, so the route vocabulary lives in one file.
+
 ## Stack
 
 Next.js 16 App Router (React 19, Turbopack) · Tailwind v4 · three.js + React Three Fiber (one persistent canvas) · custom GLSL (stars, glass, the "bite" transition) · Lenis + GSAP ticker for smooth scroll · TanStack Query for the scanner feed · shadcn/ui, magicui and two `@spell` components (shimmer text, logos carousel).
