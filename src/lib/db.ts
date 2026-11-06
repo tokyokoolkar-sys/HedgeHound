@@ -11,10 +11,18 @@ function getDatabaseUrl(): string {
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
+type PrismaLogLevel = "query" | "info" | "warn" | "error";
+
+const logLevels: PrismaLogLevel[] =
+  process.env.PRISMA_LOG === "1"
+    ? ["query", "info", "warn", "error"]
+    : ["warn", "error"];
+
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     adapter: new PrismaPg({ connectionString: getDatabaseUrl() }),
+    log: logLevels,
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
