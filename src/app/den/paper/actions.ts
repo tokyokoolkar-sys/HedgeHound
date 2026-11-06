@@ -11,6 +11,14 @@ export type TicketFormState = {
   errors?: Record<string, string[] | undefined>;
 };
 
+function isForeignKeyViolation(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    (error as { code?: string }).code === "P2003"
+  );
+}
+
 function readTicket(formData: FormData) {
   return {
     symbol: String(formData.get("symbol") ?? ""),
